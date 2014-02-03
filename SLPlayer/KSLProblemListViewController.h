@@ -1,5 +1,5 @@
 //
-//  KSLViewController.h
+//  KSLProblemListViewController.h
 //  SLPlayer
 //
 //  Created by KO on 2014/02/02.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface KSLViewController : UIViewController
+@interface KSLProblemListViewController : UITableViewController
 
 @end
