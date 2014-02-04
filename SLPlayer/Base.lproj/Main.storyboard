@@ -64,10 +64,10 @@
             </objects>
             <point key="canvasLocation" x="582" y="-395"/>
         </scene>
-        <!--Problem View Controller-->
+        <!--Problem Play View Controller-->
         <scene sceneID="iYB-Cl-AT0">
             <objects>
-                <viewController id="Vkt-xv-pXA" customClass="KSLProblemViewController" sceneMemberID="viewController">
+                <viewController id="Vkt-xv-pXA" customClass="KSLProblemPlayViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="U39-7D-nyG"/>
                         <viewControllerLayoutGuide type="bottom" id="z8e-nS-dSD"/>
@@ -87,7 +87,7 @@
                                             <barButtonItem title="Item" id="M2x-sp-VGu"/>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kEy-9o-GNE" customClass="KSLOverallView">
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kEy-9o-GNE" customClass="KSLBoardOverallView">
                                         <rect key="frame" x="0.0" y="44" width="384" height="660"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -106,7 +106,7 @@
                                             <barButtonItem title="Item" id="nqY-gG-NmW"/>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLBoardZoomedView">
                                         <rect key="frame" x="0.0" y="44" width="640" height="660"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -126,10 +126,10 @@
             </objects>
             <point key="canvasLocation" x="1740" y="-395"/>
         </scene>
-        <!--Add Problem View Controller-->
+        <!--Problem Edit View Controller-->
         <scene sceneID="ueE-jC-Jjy">
             <objects>
-                <viewController id="eQF-aD-vjA" customClass="KSLAddProblemViewController" sceneMemberID="viewController">
+                <viewController id="eQF-aD-vjA" customClass="KSLProblemEditViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="a4G-G7-fgH"/>
                         <viewControllerLayoutGuide type="bottom" id="eZp-Za-8Os"/>
@@ -163,12 +163,21 @@
                                                             <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
                                                         </connections>
                                                     </barButtonItem>
-                                                    <barButtonItem systemItem="search" id="4Cq-Sk-ekr"/>
+                                                    <barButtonItem width="14" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
+                                                    <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
+                                                        <connections>
+                                                            <action selector="selectClicked:" destination="eQF-aD-vjA" id="TBy-5y-hHX"/>
+                                                        </connections>
+                                                    </barButtonItem>
                                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="gwn-Pq-DKI"/>
-                                                    <barButtonItem systemItem="compose" id="nj7-xS-Qf9"/>
+                                                    <barButtonItem systemItem="compose" id="nj7-xS-Qf9">
+                                                        <connections>
+                                                            <action selector="newClicked:" destination="eQF-aD-vjA" id="xpE-M4-Gb1"/>
+                                                        </connections>
+                                                    </barButtonItem>
                                                 </items>
                                             </toolbar>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="era-cR-KOj" customClass="KSLOverallView">
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="era-cR-KOj" customClass="KSLBoardOverallView">
                                                 <rect key="frame" x="0.0" y="44" width="384" height="616"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -187,7 +196,7 @@
                                                     <barButtonItem title="Item" id="J1T-v0-GID"/>
                                                 </items>
                                             </toolbar>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLProblemView">
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLBoardZoomedView">
                                                 <rect key="frame" x="0.0" y="44" width="639" height="616"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -203,8 +212,16 @@
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" id="5mM-Bb-AMp">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="qyi-p2-qpj"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="ujM-P2-P5J"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="qyi-p2-qpj">
+                            <connections>
+                                <segue destination="06K-KE-dCs" kind="unwind" unwindAction="cancelProblemEdit:" id="uLk-Bu-GVi"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="ujM-P2-P5J">
+                            <connections>
+                                <segue destination="06K-KE-dCs" kind="unwind" unwindAction="doneProblemEdit:" id="l50-RU-1IW"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
@@ -213,6 +230,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xOj-Ev-BlJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="06K-KE-dCs" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2902" y="549"/>
         </scene>

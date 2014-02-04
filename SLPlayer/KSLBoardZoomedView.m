@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 KO. All rights reserved.
 //
 
-#import "KSLProblemView.h"
+#import "KSLBoardZoomedView.h"
 #import "KSLProblemViewDelegate.h"
 #import "KSLBoard.h"
 #import "KLCGPointUtil.h"
 #import "KLCGUtil.h"
 
-@implementation KSLProblemView
+@implementation KSLBoardZoomedView
 {
     UIPanGestureRecognizer *_panGr;
     UIPinchGestureRecognizer *_pinchGr;
@@ -51,33 +51,21 @@
     
     CGFloat w = self.frame.size.width;
     CGFloat h = self.frame.size.height;
-    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+    CGContextSetFillColorWithColor(context, [UIColor lightGrayColor].CGColor);
     CGContextFillRect(context, CGRectMake(0, 0, w, h));
     
     KSLBoard *board = _delegate.board;
     if (board) {
-        [self calculateBoardOrigin];
+        [self calculateBoardParameter];
+        CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        CGRect boardRect = CGRectMake(_x0 - _pitch, _y0 - _pitch,
+                                      (board.width + KSLPROBLEM_MARGIN * 2) * _pitch,
+                                      (board.height + KSLPROBLEM_MARGIN * 2) * _pitch);
+        CGContextFillRect(context, boardRect);
+        
         [board drawImageWithContext:context origin:CGPointMake(_x0, _y0) pitch:_pitch
                       erasableColor:[UIColor blueColor].CGColor];
-        
-        CGContextSetFillColorWithColor(context, [UIColor darkGrayColor].CGColor);
-        CGFloat margin = KSLPROBLEM_MARGIN * _pitch;
-        CGFloat border = KSLPROBLEM_BORDER_WIDTH * _pitch;
-        CGFloat x1 = _x0 + board.width * _pitch;
-        CGFloat y1 = _y0 + board.height * _pitch;
-        CGContextFillRect(context, CGRectMake(_x0 - margin, _y0 - margin,
-                                              border, board.height * _pitch + 2.0 * margin));
-        CGContextFillRect(context, CGRectMake(x1 + margin - border, _y0 - margin,
-                                              border, board.height * _pitch + 2.0 * margin));
-        CGContextFillRect(context, CGRectMake(_x0 - margin, _y0 - margin,
-                                              board.width * _pitch + 2.0 * margin, border));
-        CGContextFillRect(context, CGRectMake(_x0 - margin, y1 + margin - border,
-                                              board.width * _pitch + 2.0 * margin, border));
     }
-    
-//    CGContextSetLineWidth(context, 2.0);
-//    CGContextSetStrokeColorWithColor(context, [UIColor darkGrayColor].CGColor);
-//    CGContextStrokeRect(context, CGRectMake(1, 1, w-2, h-2));
 }
 
 - (IBAction)panned:(id)sender
@@ -94,14 +82,14 @@
 
 - (void)panZoomedArea:(CGPoint)translation
 {
-    [self calculateBoardOrigin];
+    [self calculateBoardParameter];
     [self setZoomedAreaWithRect:CGRectOffset(_delegate.zoomedArea,
                                              -translation.x / _pitch, -translation.y / _pitch)];
 }
 
 - (void)zoomZoomedArea:(CGFloat)scale
 {
-    [self calculateBoardOrigin];
+    [self calculateBoardParameter];
 
     CGFloat p = KLCGClumpValue(_pitch * scale, KSLPROBLEM_MINIMUM_PITCH, KSLPROBLEM_MAXIMUM_PITCH);
     CGFloat w = self.frame.size.width / p;
@@ -121,7 +109,7 @@
     _delegate.zoomedArea = KLCGClumpRect(rect, _delegate.problemArea);
 }
 
-- (void)calculateBoardOrigin
+- (void)calculateBoardParameter
 {
     CGRect zoomed = _delegate.zoomedArea;
     CGFloat w = self.frame.size.width;

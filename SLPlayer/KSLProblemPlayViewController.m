@@ -6,17 +6,17 @@
 //  Copyright (c) 2014年 KO. All rights reserved.
 //
 
-#import "KSLProblemViewController.h"
-#import "KSLOverallView.h"
-#import "KSLProblemView.h"
+#import "KSLProblemPlayViewController.h"
+#import "KSLBoardOverallView.h"
+#import "KSLBoardZoomedView.h"
 
-@interface KSLProblemViewController ()
-@property (weak, nonatomic) IBOutlet KSLOverallView *overallView;
-@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
+@interface KSLProblemPlayViewController ()
+@property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
+@property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
 
 @end
 
-@implementation KSLProblemViewController
+@implementation KSLProblemPlayViewController
 {
     KSLBoard *_board;
     CGRect _zoomedArea;

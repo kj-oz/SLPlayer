@@ -12,7 +12,7 @@
 /**
  * プレイ画面、編集画面等で盤面全体を表示するビュー
  */
-@interface KSLOverallView : UIView
+@interface KSLBoardOverallView : UIView
 
 // 盤面の情報の取得、設定を行うデリゲート
 @property (nonatomic, weak) id<KSLProblemViewDelegate> delegate;

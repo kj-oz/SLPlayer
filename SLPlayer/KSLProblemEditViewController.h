@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "KSLProblemViewDelegate.h"
 
-@class KSLOverallView;
-@class KSLProblemView;
+@class KSLBoardOverallView;
+@class KSLBoardZoomedView;
 @class KSLProblem;
 
-@interface KSLAddProblemViewController : UIViewController
+@interface KSLProblemEditViewController : UIViewController
         <UINavigationControllerDelegate, UIImagePickerControllerDelegate, KSLProblemViewDelegate>
 
 @property (nonatomic, strong) KSLProblem *problem;

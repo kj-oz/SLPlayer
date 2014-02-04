@@ -26,7 +26,7 @@ typedef enum {
 /**
  * 問題の一部を拡大表示し各種操作を行うためのビュー
  */
-@interface KSLProblemView : UIView
+@interface KSLBoardZoomedView : UIView
 
 // 盤面の情報の取得、設定を行うデリゲート
 @property (nonatomic, weak) id<KSLProblemViewDelegate> delegate;

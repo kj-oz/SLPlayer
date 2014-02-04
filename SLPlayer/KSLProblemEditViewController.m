@@ -6,35 +6,22 @@
 //  Copyright (c) 2014年 KO. All rights reserved.
 //
 
-#import "KSLAddProblemViewController.h"
+#import "KSLProblemEditViewController.h"
 #import "KSLProblemDetector.h"
 #import "KSLBoard.h"
 #import "KSLSolver.h"
 #import "KSLProblem.h"
-#import "KSLOverallView.h"
-#import "KSLProblemView.h"
+#import "KSLBoardOverallView.h"
+#import "KSLBoardZoomedView.h"
 
-//@interface NonRotatingUIImagePickerController : UIImagePickerController
-//
-//@end
-//
-//@implementation NonRotatingUIImagePickerController
-//// Disable Landscape mode.
-//- (NSUInteger)supportedInterfaceOrientations
-//{
-//    return UIInterfaceOrientationMaskLandscape;
-//}
-//
-//@end
-//
-@interface KSLAddProblemViewController ()
+@interface KSLProblemEditViewController ()
 
-@property (weak, nonatomic) IBOutlet KSLOverallView *overallView;
-@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
+@property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
+@property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
 
 @end
 
-@implementation KSLAddProblemViewController
+@implementation KSLProblemEditViewController
 {
     KSLBoard *_board;
     CGRect _zoomedArea;
@@ -116,12 +103,15 @@
 
 - (IBAction)cameraClicked:(id)sender
 {
-    [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
+    [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera sender:sender];
 }
 
 - (IBAction)selectClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
+}
+
+- (IBAction)newClicked:(id)sender {
 }
 
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType sender:(id)sender
@@ -154,7 +144,7 @@
     
     // 問題チェック
     [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
-    KSLSolver *solver = [[KSLSolver alloc] initWithBoard:_board];
+    KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
     if (![solver solveWithError:&error]) {
         switch (error.code) {

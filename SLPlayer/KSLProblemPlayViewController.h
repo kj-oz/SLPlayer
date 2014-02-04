@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "KSLProblemViewDelegate.h"
 
-@interface KSLProblemViewController : UIViewController <KSLProblemViewDelegate>
+@interface KSLProblemPlayViewController : UIViewController <KSLProblemViewDelegate>
 
 @end

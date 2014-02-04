@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 KO. All rights reserved.
 //
 
-#import "KSLOverallView.h"
+#import "KSLBoardOverallView.h"
 #import "KSLProblemViewDelegate.h"
 #import "KSLBoard.h"
 #import "KLCGPointUtil.h"
 #import "KLCGUtil.h"
 
-@implementation KSLOverallView
+@implementation KSLBoardOverallView
 {
     UIPanGestureRecognizer *_panGr;
     KSLBoard *_board;
@@ -38,9 +38,6 @@
 
 - (void)awakeFromNib
 {
-//    KSLOverallView *view = (KSLOverallView *)[[[NSBundle mainBundle] loadNibNamed:@"KSLOverallView"
-//                                                                owner:nil options:nil] lastObject];
-//    [self addSubview:view];
     _panGr = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     [self addGestureRecognizer:_panGr];
     KLDBGPrintMethodName("> ");
@@ -57,7 +54,7 @@
     
     KSLBoard *board = _delegate.board;
     if (board) {
-        [self calculateBoardOrigin];
+        [self calculateBoardParameter];
         [board drawImageWithContext:context origin:CGPointMake(_x0, _y0) pitch:_pitch
                                 erasableColor:[UIColor blueColor].CGColor];
         
@@ -84,7 +81,7 @@
 
 - (CGRect)zoomedArea
 {
-    [self calculateBoardOrigin];
+    [self calculateBoardParameter];
     
     CGRect zoomedArea = _delegate.zoomedArea;
     CGFloat x = _x0 + zoomedArea.origin.x * _pitch;
@@ -96,7 +93,7 @@
 
 - (void)setZoomedArea:(CGRect)rectByPixel
 {
-    [self calculateBoardOrigin];
+    [self calculateBoardParameter];
     
     CGFloat x = (rectByPixel.origin.x - _x0) / _pitch;
     CGFloat y = (rectByPixel.origin.y - _y0) / _pitch;
@@ -105,7 +102,7 @@
     _delegate.zoomedArea = KLCGClumpRect(CGRectMake(x, y, w, h), _delegate.problemArea);
 }
 
-- (void)calculateBoardOrigin
+- (void)calculateBoardParameter
 {
     if (_delegate.board != _board) {
         KSLBoard *board = _delegate.board;
@@ -115,8 +112,8 @@
         CGFloat pitchV = h / (board.height + 2 * KSLPROBLEM_MARGIN);
         _pitch = MIN(pitchH, pitchV);
         
-        _x0 = (w - _pitch * board.width) / 2;
-        _y0 = (h - _pitch * board.height) / 2;
+        _x0 = _pitch;
+        _y0 = _pitch;
     }
 }
 

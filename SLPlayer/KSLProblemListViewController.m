@@ -117,4 +117,12 @@
 
  */
 
+- (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
+{
+}
+
+- (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue
+{
+}
+
 @end
