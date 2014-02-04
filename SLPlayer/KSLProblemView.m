@@ -11,7 +11,6 @@
 #import "KSLBoard.h"
 #import "KLCGPointUtil.h"
 #import "KLCGUtil.h"
-#import "KLDBGUtil.h"
 
 @implementation KSLProblemView
 {
@@ -76,9 +75,9 @@
                                               board.width * _pitch + 2.0 * margin, border));
     }
     
-    CGContextSetLineWidth(context, 2.0);
-    CGContextSetStrokeColorWithColor(context, [UIColor darkGrayColor].CGColor);
-    CGContextStrokeRect(context, CGRectMake(1, 1, w-2, h-2));
+//    CGContextSetLineWidth(context, 2.0);
+//    CGContextSetStrokeColorWithColor(context, [UIColor darkGrayColor].CGColor);
+//    CGContextStrokeRect(context, CGRectMake(1, 1, w-2, h-2));
 }
 
 - (IBAction)panned:(id)sender
