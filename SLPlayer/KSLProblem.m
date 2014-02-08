@@ -77,6 +77,7 @@
             [[NSException exceptionWithName:error.description reason:path userInfo:nil] raise];
         }
         _uid = [[path lastPathComponent] stringByDeletingPathExtension];
+        _path = path;
         self.title = json[@"title"];
         self.status = [json[@"status"] integerValue];
         self.difficulty = [json[@"difficulty"] integerValue];
@@ -84,16 +85,26 @@
         _width = [json[@"width"] integerValue];
         _height = [json[@"height"] integerValue];
         _data = json[@"data"];
-//        NSInteger count = _width * _height;
-//        NSString *data = json[@"data"];
-//        unichar *buf = (unichar *)malloc(sizeof(unichar) * count);
-//        [data getCharacters:buf range:NSMakeRange(0, count)];
-//        _data = [NSMutableArray arrayWithCapacity:count];
-//        for (int i = 0; i < count; i++) {
-//            _data[i] = @(buf[i] == '-' ? -1 : buf[i] - 48);
-//        }
-//        free(buf);
         self.elapsedSeconds = json[@"elapsedSeconds"];
+    }
+    return self;
+}
+
+- (id)initWithProblem:(KSLProblem *)original
+{
+    self = [super init];
+    if (self) {
+        CFUUIDRef uuid = CFUUIDCreate(NULL);
+        _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+        _path = original.path;
+        self.title = original.title;
+        self.status = original.status;
+        self.difficulty = original.difficulty;
+        self.evaluation = original.evaluation;
+        _width = original.width;
+        _height = original.height;
+        _data = [original.data mutableCopy];
+        self.elapsedSeconds = [original.elapsedSeconds mutableCopy];
     }
     return self;
 }
@@ -104,6 +115,7 @@
     _path = [directory stringByAppendingPathComponent:fileName];
     [self save];
 }
+
 
 - (void)save
 {

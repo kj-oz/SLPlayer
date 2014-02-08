@@ -58,9 +58,10 @@
     if (board) {
         [self calculateBoardParameter];
         CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-        CGRect boardRect = CGRectMake(_x0 - _pitch, _y0 - _pitch,
-                                      (board.width + KSLPROBLEM_MARGIN * 2) * _pitch,
-                                      (board.height + KSLPROBLEM_MARGIN * 2) * _pitch);
+        float margin = (KSLPROBLEM_MARGIN - KSLPROBLEM_BORDER_WIDTH) * _pitch;
+        CGRect boardRect = CGRectMake(_x0 - margin, _y0 - margin,
+                                      board.width  * _pitch + margin * 2,
+                                      board.height * _pitch + margin * 2);
         CGContextFillRect(context, boardRect);
         
         [board drawImageWithContext:context origin:CGPointMake(_x0, _y0) pitch:_pitch

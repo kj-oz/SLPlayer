@@ -7,12 +7,19 @@
 //
 
 #import "KSLProblemListViewController.h"
+#import "KSLProblemEditViewController.h"
+#import "KSLProblemManager.h"
+#import "KSLWorkbook.h"
+#import "KSLProblem.h"
 
 @interface KSLProblemListViewController ()
 
 @end
 
 @implementation KSLProblemListViewController
+{
+    KSLProblem *_editingProblem;
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -44,24 +51,63 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    return pm.currentWorkbook.problems.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"ProblemCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
+                                                            forIndexPath:indexPath];
     
-    // Configure the cell...
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
+    NSString *levelSeed = @"★★★★★★★★★★★★";
+    NSString *level = [levelSeed substringToIndex:problem.difficulty];
+    NSString *status;
+    switch (problem.status) {
+        case KSLProblemStatusEditing:
+            status = @"編集中";
+            break;
+        case KSLProblemStatusNotStarted:
+            status = @"未着手";
+            break;
+        case KSLProblemStatusSolving:
+        {
+            int sec = ((NSNumber *)[problem.elapsedSeconds lastObject]).intValue;
+            status = [NSString stringWithFormat:@"未了（%.1f分）", (sec / 60.0)];
+            break;
+        }
+        case KSLProblemStatusSolved:
+            status = @"完了";
+            break;
+        default:
+            status = @"不明";
+            break;
+    }
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %dX%d %@ %@", problem.title, problem.width,
+                       problem.height, level, status];
+    
+    int finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
+    if (finishedCount) {
+        NSArray *eval = @[@"", @"駄作", @"平凡", @"秀作"];
+        NSMutableString *elapsed = [NSMutableString stringWithFormat:@"%@ (", eval[problem.evaluation]];
+        for (int i = 0; i < finishedCount; i++) {
+            int minute = (int)(((NSNumber *)problem.elapsedSeconds[i]).intValue / 60.0 + 0.5);
+            [elapsed appendFormat:@"%d分,", minute];
+        }
+        [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
+        
+        cell.detailTextLabel.text = elapsed;
+    } else {
+        cell.detailTextLabel.text = @"";
+    }
     
     return cell;
 }
@@ -119,6 +165,9 @@
 
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
+    KSLProblemEditViewController *pev = (KSLProblemEditViewController *)segue.sourceViewController;
+    
+    
 }
 
 - (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue

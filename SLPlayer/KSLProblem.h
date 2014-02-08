@@ -119,6 +119,13 @@ typedef enum {
 - (id)initWithFile:(NSString *)path;
 
 /**
+ * 与えられた問題のコピーを生成する.
+ * @param original 元の問題
+ * @return 問題オブジェクト
+ */
+- (id)initWithProblem:(KSLProblem *)original;
+
+/**
  * 与えられたディレクトリーの下に問題をjson形式のファイルとして保存する.
  * @param directory 保存先ディレクトリー
  */

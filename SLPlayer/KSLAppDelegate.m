@@ -7,6 +7,9 @@
 //
 
 #import "KSLAppDelegate.h"
+#import "KSLProblemManager.h"
+#import "KSLWorkbook.h"
+#import "KSLProblem.h"
 
 @implementation UIViewController (OrientationFix)
 
@@ -49,7 +52,32 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    // データを読み込む
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    [pm load];
+    
+    // 最後に開いていたドキュメントを得る
+    pm.currentWorkbook = pm.workbooks[0];
+    NSString* lastWorkbook = [[NSUserDefaults standardUserDefaults] stringForKey:@"lastWorkbook"];
+    if (lastWorkbook) {
+        for (KSLWorkbook *book in pm.workbooks) {
+            if ([book.title isEqualToString:lastWorkbook]) {
+                pm.currentWorkbook = book;
+                break;
+            }
+        }
+    }
+    
+    NSString* lastProblem = [[NSUserDefaults standardUserDefaults] stringForKey:@"lastProblem"];
+    if (lastProblem) {
+        for (KSLProblem *problem in pm.currentWorkbook.problems) {
+            if ([problem.uid isEqualToString:lastProblem]) {
+                pm.currentProblem = problem;
+                break;
+            }
+        }
+    }
+
     return YES;
 }
 							
@@ -78,6 +106,21 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)saveData
+{
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    KSLProblem *currentProblem = pm.currentProblem;
+    if (currentProblem) {
+        [[NSUserDefaults standardUserDefaults] setValue:currentProblem.uid forKey:@"lastProblem"];
+        [currentProblem saveToFile:pm.currentWorkbookDir];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastProblem"];
+    }
+    
+    // カレントの本棚の情報も標準の設定ファイルに保存する
+    [[NSUserDefaults standardUserDefaults] setValue:pm.currentWorkbook.title forKey:@"lastWorkbook"];
 }
 
 @end

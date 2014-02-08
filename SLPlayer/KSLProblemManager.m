@@ -69,6 +69,7 @@ static KSLProblemManager *_sharaedInstance = nil;
             [_workbooks addObject:book];
         }
     } else {
+        // サンプル問題集の展開
         NSString *path = [_documentDir stringByAppendingPathComponent:@"問題集1"];
         [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:NULL];
         KSLWorkbook *book = [[KSLWorkbook alloc] initWithDirectory:path];
