@@ -7,6 +7,7 @@
 //
 
 #import "KSLProblemManager.h"
+#import "KSLProblem.h"
 #import "KSLWorkbook.h"
 
 // シングルトンオブジェクト
@@ -17,9 +18,6 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     // 問題集の配列
     NSMutableArray *_workbooks;
-    
-    // アプリケーションドメインのドキュメントディレクトリー
-    NSString *_documentDir;
 }
 
 #pragma mark - シングルトンオブジェクト
@@ -62,19 +60,48 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     NSFileManager *fm = [NSFileManager defaultManager];
     
-    NSArray *dirs = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
+    NSMutableArray *dirs = [NSMutableArray array];
+    NSArray *files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
+    BOOL isDir;
+    for (int i = 0, n = files.count; i < n; i++) {
+        [fm fileExistsAtPath:[_documentDir stringByAppendingPathComponent:files[i]] isDirectory:&isDir];
+        if (isDir) {
+            [dirs addObject:files[i]];
+        }
+    }
+    
     if ([dirs count]) {
         for (NSString *dir in dirs) {
-            KSLWorkbook *book = [[KSLWorkbook alloc] initWithDirectory:dir];
+            KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:dir];
             [_workbooks addObject:book];
         }
     } else {
         // サンプル問題集の展開
-        NSString *path = [_documentDir stringByAppendingPathComponent:@"問題集1"];
-        [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:NULL];
-        KSLWorkbook *book = [[KSLWorkbook alloc] initWithDirectory:path];
+        NSString *path = [_documentDir stringByAppendingPathComponent:@"サンプル"];
+        NSError *error;
+        if (![fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error]) {
+            KLDBGPrint("%s", error.description.UTF8String);
+        };
+        KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:@"サンプル"];
         [_workbooks addObject:book];
     }
+}
+
+- (void)moveProblem:(KSLProblem *)problem toWorkbook:(KSLWorkbook *)to
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *fromDir = self.currentWorkbookDir;
+    NSString *fromFile = [fromDir stringByAppendingPathComponent:problem.uid];
+    NSString *toDir = [_documentDir stringByAppendingPathComponent:to.title];
+    NSString *toFile = [toDir stringByAppendingPathComponent:problem.uid];
+    NSError *error;
+    [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"problem"]
+                toPath:[toFile stringByAppendingPathComponent:@"problem"] error:&error];
+    [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"play"]
+                toPath:[toFile stringByAppendingPathComponent:@"play"] error:&error];
+    
+    [to addProblem:problem withSave:NO];
+    [_currentWorkbook removeProblem:problem withDelete:NO];
 }
 
 @end

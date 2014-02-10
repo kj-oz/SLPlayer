@@ -75,9 +75,6 @@ typedef enum {
 // ユニークなID
 @property (nonatomic, readonly) NSString *uid;
 
-// ファイルパス
-@property (nonatomic, readonly) NSString *path;
-
 // 一覧に表示する名称
 @property (nonatomic, copy) NSString *title;
 
@@ -124,6 +121,8 @@ typedef enum {
  * @return 問題オブジェクト
  */
 - (id)initWithProblem:(KSLProblem *)original;
+
+- (void)updateWithProblem:(KSLProblem *)original;
 
 /**
  * 与えられたディレクトリーの下に問題をjson形式のファイルとして保存する.

@@ -33,6 +33,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.editing = NO;
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -151,23 +152,48 @@
 }
 */
 
-/*
-#pragma mark - Navigation
-
-// In a story board-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if (self.editing) {
+        [self performSegueWithIdentifier:@"EditProblem" sender:self];
+    } else {
+        [self performSegueWithIdentifier:@"PlayProblem" sender:self];
+    }
 }
 
- */
+#pragma mark - Navigation
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    if ([segue.identifier isEqualToString:@"PlayProblem"]) {
+        KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
+        pm.currentProblem = problem;
+    } else if ([segue.identifier isEqualToString:@"EditProblem"]) {
+        UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
+        KSLProblemEditViewController *pev = (KSLProblemEditViewController *)nc.topViewController;
+        KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
+        pev.problem = [[KSLProblem alloc] initWithProblem:problem];
+        pev.addNew = NO;
+    } else if ([segue.identifier isEqualToString:@"AddProblem"]) {
+        UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
+        KSLProblemEditViewController *pev = (KSLProblemEditViewController *)nc.visibleViewController;
+        pev.problem = [[KSLProblem alloc] initWithWidth:10 andHeight:20 data:nil];
+        pev.addNew = YES;
+    }
+}
 
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblemEditViewController *pev = (KSLProblemEditViewController *)segue.sourceViewController;
-    
-    
+    if (pev.addNew) {
+        [pm.currentWorkbook addProblem:pev.problem withSave:YES];
+        [((UITableView *)self.view) reloadData];
+    } else {
+        KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
+        [problem updateWithProblem:pev.problem];
+    }
 }
 
 - (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue

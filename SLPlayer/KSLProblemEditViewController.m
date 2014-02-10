@@ -18,6 +18,12 @@
 
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 @property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
+@property (weak, nonatomic) IBOutlet UITextField *nameText;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *sizeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *difficultyText;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *statusLabel;
+@property (weak, nonatomic) IBOutlet UITextField *evaluationText;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *elapsedLabel;
 
 @end
 
@@ -111,7 +117,17 @@
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
 }
 
-- (IBAction)newClicked:(id)sender {
+- (IBAction)newClicked:(id)sender
+{
+    
+}
+- (IBAction)checkClicked:(id)sender {
+}
+- (IBAction)panClicked:(id)sender {
+}
+- (IBAction)numberClicked:(id)sender {
+}
+- (IBAction)undoClicked:(id)sender {
 }
 
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType sender:(id)sender

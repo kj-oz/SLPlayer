@@ -7,6 +7,7 @@
 //
 
 #import "KSLProblem.h"
+#import "KSLProblemManager.h"
 
 #pragma mark - KSLAction
 
@@ -49,17 +50,17 @@
     if (self) {
         CFUUIDRef uuid = CFUUIDCreate(NULL);
         _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+        CFRelease(uuid);
         self.title = @"未定";
         self.status = KSLProblemStatusNotStarted;
-        self.difficulty = -1;
-        self.evaluation = -1;
-        CFRelease(uuid);
+        self.difficulty = 0;
+        self.evaluation = 0;
         _width = width;
         _height = height;
         NSInteger count = width * height;
         _data = [NSMutableArray arrayWithCapacity:count];
         for (int i = 0; i < count; i++) {
-            _data[i] = @(data[i]);
+            _data[i] = data ? @(data[i]) : @(-1);
         }
         _elapsedSeconds = [NSMutableArray array];
     }
@@ -77,7 +78,6 @@
             [[NSException exceptionWithName:error.description reason:path userInfo:nil] raise];
         }
         _uid = [[path lastPathComponent] stringByDeletingPathExtension];
-        _path = path;
         self.title = json[@"title"];
         self.status = [json[@"status"] integerValue];
         self.difficulty = [json[@"difficulty"] integerValue];
@@ -96,7 +96,7 @@
     if (self) {
         CFUUIDRef uuid = CFUUIDCreate(NULL);
         _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        _path = original.path;
+        CFRelease(uuid);
         self.title = original.title;
         self.status = original.status;
         self.difficulty = original.difficulty;
@@ -109,32 +109,42 @@
     return self;
 }
 
+- (void)updateWithProblem:(KSLProblem *)original
+{
+    self.title = original.title;
+    self.difficulty = original.difficulty;
+    self.evaluation = original.evaluation;
+    _data = [original.data mutableCopy];
+}
+
 - (void)saveToFile:(NSString *)directory
 {
     NSString *fileName = [_uid stringByAppendingPathExtension:@"problem"];
-    _path = [directory stringByAppendingPathComponent:fileName];
-    [self save];
-}
-
-
-- (void)save
-{
+    NSString *path = [directory stringByAppendingPathComponent:fileName];
+    
     NSMutableDictionary *json = [NSMutableDictionary dictionary];
     json[@"title"] = _title;
     json[@"status"] = @(_status);
     json[@"difficulty"] = @(_difficulty);
-    json[@"evaluation"] = @(_evaluation);    json[@"width"] = @(_width);
+    json[@"evaluation"] = @(_evaluation);
+    json[@"width"] = @(_width);
     json[@"height"] = @(_height);
-    
     json[@"data"] = _data;
     json[@"elapsedSeconds"] = _elapsedSeconds;
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]
-     writeToFile:_path atomically:YES];
+     writeToFile:path atomically:YES];
     if (error) {
-        [[NSException exceptionWithName:error.description reason:_path userInfo:nil] raise];
+        [[NSException exceptionWithName:error.description reason:path userInfo:nil] raise];
     }
+}
+
+
+- (void)save
+{
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    [self saveToFile:pm.currentWorkbookDir];
 }
 
 - (NSInteger)valueOfX:(NSInteger)x andY:(NSInteger)y

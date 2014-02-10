@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class KSLProblem;
+
 /**
  * 問題集を表すクラス.
  */
@@ -20,10 +22,14 @@
 @property (nonatomic, readonly) NSArray *problems;
 
 /**
- * 与えられたディレクトリーの内容から問題集オブジェクトを生成する.
- * @param path ディレクトリーのパス
- * @return 問題種オブジェクト
+ * 与えられた名称の問題集オブジェクトを生成する.
+ * @param title 名称
+ * @return 問題集オブジェクト
  */
-- (id)initWithDirectory:(NSString *)path;
+- (id)initWithTitle:(NSString *)title;
+
+- (void)addProblem:(KSLProblem *)problem withSave:(BOOL)save;
+
+- (void)removeProblem:(KSLProblem *)problem withDelete:(BOOL)delete;
 
 @end

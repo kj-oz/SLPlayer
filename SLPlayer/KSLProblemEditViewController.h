@@ -18,4 +18,6 @@
 
 @property (nonatomic, strong) KSLProblem *problem;
 
+@property (nonatomic, assign) BOOL addNew;
+
 @end

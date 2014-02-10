@@ -9,7 +9,7 @@
         <scene sceneID="8Uo-vh-UBY">
             <objects>
                 <tableViewController id="J4n-uI-lDX" customClass="KSLProblemListViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mVe-vZ-2Dm">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mVe-vZ-2Dm">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -38,14 +38,11 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="Vkt-xv-pXA" kind="push" id="4cw-lH-67w"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="J4n-uI-lDX" id="5r3-X3-ymA"/>
-                            <outlet property="delegate" destination="J4n-uI-lDX" id="sxj-RI-QXh"/>
+                            <outlet property="dataSource" destination="J4n-uI-lDX" id="Pdm-Sv-8H9"/>
+                            <outlet property="delegate" destination="J4n-uI-lDX" id="AwC-X3-YWC"/>
                         </connections>
                     </tableView>
                     <toolbarItems/>
@@ -62,7 +59,7 @@
                                         <items>
                                             <barButtonItem systemItem="add" id="Pyl-mv-sya">
                                                 <connections>
-                                                    <segue destination="8aW-4u-QbU" kind="modal" id="47U-cd-9F2"/>
+                                                    <segue destination="8aW-4u-QbU" kind="modal" identifier="AddProblem" id="47U-cd-9F2"/>
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem width="19" style="plain" systemItem="fixedSpace" id="CNz-W5-s8v"/>
@@ -75,6 +72,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <segue destination="Vkt-xv-pXA" kind="push" identifier="PlayProblem" id="0Mk-gz-vcX"/>
+                        <segue destination="8aW-4u-QbU" kind="modal" identifier="EditProblem" id="J9z-5i-hbI"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KRg-tV-MD5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -163,7 +164,69 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <items>
-                                            <barButtonItem title="Item" id="haH-ic-O5t"/>
+                                            <barButtonItem style="plain" id="hBP-es-Jxt">
+                                                <view key="customView" contentMode="scaleToFill" id="58s-67-0OW">
+                                                    <rect key="frame" x="16" y="6" width="992" height="33"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <subviews>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="サイズ：10 X 20" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QMY-i4-T2h">
+                                                            <rect key="frame" x="243" y="6" width="133" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="難易度：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uwi-gZ-zpa">
+                                                            <rect key="frame" x="407" y="6" width="71" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="状態：未着手" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jt7-7I-AXZ">
+                                                            <rect key="frame" x="547" y="6" width="115" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="評価：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UzQ-g6-BDr">
+                                                            <rect key="frame" x="685" y="6" width="53" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mvZ-8b-37h">
+                                                            <rect key="frame" x="476" y="2" width="36" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                            <textInputTraits key="textInputTraits"/>
+                                                        </textField>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="名称：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cL2-Bn-KEE">
+                                                            <rect key="frame" x="0.0" y="6" width="71" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aln-9m-GUC">
+                                                            <rect key="frame" x="56" y="2" width="160" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                            <textInputTraits key="textInputTraits"/>
+                                                        </textField>
+                                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hpd-hz-BV3">
+                                                            <rect key="frame" x="736" y="2" width="36" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                            <textInputTraits key="textInputTraits"/>
+                                                        </textField>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="（24分、36分）" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ojj-pb-Mlp">
+                                                            <rect key="frame" x="850" y="6" width="142" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                </view>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0k1-WH-C4G">
@@ -179,7 +242,7 @@
                                                             <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
                                                         </connections>
                                                     </barButtonItem>
-                                                    <barButtonItem width="14" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
+                                                    <barButtonItem width="8" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
                                                     <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
                                                         <connections>
                                                             <action selector="selectClicked:" destination="eQF-aD-vjA" id="TBy-5y-hHX"/>
@@ -209,7 +272,29 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="639" height="44"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <items>
-                                                    <barButtonItem title="Item" id="J1T-v0-GID"/>
+                                                    <barButtonItem systemItem="refresh" id="J1T-v0-GID">
+                                                        <connections>
+                                                            <action selector="checkClicked:" destination="eQF-aD-vjA" id="c80-mC-0bL"/>
+                                                        </connections>
+                                                    </barButtonItem>
+                                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Lay-wm-kV3"/>
+                                                    <barButtonItem systemItem="action" id="5oM-EU-UrQ">
+                                                        <connections>
+                                                            <action selector="panClicked:" destination="eQF-aD-vjA" id="hsj-hh-iGV"/>
+                                                        </connections>
+                                                    </barButtonItem>
+                                                    <barButtonItem width="12" style="plain" systemItem="fixedSpace" id="zI9-fU-mgz"/>
+                                                    <barButtonItem title="２" id="vrV-ei-cOZ">
+                                                        <connections>
+                                                            <action selector="numberClicked:" destination="eQF-aD-vjA" id="O73-kR-0uV"/>
+                                                        </connections>
+                                                    </barButtonItem>
+                                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Ij7-Y9-HYw"/>
+                                                    <barButtonItem systemItem="undo" id="4B3-Pj-Ccc">
+                                                        <connections>
+                                                            <action selector="undoClicked:" destination="eQF-aD-vjA" id="4tF-Xu-SYH"/>
+                                                        </connections>
+                                                    </barButtonItem>
                                                 </items>
                                             </toolbar>
                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLBoardZoomedView">
@@ -228,6 +313,7 @@
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" id="5mM-Bb-AMp">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="qyi-p2-qpj">
                             <connections>
                                 <segue destination="06K-KE-dCs" kind="unwind" unwindAction="cancelProblemEdit:" id="uLk-Bu-GVi"/>
@@ -241,7 +327,13 @@
                     </navigationItem>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
+                        <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
+                        <outlet property="elapsedLabel" destination="hBP-es-Jxt" id="bu9-v3-ac5"/>
+                        <outlet property="evaluationText" destination="hpd-hz-BV3" id="Oe6-hw-PrL"/>
+                        <outlet property="nameText" destination="aln-9m-GUC" id="zP2-P4-I5V"/>
                         <outlet property="overallView" destination="era-cR-KOj" id="ZrV-Sn-pQk"/>
+                        <outlet property="sizeLabel" destination="hBP-es-Jxt" id="Kkc-91-gfK"/>
+                        <outlet property="statusLabel" destination="hBP-es-Jxt" id="Lqc-DL-JjU"/>
                         <outlet property="zoomedView" destination="f7g-iV-S8c" id="aps-No-xaY"/>
                     </connections>
                 </viewController>
@@ -294,4 +386,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="47U-cd-9F2"/>
+    </inferredMetricsTieBreakers>
 </document>

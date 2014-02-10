@@ -25,6 +25,9 @@
 // カレントの問題、問題の操作中でなければnil
 @property (nonatomic, weak) KSLProblem *currentProblem;
 
+// 問題集を配置するデイレクトリー
+@property (nonatomic, readonly) NSString *documentDir;
+
 // カレントの問題集のディレクトリー
 @property (nonatomic, readonly) NSString *currentWorkbookDir;
 
