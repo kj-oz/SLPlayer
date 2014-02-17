@@ -117,6 +117,8 @@
     _data = [original.data mutableCopy];
 }
 
+#pragma mark - 保存
+
 - (void)saveToFile:(NSString *)directory
 {
     NSString *fileName = [_uid stringByAppendingPathExtension:@"problem"];
@@ -152,6 +154,8 @@
     return [((NSNumber *)_data[y * _width + x]) integerValue];
 }
 
+#pragma mark - 出力
+
 - (void)dump
 {
     for (int y = 0; y < _height; y++) {
@@ -164,6 +168,42 @@
             }
         }
         printf("\n");
+    }
+}
+
+- (NSString *)statusString
+{
+    switch (_status) {
+        case KSLProblemStatusEditing:
+            return @"編集中";
+        case KSLProblemStatusNotStarted:
+            return @"未着手";
+        case KSLProblemStatusSolving:
+        {
+            int sec = ((NSNumber *)[_elapsedSeconds lastObject]).intValue;
+            return [NSString stringWithFormat:@"未了（%.1f分）", (sec / 60.0)];
+        }
+        case KSLProblemStatusSolved:
+            return @"完了";
+        default:
+            return @"不明";
+    }
+}
+
+- (NSString *)elapsedTimeString
+{
+    int finishedCount = _elapsedSeconds.count - (_status == KSLProblemStatusSolving ? 1 : 0);
+    if (finishedCount) {
+        NSMutableString *elapsed = [NSMutableString stringWithString:@"("];
+        for (int i = 0; i < finishedCount; i++) {
+            int minute = (int)(((NSNumber *)_elapsedSeconds[i]).intValue / 60.0 + 0.5);
+            [elapsed appendFormat:@"%d分,", minute];
+        }
+        [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
+        
+        return elapsed;
+    } else {
+        return @"";
     }
 }
 

@@ -18,19 +18,30 @@
 
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 @property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
-@property (weak, nonatomic) IBOutlet UITextField *nameText;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *sizeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *titleText;
 @property (weak, nonatomic) IBOutlet UITextField *difficultyText;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *statusLabel;
 @property (weak, nonatomic) IBOutlet UITextField *evaluationText;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *elapsedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+@property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *cameraButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *pictureButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *createButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *checkButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *panButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *inputButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
 
 @end
 
 @implementation KSLProblemEditViewController
 {
     KSLBoard *_board;
+    
+    // 問題座標系での拡大領域
     CGRect _zoomedArea;
+    
+    // 問題座標系での問題の全領域
     CGRect _problemArea;
 }
 
@@ -50,18 +61,12 @@
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    KLDBGPrintMethodName("> ");
-    KLDBGPrint(">  (%p %p)\n", _overallView, _zoomedView);
     return [super initWithCoder:aDecoder];
 }
 
 - (void)awakeFromNib
 {
-    _overallView.delegate = self;
-    _zoomedView.delegate = self;
-    _zoomedView.mode = KSLProblemViewModeScroll;
-    KLDBGPrintMethodName("> ");
-    KLDBGPrint(">  (%p %p)\n", _overallView, _zoomedView);
+    KLDBGPrintMethodName(">>");
 }
 
 - (void)viewDidLoad
@@ -72,6 +77,16 @@
     _overallView.delegate = self;
     _zoomedView.delegate = self;
     _zoomedView.mode = KSLProblemViewModeScroll;
+
+    self.title = _addNew ? @"新規追加" : _problem.title;
+    [self setBoard:[[KSLBoard alloc] initWithProblem:_problem]];
+    [self updateProblemInfo];
+    KLDBGPrintMethodName(">>");
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    KLDBGPrintMethodName(">>");
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,8 +110,9 @@
     _board = board;
     _problemArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN,
                               board.width + 2 * KSLPROBLEM_MARGIN, board.height + 2 * KSLPROBLEM_MARGIN);
-    CGRect zoomArea = CGRectMake(-1, -1, _zoomedView.frame.size.width / KSLPROBLEM_MINIMUM_PITCH - 1,
-                                 _zoomedView.frame.size.height / KSLPROBLEM_MINIMUM_PITCH - 1);
+    CGFloat zoomedW = _zoomedView.frame.size.width / KSLPROBLEM_MINIMUM_PITCH;
+    CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_MINIMUM_PITCH;
+    CGRect zoomArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN, zoomedW, zoomedH);
     [self setZoomedArea:zoomArea];
 }
 
@@ -107,25 +123,43 @@
     [_zoomedView setNeedsDisplay];
 }
 
+- (void)updateProblemInfo
+{
+    _titleText.text = _problem.title;
+    _sizeLabel.text = [NSString stringWithFormat:@"サイズ：%d X %d", _problem.width, _problem.height];
+    _difficultyText.text = [NSString stringWithFormat:@"%d", _problem.difficulty];
+    _statusLabel.text = _problem.statusString;
+    _evaluationText.text = [NSString stringWithFormat:@"%d", _problem.evaluation];
+    _elapsedLabel.text = _problem.elapsedTimeString;
+    
+    if (!_addNew) {
+        
+    }
+}
+
 - (IBAction)cameraClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera sender:sender];
 }
 
-- (IBAction)selectClicked:(id)sender
+- (IBAction)pictureClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
 }
 
-- (IBAction)newClicked:(id)sender
+- (IBAction)createClicked:(id)sender
 {
     
 }
 - (IBAction)checkClicked:(id)sender {
 }
-- (IBAction)panClicked:(id)sender {
+- (IBAction)panClicked:(id)sender
+{
+    _zoomedView.mode = KSLProblemViewModeScroll;
 }
-- (IBAction)numberClicked:(id)sender {
+- (IBAction)inputClicked:(id)sender
+{
+    _zoomedView.mode = KSLProblemViewModeInputNumber;
 }
 - (IBAction)undoClicked:(id)sender {
 }
@@ -156,10 +190,8 @@
         // TODO 認識エラーのメッセージの表示
         return;
     }
-    self.problem = problem;
-    
+
     // 問題チェック
-    [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
     KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
     if (![solver solveWithError:&error]) {
@@ -172,6 +204,9 @@
         }
         problem.status = KSLProblemStatusEditing;
     }
+    self.problem = problem;
+    [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
+    [self updateProblemInfo];
     
     [self dismissViewControllerAnimated:YES completion:NULL];
 }

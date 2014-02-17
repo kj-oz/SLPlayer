@@ -71,6 +71,7 @@
 - (IBAction)panned:(id)sender
 {
     CGPoint translation = [_panGr translationInView:self];
+    [_panGr setTranslation:CGPointZero inView:self];
     CGPoint location = KLCGPointSubtract([_panGr locationInView:self], translation);
     CGRect zoomedArea = [self zoomedArea];
     

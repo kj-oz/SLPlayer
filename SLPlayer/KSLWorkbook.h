@@ -28,8 +28,18 @@
  */
 - (id)initWithTitle:(NSString *)title;
 
+/**
+ * 与えられた問題を自分自身に追加する.
+ * @param problem 問題
+ * @param save 同時に問題の保存を実行するかどうか
+ */
 - (void)addProblem:(KSLProblem *)problem withSave:(BOOL)save;
 
+/**
+ * 与えられた問題を削除する.
+ * @param problem 問題
+ * @param delete 同時に問題のファイルを実際に削除するかどうか
+ */
 - (void)removeProblem:(KSLProblem *)problem withDelete:(BOOL)delete;
 
 @end

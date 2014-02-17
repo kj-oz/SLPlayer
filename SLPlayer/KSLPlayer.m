@@ -11,7 +11,6 @@
 #import "KSLProblem.h"
 #import "KSLProblemManager.h"
 
-
 @implementation KSLPlayer
 {
     // 問題
@@ -26,6 +25,8 @@
     // ステップを保持する配列（Mutableとするための再宣言
     NSMutableArray *_steps;
 }
+
+#pragma mark - 初期化
 
 - (id)initWithProblem:(KSLProblem *)problem
 {
@@ -58,6 +59,8 @@
     return self;
 }
 
+#pragma mark - 出力
+
 - (void)save
 {
     NSMutableDictionary *json = [NSMutableDictionary dictionary];
@@ -70,6 +73,14 @@
     if (error) {
         [[NSException exceptionWithName:error.description reason:_path userInfo:nil] raise];
     }
+}
+
+- (void)addStep:(NSArray *)step
+{
+    while (_currentIndex < _steps.count - 1) {
+        [_steps removeLastObject];
+    }
+    [_steps addObject:[step copy]];
 }
 
 
@@ -109,7 +120,7 @@
 {
     NSArray *parts = [string componentsSeparatedByString:@":"];
     KSLActionType type = [((NSString *)parts[0]) intValue];
-    if (type != KSLActiomTypeEdgeStatus) {
+    if (type != KSLActionTypeEdgeStatus) {
         return nil;
     }
     KSLEdge *edge = [_board findEdgeWithId:parts[1]];
@@ -126,7 +137,7 @@
 {
     KSLEdge *edge = nil;
     switch (action.type) {
-        case KSLActiomTypeEdgeStatus:
+        case KSLActionTypeEdgeStatus:
             edge = action.target;
             edge.status = action.newValue;
             break;

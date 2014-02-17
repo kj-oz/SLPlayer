@@ -11,6 +11,7 @@
 #import "KSLProblemManager.h"
 #import "KSLWorkbook.h"
 #import "KSLProblem.h"
+#import "KLDBGUtil.h"
 
 @interface KSLProblemListViewController ()
 
@@ -71,41 +72,14 @@
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     NSString *levelSeed = @"★★★★★★★★★★★★";
     NSString *level = [levelSeed substringToIndex:problem.difficulty];
-    NSString *status;
-    switch (problem.status) {
-        case KSLProblemStatusEditing:
-            status = @"編集中";
-            break;
-        case KSLProblemStatusNotStarted:
-            status = @"未着手";
-            break;
-        case KSLProblemStatusSolving:
-        {
-            int sec = ((NSNumber *)[problem.elapsedSeconds lastObject]).intValue;
-            status = [NSString stringWithFormat:@"未了（%.1f分）", (sec / 60.0)];
-            break;
-        }
-        case KSLProblemStatusSolved:
-            status = @"完了";
-            break;
-        default:
-            status = @"不明";
-            break;
-    }
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %dX%d %@ %@", problem.title, problem.width,
-                       problem.height, level, status];
+                       problem.height, level, [problem statusString]];
     
     int finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {
         NSArray *eval = @[@"", @"駄作", @"平凡", @"秀作"];
-        NSMutableString *elapsed = [NSMutableString stringWithFormat:@"%@ (", eval[problem.evaluation]];
-        for (int i = 0; i < finishedCount; i++) {
-            int minute = (int)(((NSNumber *)problem.elapsedSeconds[i]).intValue / 60.0 + 0.5);
-            [elapsed appendFormat:@"%d分,", minute];
-        }
-        [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
-        
-        cell.detailTextLabel.text = elapsed;
+        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@ %@", eval[problem.evaluation],
+                                     problem.elapsedTimeString];
     } else {
         cell.detailTextLabel.text = @"";
     }
@@ -165,6 +139,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    KLDBGPrintMethodName(">>");
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     if ([segue.identifier isEqualToString:@"PlayProblem"]) {
         KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];

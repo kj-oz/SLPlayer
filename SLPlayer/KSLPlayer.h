@@ -9,9 +9,10 @@
 #import <Foundation/Foundation.h>
 
 @class KSLProblem;
+@class KSLBoard;
 
 /**
- * 問題を解いている過程を保持するクラス
+ * 問題を解いている手順を保持するクラス
  */
 @interface KSLPlayer : NSObject
 
@@ -24,11 +25,13 @@
 // 実行した全ステップ（Actionの配列）の配列
 @property (nonatomic, readonly) NSArray *steps;
 
+@property (nonatomic, readonly) KSLBoard *board;
+
 /**
  * 与えられた問題に対するPlayerを作成する.
- * ファイルが残っていればファイルからロードする.残っていなければ初期状態で作成.
+ * ファイルが残っていればファイルからロードし残っていなければ初期状態で作成する.
  * @param problem 問題
- * @return Player
+ * @return 手順管理オブジェクト
  */
 - (id)initWithProblem:(KSLProblem *)problem;
 
@@ -36,5 +39,11 @@
  * 状態をファイルに保存する.
  */
 - (void)save;
+
+/**
+ *
+ * @param step
+ */
+- (void)addStep:(NSArray *)step;
 
 @end

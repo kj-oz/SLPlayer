@@ -14,10 +14,10 @@
  * 動作を巻き戻せるよう処理履歴に残すアクションの種類の定義
  */
 typedef enum {
-    KSLActiomTypeEdgeStatus,        // Edgeの状態の変更
-    KSLActiomTypeOppositeNode,      // Nodeの(一連の辺の)逆端のNodeを変更
-    KSLActiomTypeLUGateStatus,      // Nodeの右下から左上方向へのGateの状態の変更
-    KSLActiomTypeRUGateStatus,      // Nodeの左下から右上方向へのGateの状態の変更
+    KSLActionTypeEdgeStatus,        // Edgeの状態の変更
+    KSLActionTypeOppositeNode,      // Nodeの(一連の辺の)逆端のNodeを変更
+    KSLActionTypeLUGateStatus,      // Nodeの右下から左上方向へのGateの状態の変更
+    KSLActionTypeRUGateStatus,      // Nodeの左下から右上方向へのGateの状態の変更
     KSLActionTypeCellNumber         // Cellの数値の変更（Edit時）
 } KSLActionType;
 
@@ -122,6 +122,10 @@ typedef enum {
  */
 - (id)initWithProblem:(KSLProblem *)original;
 
+/**
+ *
+ * @param original 
+ */
 - (void)updateWithProblem:(KSLProblem *)original;
 
 /**
@@ -147,5 +151,17 @@ typedef enum {
  * 問題を文字形式で出力する.
  */
 - (void)dump;
+
+/**
+ * 状態の文字列を得る.
+ * @return 状態の文字列
+ */
+- (NSString *)statusString;
+
+/**
+ * 解くのに掛かった時間の文字列（XX分、YY分、・・・の形式）を得る.
+ * @return 解くのに掛かった時間の文字列
+ */
+- (NSString *)elapsedTimeString;
 
 @end

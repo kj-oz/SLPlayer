@@ -576,22 +576,22 @@
         KSLEdge *edge = nil;
         KSLNode *node = nil;
         switch (action.type) {
-            case KSLActiomTypeEdgeStatus:
+            case KSLActionTypeEdgeStatus:
                 edge = action.target;
                 edge.status = action.oldValue;
                 break;
                 
-            case KSLActiomTypeOppositeNode:
+            case KSLActionTypeOppositeNode:
                 node = action.target;
                 node.oppositeNode = action.oldValue < 0 ? nil : _board.nodes[action.oldValue];
                 break;
                 
-            case KSLActiomTypeLUGateStatus:
+            case KSLActionTypeLUGateStatus:
                 node = action.target;
                 [node setGateStatusOfDir:KSLGateDirLU toStatus:action.oldValue];
                 break;
                 
-            case KSLActiomTypeRUGateStatus:
+            case KSLActionTypeRUGateStatus:
                 node = action.target;
                 [node setGateStatusOfDir:KSLGateDirRU toStatus:action.oldValue];
                 break;
@@ -674,7 +674,7 @@
     KSLEdgeStatus oldStatus = edge.status;
     edge.status = status;
     if (_currentStep) {
-        [_currentStep addObject:[[KSLAction alloc] initWithType:KSLActiomTypeEdgeStatus
+        [_currentStep addObject:[[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                                      target:edge fromValue:oldStatus toValue:status]];
     }
     [_changedEdges addObject:edge];
@@ -689,11 +689,11 @@
         } else {
             if (_currentStep) {
                 [_currentStep addObject:[[KSLAction alloc]
-                                     initWithType:KSLActiomTypeOppositeNode
+                                     initWithType:KSLActionTypeOppositeNode
                                      target:head fromValue:[_board nodeIndex:head.oppositeNode]
                                      toValue:[_board nodeIndex:tail]]];
                 [_currentStep addObject:[[KSLAction alloc]
-                                     initWithType:KSLActiomTypeOppositeNode
+                                     initWithType:KSLActionTypeOppositeNode
                                      target:tail fromValue:[_board nodeIndex:tail.oppositeNode]
                                      toValue:[_board nodeIndex:head]]];
             }
@@ -706,7 +706,7 @@
                 @try {
                     jointEdge.status = KSLEdgeStatusOn;
                     if (_currentStep) {
-                        [_currentStep addObject:[[KSLAction alloc] initWithType:KSLActiomTypeEdgeStatus
+                        [_currentStep addObject:[[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                                     target:jointEdge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn]];
                     }
                     [self _checkNewLoopWithEdge:jointEdge];
@@ -1263,7 +1263,7 @@
         [node setGateStatusOfDir:dir toStatus:status];
         if (_currentStep) {
             [_currentStep addObject:[[KSLAction alloc]
-                            initWithType:(dir ? KSLActiomTypeRUGateStatus : KSLActiomTypeLUGateStatus)
+                            initWithType:(dir ? KSLActionTypeRUGateStatus : KSLActionTypeLUGateStatus)
                             target:node fromValue:oldStatus toValue:status]];
         }
         return YES;
@@ -1443,7 +1443,7 @@
             printf("STEP%02d:", i);
             int m = 0;
             for (KSLAction *action in step) {
-                if (action.type == KSLActiomTypeEdgeStatus) {
+                if (action.type == KSLActionTypeEdgeStatus) {
                     m++;
                     if (m > 10) {
                         printf("\n       ");

@@ -48,7 +48,7 @@ typedef enum {
 @interface KSLCell : NSObject
 
 // 中の数値、空の場合は-1
-@property (nonatomic, readonly) int number;
+@property (nonatomic, assign) int number;
 
 // 四周Edgeの中のOnのEdgeの数
 @property (nonatomic, assign) int onCount;
@@ -69,18 +69,24 @@ typedef enum {
 @property (nonatomic, unsafe_unretained) KSLEdge *rightEdge;
 
 /**
- * 指定の数値でCellを初期化する
+ * 指定の数値でCellを初期化する.
  * @param number 中の数値
  * @return Cell
  */
 - (id)initWithNumber:(NSInteger)number;
 
 /**
- * 与えられたEdgeの対辺のEdgeを得る
+ * 与えられたEdgeの対辺のEdgeを得る.
  * @param edge Edge
  * @return 対辺のEdge
  */
 - (KSLEdge *)oppsiteEdgeOfEdge:(KSLEdge *)edge;
+
+/**
+ * セルの番号を変更する.（問題作成時のみ使用）
+ * @param number 中の数値
+ */
+- (void)changeNumber:(NSInteger)number;
 
 @end
 

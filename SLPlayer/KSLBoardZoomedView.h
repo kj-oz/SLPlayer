@@ -16,8 +16,9 @@
  */
 typedef enum {
     KSLProblemViewModeScroll,       // パン、ズーム
-    KSLProblemViewModeEnter,        // EdgeのOn、Offの設定
-    KSLProbremViewModeErase         // Edgeのクリア
+    KSLProblemViewModeInputLine,    // EdgeのOn、Offの指定
+    KSLProblemViewModeInputNumber,  // 数字の入力
+    KSLProblemViewModeErase         // Edgeのクリア
 } KSLProblemViewMode;
 
 

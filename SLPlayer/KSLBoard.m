@@ -42,6 +42,11 @@
     return nil;
 }
 
+- (void)changeNumber:(NSInteger)number
+{
+    _number = number;
+}
+
 @end
 
 
@@ -563,7 +568,7 @@
         CGFloat y = y0 + v * pitch;
         for (int u = 0; u <= _width; u++) {
             CGFloat x = x0 + u * pitch;
-            KSLEdge *edge = [self hEdgeAtX:u andY:v];
+            KSLEdge *edge = [self vEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             KSLEdgeStatus status = edge.status;
             if (status == KSLEdgeStatusOn) {

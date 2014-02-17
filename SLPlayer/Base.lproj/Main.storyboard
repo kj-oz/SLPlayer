@@ -101,7 +101,17 @@
                                         <rect key="frame" x="0.0" y="0.0" width="384" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <items>
-                                            <barButtonItem title="Item" id="M2x-sp-VGu"/>
+                                            <barButtonItem title="クリア" id="M2x-sp-VGu">
+                                                <connections>
+                                                    <action selector="clearClicked:" destination="Vkt-xv-pXA" id="K5F-mn-MVD"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="cGJ-sI-dbT"/>
+                                            <barButtonItem title="固定" id="0PC-bi-7Ey">
+                                                <connections>
+                                                    <action selector="fixClicked:" destination="Vkt-xv-pXA" id="byR-6W-8k0"/>
+                                                </connections>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kEy-9o-GNE" customClass="KSLBoardOverallView">
@@ -113,14 +123,37 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Awj-nv-COJ">
-                                <rect key="frame" x="384" y="64" width="640" height="704"/>
+                                <rect key="frame" x="385" y="64" width="639" height="704"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6zq-W5-IQa">
-                                        <rect key="frame" x="0.0" y="0.0" width="640" height="44"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="639" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <items>
-                                            <barButtonItem title="Item" id="nqY-gG-NmW"/>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="Mev-oH-5Fd"/>
+                                            <barButtonItem systemItem="action" id="nqY-gG-NmW">
+                                                <connections>
+                                                    <action selector="panClicked:" destination="Vkt-xv-pXA" id="iQZ-4L-nbD"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="SXU-HC-5MS"/>
+                                            <barButtonItem systemItem="compose" id="fsh-Km-HQN">
+                                                <connections>
+                                                    <action selector="inputClicked:" destination="Vkt-xv-pXA" id="N2l-3U-Scc"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="LqW-V7-YTr"/>
+                                            <barButtonItem systemItem="organize" id="xsg-5V-GA2">
+                                                <connections>
+                                                    <action selector="eraseClicked:" destination="Vkt-xv-pXA" id="Fi3-Df-oJZ"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="bDB-hg-AHB"/>
+                                            <barButtonItem systemItem="undo" id="5a4-jz-DkL">
+                                                <connections>
+                                                    <action selector="undoClicked:" destination="Vkt-xv-pXA" id="5TS-la-fj5"/>
+                                                </connections>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLBoardZoomedView">
@@ -132,12 +165,47 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
-                    <navigationItem key="navigationItem" id="fZq-5n-rSl"/>
+                    <navigationItem key="navigationItem" id="fZq-5n-rSl">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="bO4-cu-mbV">
+                            <view key="customView" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="GjQ-Y1-6qQ">
+                                <rect key="frame" x="781" y="5" width="227" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="★★★★★★★★★★★★★" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIO-3j-OaD">
+                                        <rect key="frame" x="0.0" y="0.0" width="227" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="100秒" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0gJ-gH-pCs">
+                                        <rect key="frame" x="0.0" y="17" width="227" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                                </accessibility>
+                            </view>
+                        </barButtonItem>
+                    </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <connections>
+                        <outlet property="clearButton" destination="M2x-sp-VGu" id="jrX-7F-98e"/>
+                        <outlet property="eraseButton" destination="xsg-5V-GA2" id="DpW-uB-s3m"/>
+                        <outlet property="fixButton" destination="0PC-bi-7Ey" id="9i4-VP-LuH"/>
+                        <outlet property="inputButton" destination="fsh-Km-HQN" id="LS6-EV-a6c"/>
+                        <outlet property="overallView" destination="kEy-9o-GNE" id="STu-pc-kyS"/>
+                        <outlet property="panButton" destination="nqY-gG-NmW" id="HOK-uo-SjC"/>
+                        <outlet property="undoButton" destination="0PC-bi-7Ey" id="mlF-hZ-Ahb"/>
+                        <outlet property="zoomedView" destination="Rdf-db-Ys1" id="zd5-oW-10X"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fp1-xO-Pof" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -242,16 +310,16 @@
                                                             <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
                                                         </connections>
                                                     </barButtonItem>
-                                                    <barButtonItem width="8" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
+                                                    <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
                                                     <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
                                                         <connections>
-                                                            <action selector="selectClicked:" destination="eQF-aD-vjA" id="TBy-5y-hHX"/>
+                                                            <action selector="pictureClicked:" destination="eQF-aD-vjA" id="DKC-FX-Fo7"/>
                                                         </connections>
                                                     </barButtonItem>
                                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="gwn-Pq-DKI"/>
                                                     <barButtonItem systemItem="compose" id="nj7-xS-Qf9">
                                                         <connections>
-                                                            <action selector="newClicked:" destination="eQF-aD-vjA" id="xpE-M4-Gb1"/>
+                                                            <action selector="createClicked:" destination="eQF-aD-vjA" id="KF8-0r-VJA"/>
                                                         </connections>
                                                     </barButtonItem>
                                                 </items>
@@ -283,10 +351,10 @@
                                                             <action selector="panClicked:" destination="eQF-aD-vjA" id="hsj-hh-iGV"/>
                                                         </connections>
                                                     </barButtonItem>
-                                                    <barButtonItem width="12" style="plain" systemItem="fixedSpace" id="zI9-fU-mgz"/>
+                                                    <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="zI9-fU-mgz"/>
                                                     <barButtonItem title="２" id="vrV-ei-cOZ">
                                                         <connections>
-                                                            <action selector="numberClicked:" destination="eQF-aD-vjA" id="O73-kR-0uV"/>
+                                                            <action selector="inputClicked:" destination="eQF-aD-vjA" id="SJW-ns-9sr"/>
                                                         </connections>
                                                     </barButtonItem>
                                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Ij7-Y9-HYw"/>
@@ -327,13 +395,20 @@
                     </navigationItem>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
+                        <outlet property="cameraButton" destination="jph-Vg-SjD" id="eV3-fO-H7y"/>
+                        <outlet property="checkButton" destination="J1T-v0-GID" id="QrT-rm-2C5"/>
+                        <outlet property="createButton" destination="nj7-xS-Qf9" id="MK9-KX-19f"/>
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
-                        <outlet property="elapsedLabel" destination="hBP-es-Jxt" id="bu9-v3-ac5"/>
+                        <outlet property="elapsedLabel" destination="ojj-pb-Mlp" id="NYm-sX-sVI"/>
                         <outlet property="evaluationText" destination="hpd-hz-BV3" id="Oe6-hw-PrL"/>
-                        <outlet property="nameText" destination="aln-9m-GUC" id="zP2-P4-I5V"/>
+                        <outlet property="inputButton" destination="vrV-ei-cOZ" id="9Gb-hG-1Q2"/>
                         <outlet property="overallView" destination="era-cR-KOj" id="ZrV-Sn-pQk"/>
-                        <outlet property="sizeLabel" destination="hBP-es-Jxt" id="Kkc-91-gfK"/>
-                        <outlet property="statusLabel" destination="hBP-es-Jxt" id="Lqc-DL-JjU"/>
+                        <outlet property="panButton" destination="5oM-EU-UrQ" id="c2h-Ut-2if"/>
+                        <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
+                        <outlet property="sizeLabel" destination="QMY-i4-T2h" id="7oF-QM-FDU"/>
+                        <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
+                        <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
+                        <outlet property="undoButton" destination="4B3-Pj-Ccc" id="79i-2R-ouB"/>
                         <outlet property="zoomedView" destination="f7g-iV-S8c" id="aps-No-xaY"/>
                     </connections>
                 </viewController>
