@@ -12,6 +12,7 @@
 #import "KSLWorkbook.h"
 #import "KSLProblem.h"
 #import "KLDBGUtil.h"
+#import "KSLAppDelegate.h"
 
 @interface KSLProblemListViewController ()
 
@@ -35,18 +36,35 @@
 {
     [super viewDidLoad];
     self.editing = NO;
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    if (app.restoring) {
+        int problemIndex;
+        if (app.lastProblem) {
+            problemIndex = [pm.currentWorkbook.problems indexOfObject:app.lastProblem];
+            [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:problemIndex inSection:0]
+                                        animated:NO scrollPosition:UITableViewScrollPositionBottom];
+        }
+        if ([app.lastView isEqualToString:@"Play"]) {
+            // TODO Segueの実行
+        } else if ([app.lastView isEqualToString:@"Edit"]) {
+            self.editing = YES;
+            // TODO Segueの実行
+        }
+        app.restoring = NO;
+    } else if ([app.currentView isEqualToString:@"Play"]) {
+        // 戻り時の処理
+    }
 }
 
 #pragma mark - Table view data source
@@ -70,16 +88,13 @@
     
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    NSString *levelSeed = @"★★★★★★★★★★★★";
-    NSString *level = [levelSeed substringToIndex:problem.difficulty];
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %dX%d %@ %@", problem.title, problem.width,
-                       problem.height, level, [problem statusString]];
+                       problem.height, [problem difficultyString], [problem statusString]];
     
     int finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {
-        NSArray *eval = @[@"", @"駄作", @"平凡", @"秀作"];
-        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@ %@", eval[problem.evaluation],
-                                     problem.elapsedTimeString];
+        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@ %@", [problem evaluationString],
+                                     [problem elapsedTimeString]];
     } else {
         cell.detailTextLabel.text = @"";
     }
@@ -166,13 +181,17 @@
         [pm.currentWorkbook addProblem:pev.problem withSave:YES];
         [((UITableView *)self.view) reloadData];
     } else {
-        KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
+        KSLProblem *problem = pm.currentProblem;
         [problem updateWithProblem:pev.problem];
+        // TODO 行の更新
+        pm.currentProblem = nil;
+        // TODO currentView
     }
 }
 
 - (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue
 {
+    // TODO currentView, currentProblem
 }
 
 @end

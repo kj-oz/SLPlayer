@@ -40,6 +40,9 @@
 {
     // セルの数値の配列
     NSMutableArray *_data;
+    
+    //
+    NSMutableArray *_elapsedSeconds;
 }
 
 #pragma mark - 初期化
@@ -84,8 +87,8 @@
         self.evaluation = [json[@"evaluation"] integerValue];
         _width = [json[@"width"] integerValue];
         _height = [json[@"height"] integerValue];
-        _data = json[@"data"];
-        self.elapsedSeconds = json[@"elapsedSeconds"];
+        _data = [json[@"data"] mutableCopy];
+        self.elapsedSeconds = [json[@"elapsedSeconds"] mutableCopy];
     }
     return self;
 }
@@ -206,5 +209,26 @@
         return @"";
     }
 }
+
+- (NSString *)difficultyString
+{
+    return [@"★★★★★★★★★★★★" substringToIndex:_difficulty];
+}
+
+- (NSString *)evaluationString
+{
+    return @[@"", @"駄作", @"平凡", @"秀作"][_evaluation];
+}
+
+- (void)updateElapsedSecond:(NSInteger)sec
+{
+    [_elapsedSeconds setObject:@(sec) atIndexedSubscript:_elapsedSeconds.count - 1];
+}
+
+- (void)addElapsedSecond:(NSInteger)sec
+{
+    [_elapsedSeconds addObject:@(sec)];
+}
+
 
 @end

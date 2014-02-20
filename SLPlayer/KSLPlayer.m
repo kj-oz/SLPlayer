@@ -13,9 +13,6 @@
 
 @implementation KSLPlayer
 {
-    // 問題
-    __weak KSLProblem *_problem;
-    
     // 盤面
     KSLBoard *_board;
     
@@ -66,6 +63,7 @@
     NSMutableDictionary *json = [NSMutableDictionary dictionary];
     json[@"currentIndex"] = @(_currentIndex);
     json[@"fixedIndex"] = @(_fixedIndex);
+    json[@"steps"] = [self stringArrayFromSteps];
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]
@@ -81,6 +79,7 @@
         [_steps removeLastObject];
     }
     [_steps addObject:[step copy]];
+    _currentIndex++;
 }
 
 
@@ -109,6 +108,19 @@
         }
         index++;
     }
+}
+
+- (NSArray *)stringArrayFromSteps
+{
+    NSMutableArray *jsonArray = [NSMutableArray arrayWithCapacity:[_steps count]];
+    for (NSArray *actions in _steps) {
+        NSMutableArray *step = [NSMutableArray arrayWithCapacity:[actions count]];
+        for (KSLAction *action in actions) {
+            [step addObject:action.description];
+        }
+        [jsonArray addObject:step];
+    }
+    return jsonArray;
 }
 
 /**

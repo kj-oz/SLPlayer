@@ -164,4 +164,12 @@ typedef enum {
  */
 - (NSString *)elapsedTimeString;
 
+- (NSString *)difficultyString;
+
+- (NSString *)evaluationString;
+
+- (void)updateElapsedSecond:(NSInteger)sec;
+
+- (void)addElapsedSecond:(NSInteger)sec;
+
 @end

@@ -25,6 +25,8 @@
 // 実行した全ステップ（Actionの配列）の配列
 @property (nonatomic, readonly) NSArray *steps;
 
+@property (nonatomic, readonly) KSLProblem *problem;
+
 @property (nonatomic, readonly) KSLBoard *board;
 
 /**

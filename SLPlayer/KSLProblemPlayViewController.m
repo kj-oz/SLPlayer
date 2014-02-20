@@ -24,15 +24,30 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *inputButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *eraseButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
+@property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
+@property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
 
 @end
 
 @implementation KSLProblemPlayViewController
 {
+    // プレイヤ・オブジェクト
     KSLPlayer *_player;
     
+    // 1ステップ分の複数のアクションを保持する配列、同じ配列を使い回す.
     NSMutableArray *_step;
     
+    // プレイ開始時刻
+    NSDate *_start;
+    
+    // プレイ開始時刻の経過秒数
+    NSInteger _elapsed;
+    
+    // 経過時間の更新処理用のタイマー
+    NSTimer *_timer;
+
+    // 以下、KSLProblemViewDelegateのプロパティ用変数
+    // 盤面オブジェクト
     KSLBoard *_board;
     
     // 問題座標系での拡大領域
@@ -40,6 +55,7 @@
     
     // 問題座標系での問題の全領域
     CGRect _problemArea;
+    
 }
 
 @synthesize board = _board;
@@ -50,7 +66,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -61,6 +76,7 @@
 
 - (void)viewDidLoad
 {
+    KLDBGPrintMethodName(">>");
     [super viewDidLoad];
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
@@ -73,10 +89,54 @@
     _player = [[KSLPlayer alloc] initWithProblem:problem];
     _step = [NSMutableArray array];
     
-    self.title = problem.title;
     [self setBoard:_player.board];
+}
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.title = _player.problem.title;
+    self.difficultyLabel.text = _player.problem.difficultyString;
+    
+    if (_player.problem.status == KSLProblemStatusSolved) {
+        _player.problem.status = KSLProblemStatusNotStarted;
+    }
+    _elapsed = _player.problem.status == KSLProblemStatusNotStarted ? 0 :
+                        ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
+    _start = [NSDate date];
+    [self updateElapsedlabel:nil];
+    
+    _timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                target:self selector:@selector(updateElapsedlabel:) userInfo:nil repeats:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
     KLDBGPrintMethodName(">>");
+    [super viewWillDisappear:animated];
+    
+    [_timer invalidate];
+    
+    KSLProblem *problem = _player.problem;
+    NSDate *now = [NSDate date];
+    NSTimeInterval t = [now timeIntervalSinceDate:_start];
+    switch (problem.status) {
+        case KSLProblemStatusSolving:
+            [problem updateElapsedSecond:_elapsed + (int)t];
+            break;
+            
+        case KSLProblemStatusNotStarted:
+            problem.status = KSLProblemStatusSolving;
+            [problem addElapsedSecond:(int)t];
+            break;
+            
+        default:
+            break;
+    }
+    
+    [_player save];
+    [_player.problem save];
 }
 
 - (void)didReceiveMemoryWarning
@@ -149,5 +209,14 @@
 - (IBAction)undoClicked:(id)sender {
 }
 
+- (void)updateElapsedlabel:(NSTimer *)timer
+{
+    NSDate *now = [NSDate date];
+    NSTimeInterval t = [now timeIntervalSinceDate:_start];
+    
+    NSInteger sec = _elapsed + (int)t;
+    NSString *time = [NSString stringWithFormat:@"%d:%02d:%02d", sec / 3600, (sec % 3600) / 60, sec % 60];
+    _elapsedLabel.text = time;
+}
 
 @end

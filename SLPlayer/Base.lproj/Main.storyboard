@@ -198,6 +198,8 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="clearButton" destination="M2x-sp-VGu" id="jrX-7F-98e"/>
+                        <outlet property="difficultyLabel" destination="rIO-3j-OaD" id="5oZ-14-ZsI"/>
+                        <outlet property="elapsedLabel" destination="0gJ-gH-pCs" id="77Y-em-5JV"/>
                         <outlet property="eraseButton" destination="xsg-5V-GA2" id="DpW-uB-s3m"/>
                         <outlet property="fixButton" destination="0PC-bi-7Ey" id="9i4-VP-LuH"/>
                         <outlet property="inputButton" destination="fsh-Km-HQN" id="LS6-EV-a6c"/>

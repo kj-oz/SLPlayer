@@ -56,9 +56,11 @@
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     [pm load];
     
-    // 最後に開いていたドキュメントを得る
+    // 前回起動時の状態を得る
+    _lastView = [[NSUserDefaults standardUserDefaults] stringForKey:@"lastView"];
+    
     pm.currentWorkbook = pm.workbooks[0];
-    NSString* lastWorkbook = [[NSUserDefaults standardUserDefaults] stringForKey:@"lastWorkbook"];
+    NSString *lastWorkbook = [[NSUserDefaults standardUserDefaults] stringForKey:@"lastWorkbook"];
     if (lastWorkbook) {
         for (KSLWorkbook *book in pm.workbooks) {
             if ([book.title isEqualToString:lastWorkbook]) {
@@ -72,40 +74,46 @@
     if (lastProblem) {
         for (KSLProblem *problem in pm.currentWorkbook.problems) {
             if ([problem.uid isEqualToString:lastProblem]) {
-                pm.currentProblem = problem;
+                _lastProblem = problem;
                 break;
             }
         }
     }
+    
+    _restoring = YES;
 
     return YES;
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    NSNotification* n = [NSNotification notificationWithName:@"applicationWillResignActive" object:self];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    NSNotification* n = [NSNotification notificationWithName:@"applicationDidEnterBackground" object:self];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
+
+    [self saveData];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    NSNotification* n = [NSNotification notificationWithName:@"applicationWillEnterForeground" object:self];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    NSNotification* n = [NSNotification notificationWithName:@"applicationDidBecomeActive" object:self];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [self saveData];
 }
 
 - (void)saveData
@@ -119,8 +127,9 @@
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastProblem"];
     }
     
-    // カレントの本棚の情報も標準の設定ファイルに保存する
+    // カレントの問題集の情報も標準の設定ファイルに保存する
     [[NSUserDefaults standardUserDefaults] setValue:pm.currentWorkbook.title forKey:@"lastWorkbook"];
+    [[NSUserDefaults standardUserDefaults] setValue:_currentView forKey:@"lastView"];
 }
 
 @end
