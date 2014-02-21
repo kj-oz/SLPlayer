@@ -48,22 +48,31 @@
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    int problemIndex;
     if (app.restoring) {
-        int problemIndex;
         if (app.lastProblem) {
             problemIndex = [pm.currentWorkbook.problems indexOfObject:app.lastProblem];
             [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:problemIndex inSection:0]
                                         animated:NO scrollPosition:UITableViewScrollPositionBottom];
         }
+        
         if ([app.lastView isEqualToString:@"Play"]) {
-            // TODO Segueの実行
+            [self performSegueWithIdentifier:@"PlayProblem" sender:self];
         } else if ([app.lastView isEqualToString:@"Edit"]) {
-            self.editing = YES;
-            // TODO Segueの実行
+            //TODO 将来対応予定
+            //self.editing = YES;
+            //[self performSegueWithIdentifier:@"EditProblem" sender:self];
         }
         app.restoring = NO;
     } else if ([app.currentView isEqualToString:@"Play"]) {
-        // 戻り時の処理
+        // Backボタンで戻った場合には、アクションは発生しないためここで処理
+        problemIndex = [pm.currentWorkbook.problems indexOfObject:pm.currentProblem];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:problemIndex inSection:0];
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        [self updateCell:cell atIndexPath:indexPath];
+        
+        pm.currentProblem = nil;
+        app.currentView = @"List";
     }
 }
 
@@ -85,11 +94,16 @@
     static NSString *CellIdentifier = @"ProblemCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
                                                             forIndexPath:indexPath];
-    
+    [self updateCell:cell atIndexPath:indexPath];
+    return cell;
+}
+
+- (void)updateCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+{
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %dX%d %@ %@", problem.title, problem.width,
-                       problem.height, [problem difficultyString], [problem statusString]];
+                           problem.height, [problem difficultyString], [problem statusString]];
     
     int finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {
@@ -98,8 +112,6 @@
     } else {
         cell.detailTextLabel.text = @"";
     }
-    
-    return cell;
 }
 
 /*
@@ -155,43 +167,58 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     KLDBGPrintMethodName(">>");
+    KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    
     if ([segue.identifier isEqualToString:@"PlayProblem"]) {
         KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
         pm.currentProblem = problem;
+        app.currentView = @"Play";
     } else if ([segue.identifier isEqualToString:@"EditProblem"]) {
         UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
         KSLProblemEditViewController *pev = (KSLProblemEditViewController *)nc.topViewController;
         KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
         pev.problem = [[KSLProblem alloc] initWithProblem:problem];
         pev.addNew = NO;
+        pm.currentProblem = problem;
+        app.currentView = @"Edit";
     } else if ([segue.identifier isEqualToString:@"AddProblem"]) {
         UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
         KSLProblemEditViewController *pev = (KSLProblemEditViewController *)nc.visibleViewController;
         pev.problem = [[KSLProblem alloc] initWithWidth:10 andHeight:20 data:nil];
         pev.addNew = YES;
+        app.currentView = @"Edit";
     }
 }
 
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
+    KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    
     KSLProblemEditViewController *pev = (KSLProblemEditViewController *)segue.sourceViewController;
     if (pev.addNew) {
         [pm.currentWorkbook addProblem:pev.problem withSave:YES];
-        [((UITableView *)self.view) reloadData];
+        [self.tableView reloadData];
     } else {
         KSLProblem *problem = pm.currentProblem;
         [problem updateWithProblem:pev.problem];
-        // TODO 行の更新
-        pm.currentProblem = nil;
-        // TODO currentView
+        
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        [self updateCell:cell atIndexPath:indexPath];
     }
+    pm.currentProblem = nil;
+    app.currentView = @"List";
 }
 
 - (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue
 {
-    // TODO currentView, currentProblem
+    KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    
+    pm.currentProblem = nil;
+    app.currentView = @"List";
 }
 
 @end

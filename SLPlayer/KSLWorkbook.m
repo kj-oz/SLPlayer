@@ -30,9 +30,11 @@
         NSFileManager *fm = [NSFileManager defaultManager];
         NSArray *files = [fm contentsOfDirectoryAtPath:path error:NULL];
         for (NSString *file in files) {
-            NSString *filePath = [path stringByAppendingPathComponent:file];
-            KSLProblem *problem = [[KSLProblem alloc] initWithFile:filePath];
-            [_problems addObject:problem];
+            if ([[file pathExtension] isEqualToString:@"problem"]) {
+                NSString *filePath = [path stringByAppendingPathComponent:file];
+                KSLProblem *problem = [[KSLProblem alloc] initWithFile:filePath];
+                [_problems addObject:problem];
+            }
         }
     }
     return self;

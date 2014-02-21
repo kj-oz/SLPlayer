@@ -89,6 +89,11 @@
     _player = [[KSLPlayer alloc] initWithProblem:problem];
     _step = [NSMutableArray array];
     
+    // 通知受信の設定
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(applicationDidEnterBackground) name:@"applicationDidEnterBackground" object:nil];
+    [nc addObserver:self selector:@selector(applicationWillEnterForeground) name:@"applicationWillEnterForeground" object:nil];
+    
     [self setBoard:_player.board];
 }
 
@@ -99,16 +104,7 @@
     self.title = _player.problem.title;
     self.difficultyLabel.text = _player.problem.difficultyString;
     
-    if (_player.problem.status == KSLProblemStatusSolved) {
-        _player.problem.status = KSLProblemStatusNotStarted;
-    }
-    _elapsed = _player.problem.status == KSLProblemStatusNotStarted ? 0 :
-                        ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
-    _start = [NSDate date];
-    [self updateElapsedlabel:nil];
-    
-    _timer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                target:self selector:@selector(updateElapsedlabel:) userInfo:nil repeats:YES];
+    [self startPlay];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -116,6 +112,25 @@
     KLDBGPrintMethodName(">>");
     [super viewWillDisappear:animated];
     
+    [self stopPlay];
+}
+
+- (void)startPlay
+{
+    if (_player.problem.status == KSLProblemStatusSolved) {
+        _player.problem.status = KSLProblemStatusNotStarted;
+    }
+    _elapsed = _player.problem.status == KSLProblemStatusNotStarted ? 0 :
+    ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
+    _start = [NSDate date];
+    [self updateElapsedlabel:nil];
+    
+    _timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                                              target:self selector:@selector(updateElapsedlabel:) userInfo:nil repeats:YES];
+}
+
+- (void)stopPlay
+{
     [_timer invalidate];
     
     KSLProblem *problem = _player.problem;
@@ -153,6 +168,16 @@
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
     return UIInterfaceOrientationLandscapeRight;
+}
+
+- (void)applicationDidEnterBackground
+{
+    [self stopPlay];
+}
+
+- (void)applicationWillEnterForeground
+{
+    [self startPlay];
 }
 
 - (void)setBoard:(KSLBoard *)board
