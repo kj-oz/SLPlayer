@@ -15,17 +15,16 @@
 #import "KSLPlayer.h"
 #import "KSLProblemManager.h"
 
-@interface KSLProblemPlayViewController ()
+@interface KSLProblemPlayViewController () <UIAlertViewDelegate>
+
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 @property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *clearButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *fixButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *panButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *inputButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *eraseButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
 @property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
 
 @end
 
@@ -194,8 +193,7 @@
 - (void)setZoomedArea:(CGRect)zoomedArea
 {
     _zoomedArea = zoomedArea;
-    [_overallView setNeedsDisplay];
-    [_zoomedView setNeedsDisplay];
+    [self refreshBoard];
 }
 
 - (void)stepBegan
@@ -206,8 +204,7 @@
 - (void)actionPerformed:(KSLAction *)action
 {
     [_step addObject:action];
-    [_overallView setNeedsDisplay];
-    [_zoomedView setNeedsDisplay];
+    [self refreshBoard];
 }
 
 - (void)stepEnded
@@ -215,23 +212,49 @@
     [_player addStep:_step];
 }
 
-- (IBAction)clearClicked:(id)sender {
-}
-- (IBAction)fixClicked:(id)sender {
-}
-- (IBAction)panClicked:(id)sender
+- (IBAction)clearClicked:(id)sender
 {
-    _zoomedView.mode = KSLProblemViewModeScroll;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"クリア"
+                        message:@"盤面をクリアしてもよろしいですか？" delegate:self
+                        cancelButtonTitle:@"いいえ" otherButtonTitles:@"はい", nil];
+    [alert show];
 }
-- (IBAction)inputClicked:(id)sender
+
+- (IBAction)fixClicked:(id)sender
 {
-    _zoomedView.mode = KSLProblemViewModeInputLine;
+    [_player fix];
+    [self refreshBoard];
 }
-- (IBAction)eraseClicked:(id)sender
+
+- (IBAction)modeChanged:(id)sender
 {
-    _zoomedView.mode = KSLProblemViewModeErase;
+    switch (self.modeSegmentedCtrl.selectedSegmentIndex) {
+        case 0:
+            _zoomedView.mode = KSLProblemViewModeScroll;
+            break;
+        case 1:
+            _zoomedView.mode = KSLProblemViewModeInputLine;
+            break;
+        case 2:
+            _zoomedView.mode = KSLProblemViewModeErase;
+            break;
+    }
 }
-- (IBAction)undoClicked:(id)sender {
+
+- (IBAction)undoClicked:(id)sender
+{
+    if (_player.currentIndex == _player.steps.count - 1) {
+        [_player undo];
+        [self refreshBoard];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != alertView.cancelButtonIndex) {
+        [_player clear];
+        [self refreshBoard];
+    }
 }
 
 - (void)updateElapsedlabel:(NSTimer *)timer
@@ -242,6 +265,12 @@
     NSInteger sec = _elapsed + (int)t;
     NSString *time = [NSString stringWithFormat:@"%d:%02d:%02d", sec / 3600, (sec % 3600) / 60, sec % 60];
     _elapsedLabel.text = time;
+}
+
+- (void)refreshBoard
+{
+    [_overallView setNeedsDisplay];
+    [_zoomedView setNeedsDisplay];
 }
 
 @end

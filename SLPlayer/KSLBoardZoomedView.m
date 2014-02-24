@@ -129,7 +129,7 @@
                 }
             } else {
                 KSLEdge *edge = [self findEdge:track];
-                if (edge && edge.status != KSLEdgeStatusUnset) {
+                if (edge && edge.status != KSLEdgeStatusUnset && !edge.fixed) {
                     KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                         target:edge fromValue:edge.status toValue:KSLEdgeStatusUnset];
                     edge.status = KSLEdgeStatusUnset;
@@ -140,6 +140,7 @@
             [self setNeedsDisplay];
             
             if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled) {
+                [_delegate stepEnded];
                 [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
             }
             break;
@@ -189,7 +190,7 @@
         }
         case KSLProblemViewModeErase:{
             KSLEdge *edge = [self findEdge:track];
-            if (edge && edge.status != KSLEdgeStatusUnset) {
+            if (edge && edge.status != KSLEdgeStatusUnset && !edge.fixed) {
                 KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                         target:edge fromValue:edge.status toValue:KSLEdgeStatusUnset];
                 edge.status = KSLEdgeStatusUnset;
@@ -238,7 +239,6 @@
 {
     [_tracks removeAllObjects];
     _prevNode = nil;
-    [_delegate stepEnded];
     [self setNeedsDisplay];
 }
 

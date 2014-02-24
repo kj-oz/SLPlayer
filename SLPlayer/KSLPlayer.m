@@ -82,6 +82,30 @@
     _currentIndex++;
 }
 
+- (void)clear
+{
+    _currentIndex = -1;
+    _fixedIndex = -1;
+    [_steps removeAllObjects];
+    [_board clear];
+}
+
+- (void)fix
+{
+    _fixedIndex = _currentIndex;
+    [_board fixStatus];
+}
+
+- (void)undo
+{
+    if (_currentIndex > _fixedIndex) {
+        NSArray *step = [_steps lastObject];
+        for (KSLAction *action in step.reverseObjectEnumerator) {
+            [self undoAction:action];
+        }
+        _currentIndex--;
+    }
+}
 
 #pragma mark - プライベートメッソド（初期化)
 
@@ -152,6 +176,20 @@
         case KSLActionTypeEdgeStatus:
             edge = action.target;
             edge.status = action.newValue;
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)undoAction:(KSLAction *)action
+{
+    KSLEdge *edge = nil;
+    switch (action.type) {
+        case KSLActionTypeEdgeStatus:
+            edge = action.target;
+            edge.status = action.oldValue;
             break;
             
         default:

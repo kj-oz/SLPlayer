@@ -48,4 +48,10 @@
  */
 - (void)addStep:(NSArray *)step;
 
+- (void)clear;
+
+- (void)fix;
+
+- (void)undo;
+
 @end

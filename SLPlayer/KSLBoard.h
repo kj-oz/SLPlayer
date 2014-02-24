@@ -390,6 +390,8 @@ typedef enum {
  */
 - (void)fixStatus;
 
+- (void)clear;
+
 /**
  * 文字で盤面を出力する.
  */

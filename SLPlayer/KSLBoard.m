@@ -449,6 +449,18 @@
     }
 }
 
+- (void)clear
+{
+    for (KSLEdge *edge in _hEdges) {
+        edge.status = KSLEdgeStatusUnset;
+        edge.fixed = NO;
+    }
+    for (KSLEdge *edge in _vEdges) {
+        edge.status = KSLEdgeStatusUnset;
+        edge.fixed = NO;
+    }
+}
+
 #pragma mark - 出力
 
 - (void)dump
