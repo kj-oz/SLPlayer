@@ -10,23 +10,43 @@
 #import "KSLBoardOverallView.h"
 #import "KSLBoardZoomedView.h"
 #import "KSLBoard.h"
-//#import "KSLSolver.h"
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
 #import "KSLProblemManager.h"
+#import "UIAlertView+Blocks.h"
 
-@interface KSLProblemPlayViewController () <UIAlertViewDelegate>
+#pragma mark - エクステンション
 
+@interface KSLProblemPlayViewController ()
+
+// 全体ビュー
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
+
+// 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
+
+// クリアボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *clearButton;
+
+// 固定ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *fixButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
-@property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
-@property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
+
+// モード選択セグメント
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
 
+// アンドゥボタン
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
+
+// 難易度表示ラベル
+@property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
+
+// 経過時間表示ラベル
+@property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
+
 @end
+
+
+#pragma mark - 実装
 
 @implementation KSLProblemPlayViewController
 {
@@ -57,25 +77,16 @@
     
 }
 
+// プロトコルのプロパティの内部変数は自動設定してくれない
 @synthesize board = _board;
 @synthesize zoomedArea = _zoomedArea;
 @synthesize problemArea = _problemArea;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    return self;
-}
 
-- (void)awakeFromNib
-{
-}
+#pragma mark - ビューのライフサイクル
 
 - (void)viewDidLoad
 {
-    KLDBGPrintMethodName(">>");
     [super viewDidLoad];
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
@@ -88,7 +99,7 @@
     _player = [[KSLPlayer alloc] initWithProblem:problem];
     _step = [NSMutableArray array];
     
-    // 通知受信の設定
+    // アプリケーションライフサイクルの通知受信
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     [nc addObserver:self selector:@selector(applicationDidEnterBackground) name:@"applicationDidEnterBackground" object:nil];
     [nc addObserver:self selector:@selector(applicationWillEnterForeground) name:@"applicationWillEnterForeground" object:nil];
@@ -108,26 +119,31 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    KLDBGPrintMethodName(">>");
     [super viewWillDisappear:animated];
     
     [self stopPlay];
 }
 
+/**
+ * プレイを開始する.
+ */
 - (void)startPlay
 {
     if (_player.problem.status == KSLProblemStatusSolved) {
         _player.problem.status = KSLProblemStatusNotStarted;
     }
     _elapsed = _player.problem.status == KSLProblemStatusNotStarted ? 0 :
-    ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
+                ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
     _start = [NSDate date];
     [self updateElapsedlabel:nil];
     
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                                              target:self selector:@selector(updateElapsedlabel:) userInfo:nil repeats:YES];
+                            target:self selector:@selector(updateElapsedlabel:) userInfo:nil repeats:YES];
 }
 
+/**
+ * プレイを中断する.
+ */
 - (void)stopPlay
 {
     [_timer invalidate];
@@ -153,11 +169,23 @@
     [_player.problem save];
 }
 
-- (void)didReceiveMemoryWarning
+/**
+ * アプリケーションがバックグラウンドにまわる通知への処理
+ */
+- (void)applicationDidEnterBackground
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self stopPlay];
 }
+
+/**
+ * アプリケーションがフォアグラウンドに戻る通知への処理
+ */
+- (void)applicationWillEnterForeground
+{
+    [self startPlay];
+}
+
+#pragma mark - ビューの回転
 
 - (NSUInteger)supportedInterfaceOrientations
 {
@@ -169,15 +197,7 @@
     return UIInterfaceOrientationLandscapeRight;
 }
 
-- (void)applicationDidEnterBackground
-{
-    [self stopPlay];
-}
-
-- (void)applicationWillEnterForeground
-{
-    [self startPlay];
-}
+#pragma mark - KSLProblemViewDelegateの実装
 
 - (void)setBoard:(KSLBoard *)board
 {
@@ -212,20 +232,37 @@
     [_player addStep:_step];
 }
 
+#pragma mark - 各種アクション
+
+/**
+ * クリアボタン押下時
+ */
 - (IBAction)clearClicked:(id)sender
 {
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"いいえ" action:nil];
+    RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
+        [_player clear];
+        [self refreshBoard];
+    }];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"クリア"
-                        message:@"盤面をクリアしてもよろしいですか？" delegate:self
-                        cancelButtonTitle:@"いいえ" otherButtonTitles:@"はい", nil];
+                        message:@"盤面をクリアしてもよろしいですか？"
+                                               cancelButtonItem:cancelItem
+                                               otherButtonItems:deleteItem, nil];
     [alert show];
 }
 
+/**
+ * 固定ボタン押下時
+ */
 - (IBAction)fixClicked:(id)sender
 {
     [_player fix];
     [self refreshBoard];
 }
 
+/**
+ * モード選択セグメント変更時
+ */
 - (IBAction)modeChanged:(id)sender
 {
     switch (self.modeSegmentedCtrl.selectedSegmentIndex) {
@@ -241,6 +278,9 @@
     }
 }
 
+/**
+ * アンドゥボタン押下時
+ */
 - (IBAction)undoClicked:(id)sender
 {
     if (_player.currentIndex == _player.steps.count - 1) {
@@ -249,14 +289,12 @@
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex != alertView.cancelButtonIndex) {
-        [_player clear];
-        [self refreshBoard];
-    }
-}
+#pragma mark - ヘルパメソッド群
 
+/**
+ * 経過時間表示ラベルの更新
+ * @param timer 呼び出し元のタイマー
+ */
 - (void)updateElapsedlabel:(NSTimer *)timer
 {
     NSDate *now = [NSDate date];
@@ -267,6 +305,9 @@
     _elapsedLabel.text = time;
 }
 
+/**
+ * 盤面のビューの更新
+ */
 - (void)refreshBoard
 {
     [_overallView setNeedsDisplay];

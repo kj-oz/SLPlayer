@@ -14,28 +14,61 @@
 #import "KSLBoardOverallView.h"
 #import "KSLBoardZoomedView.h"
 
+#pragma mark - エクステンション
+
 @interface KSLProblemEditViewController ()
 
+// 全体ビュー
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
+
+// 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
+
+// 問題名称入力欄
 @property (weak, nonatomic) IBOutlet UITextField *titleText;
+
+// 難易度入力欄
 @property (weak, nonatomic) IBOutlet UITextField *difficultyText;
+
+// 評価入力欄
 @property (weak, nonatomic) IBOutlet UITextField *evaluationText;
+
+// 盤面サイズ表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
+
+// 状態表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+
+// 経過時間表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
+
+// 撮影ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *cameraButton;
+
+// 既存の写真からの選択ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *pictureButton;
+
+// 新規作成ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *createButton;
+
+// 問題が正しいかどうかのチェックのボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *checkButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *panButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *inputButton;
+
+// モード選択セグメント
+@property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
+
+// アンドゥボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
 
 @end
 
+
+#pragma mark - 実装
+
 @implementation KSLProblemEditViewController
 {
+    // 全てKSLProblemViewDelegateのプロパティ用変数
+    // 盤面オブジェクト
     KSLBoard *_board;
     
     // 問題座標系での拡大領域
@@ -45,29 +78,16 @@
     CGRect _problemArea;
 }
 
+// プロトコルのプロパティの内部変数は自動設定してくれない
 @synthesize board = _board;
 @synthesize zoomedArea = _zoomedArea;
 @synthesize problemArea = _problemArea;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+#pragma mark - ビューのライフサイクル
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    return [super initWithCoder:aDecoder];
-}
-
-- (void)awakeFromNib
-{
-    KLDBGPrintMethodName(">>");
-}
+// このビューは、バックグラウンドにまわっても特に何の対処もしない.
+// バックグランド中にアプリケーションが終了した場合、キャンセルされた場合と同様の結果となる.
 
 - (void)viewDidLoad
 {
@@ -81,19 +101,9 @@
     self.title = _addNew ? @"新規追加" : _problem.title;
     [self setBoard:[[KSLBoard alloc] initWithProblem:_problem]];
     [self updateProblemInfo];
-    KLDBGPrintMethodName(">>");
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    KLDBGPrintMethodName(">>");
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+#pragma mark - ビューの回転
 
 - (NSUInteger)supportedInterfaceOrientations
 {
@@ -104,6 +114,8 @@
 {
     return UIInterfaceOrientationLandscapeRight;
 }
+
+#pragma mark - KSLProblemViewDelegateの実装
 
 - (void)setBoard:(KSLBoard *)board
 {
@@ -121,20 +133,6 @@
     _zoomedArea = zoomedArea;
     [_overallView setNeedsDisplay];
     [_zoomedView setNeedsDisplay];
-}
-
-- (void)updateProblemInfo
-{
-    _titleText.text = _problem.title;
-    _sizeLabel.text = [NSString stringWithFormat:@"サイズ：%d X %d", _problem.width, _problem.height];
-    _difficultyText.text = [NSString stringWithFormat:@"%d", _problem.difficulty];
-    _statusLabel.text = _problem.statusString;
-    _evaluationText.text = [NSString stringWithFormat:@"%d", _problem.evaluation];
-    _elapsedLabel.text = _problem.elapsedTimeString;
-    
-    if (!_addNew) {
-        
-    }
 }
 
 - (IBAction)cameraClicked:(id)sender
@@ -209,6 +207,20 @@
     [self updateProblemInfo];
     
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)updateProblemInfo
+{
+    _titleText.text = _problem.title;
+    _sizeLabel.text = [NSString stringWithFormat:@"サイズ：%d X %d", _problem.width, _problem.height];
+    _difficultyText.text = [NSString stringWithFormat:@"%d", _problem.difficulty];
+    _statusLabel.text = _problem.statusString;
+    _evaluationText.text = [NSString stringWithFormat:@"%d", _problem.evaluation];
+    _elapsedLabel.text = _problem.elapsedTimeString;
+    
+    if (!_addNew) {
+        
+    }
 }
 
 @end

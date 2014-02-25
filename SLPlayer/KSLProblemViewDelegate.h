@@ -35,6 +35,7 @@
 // 問題全体を表示するのに必要な領域（問題座標系）
 @property (nonatomic, readonly) CGRect problemArea;
 
+@optional
 // 線の入力／消去時のステップの開始
 - (void)stepBegan;
 

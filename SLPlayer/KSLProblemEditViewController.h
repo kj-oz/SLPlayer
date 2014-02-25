@@ -16,8 +16,10 @@
 @interface KSLProblemEditViewController : UIViewController
         <UINavigationControllerDelegate, UIImagePickerControllerDelegate, KSLProblemViewDelegate>
 
+// 対象の問題
 @property (nonatomic, strong) KSLProblem *problem;
 
+// 新規追加か（既存の問題の編集か）
 @property (nonatomic, assign) BOOL addNew;
 
 @end

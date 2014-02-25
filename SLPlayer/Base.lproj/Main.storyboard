@@ -237,7 +237,7 @@
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <items>
                                             <barButtonItem style="plain" id="hBP-es-Jxt">
-                                                <view key="customView" contentMode="scaleToFill" id="58s-67-0OW">
+                                                <view key="customView" opaque="NO" contentMode="scaleToFill" id="58s-67-0OW">
                                                     <rect key="frame" x="16" y="6" width="992" height="33"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
@@ -296,7 +296,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
                                             </barButtonItem>
                                         </items>
@@ -344,22 +344,31 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="639" height="44"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                 <items>
-                                                    <barButtonItem systemItem="refresh" id="J1T-v0-GID">
+                                                    <barButtonItem systemItem="stop" id="J1T-v0-GID">
                                                         <connections>
                                                             <action selector="checkClicked:" destination="eQF-aD-vjA" id="c80-mC-0bL"/>
                                                         </connections>
                                                     </barButtonItem>
                                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Lay-wm-kV3"/>
-                                                    <barButtonItem systemItem="action" id="5oM-EU-UrQ">
-                                                        <connections>
-                                                            <action selector="panClicked:" destination="eQF-aD-vjA" id="hsj-hh-iGV"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                    <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="zI9-fU-mgz"/>
-                                                    <barButtonItem title="２" id="vrV-ei-cOZ">
-                                                        <connections>
-                                                            <action selector="inputClicked:" destination="eQF-aD-vjA" id="SJW-ns-9sr"/>
-                                                        </connections>
+                                                    <barButtonItem style="plain" id="P10-6N-bP8">
+                                                        <view key="customView" opaque="NO" contentMode="scaleToFill" id="w5v-vF-t3g">
+                                                            <rect key="frame" x="275" y="6" width="88" height="33"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <subviews>
+                                                                <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="JBl-vD-goB">
+                                                                    <rect key="frame" x="0.0" y="2" width="88" height="29"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                                    <segments>
+                                                                        <segment title="範囲"/>
+                                                                        <segment title="数"/>
+                                                                    </segments>
+                                                                    <connections>
+                                                                        <action selector="modeChanged:" destination="Vkt-xv-pXA" eventType="valueChanged" id="2gm-SA-eOX"/>
+                                                                    </connections>
+                                                                </segmentedControl>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                        </view>
                                                     </barButtonItem>
                                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Ij7-Y9-HYw"/>
                                                     <barButtonItem systemItem="undo" id="4B3-Pj-Ccc">
@@ -405,9 +414,8 @@
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
                         <outlet property="elapsedLabel" destination="ojj-pb-Mlp" id="NYm-sX-sVI"/>
                         <outlet property="evaluationText" destination="hpd-hz-BV3" id="Oe6-hw-PrL"/>
-                        <outlet property="inputButton" destination="vrV-ei-cOZ" id="9Gb-hG-1Q2"/>
+                        <outlet property="modeSegmentedCtrl" destination="JBl-vD-goB" id="GEr-vE-sS1"/>
                         <outlet property="overallView" destination="era-cR-KOj" id="ZrV-Sn-pQk"/>
-                        <outlet property="panButton" destination="5oM-EU-UrQ" id="c2h-Ut-2if"/>
                         <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
                         <outlet property="sizeLabel" destination="QMY-i4-T2h" id="7oF-QM-FDU"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>

@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "KSLProblemViewDelegate.h"
 
-@class KSLProblem;
-
+/**
+ * 問題を解く画面のビューコントローラ
+ */
 @interface KSLProblemPlayViewController : UIViewController <KSLProblemViewDelegate>
 
 @end
