@@ -11,8 +11,10 @@
 #import "KSLBoard.h"
 #import "KSLSolver.h"
 #import "KSLProblem.h"
+#import "KSLPlayer.h"
 #import "KSLBoardOverallView.h"
 #import "KSLBoardZoomedView.h"
+#import "UIAlertView+Blocks.h"
 
 #pragma mark - エクステンション
 
@@ -30,8 +32,8 @@
 // 難易度入力欄
 @property (weak, nonatomic) IBOutlet UITextField *difficultyText;
 
-// 評価入力欄
-@property (weak, nonatomic) IBOutlet UITextField *evaluationText;
+// 評価選択セグメント
+@property (weak, nonatomic) IBOutlet UISegmentedControl *evaluationSegmentedCtrl;
 
 // 盤面サイズ表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
@@ -67,7 +69,13 @@
 
 @implementation KSLProblemEditViewController
 {
-    // 全てKSLProblemViewDelegateのプロパティ用変数
+    // プレイヤ・オブジェクト
+    KSLPlayer *_player;
+    
+    // 1ステップ分の複数のアクションを保持する配列、同じ配列を使い回す.
+    KSLAction *_lastAction;
+    
+    // 以下KSLProblemViewDelegateのプロパティ用変数
     // 盤面オブジェクト
     KSLBoard *_board;
     
@@ -97,7 +105,7 @@
     _overallView.delegate = self;
     _zoomedView.delegate = self;
     _zoomedView.mode = KSLProblemViewModeScroll;
-
+    
     self.title = _addNew ? @"新規追加" : _problem.title;
     [self setBoard:[[KSLBoard alloc] initWithProblem:_problem]];
     [self updateProblemInfo];
@@ -135,33 +143,35 @@
     [_zoomedView setNeedsDisplay];
 }
 
+- (void)actionPerformed:(KSLAction *)action
+{
+    // TODO 直前のアクションとtargetが同じならまとめる
+    //[_step addObject:action];
+}
+
+#pragma mark - 各種アクション
+
+/**
+ * 撮影ボタン押下時
+ */
 - (IBAction)cameraClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera sender:sender];
 }
 
+/**
+ * 画像選択ボタン押下時
+ */
 - (IBAction)pictureClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
 }
 
-- (IBAction)createClicked:(id)sender
-{
-    
-}
-- (IBAction)checkClicked:(id)sender {
-}
-- (IBAction)panClicked:(id)sender
-{
-    _zoomedView.mode = KSLProblemViewModeScroll;
-}
-- (IBAction)inputClicked:(id)sender
-{
-    _zoomedView.mode = KSLProblemViewModeInputNumber;
-}
-- (IBAction)undoClicked:(id)sender {
-}
-
+/**
+ * イメージピッカーを表示する.
+ * @param sourceType イメージピッカーのタイプ（撮影、ライブラリ）
+ * @param sender イベント発生元
+ */
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType sender:(id)sender
 {
     if ([UIImagePickerController isSourceTypeAvailable:sourceType]) {
@@ -169,12 +179,104 @@
         imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
         imagePickerController.sourceType = sourceType;
         imagePickerController.delegate = self;
-        UIImagePickerController *imgPicker = [[UIImagePickerController alloc] init];
-        imgPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        imgPicker.delegate = self;
         [self presentViewController:imagePickerController animated:YES completion:nil];
     }
 }
+
+/**
+ * 新規作成ボタン押下時
+ */
+- (IBAction)createClicked:(id)sender
+{
+    UIAlertView *alert = nil;
+    __block NSString *badInput = nil;
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
+    RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"生成" action:^{
+        int w = 0;
+        int h = 0;
+        NSString *input = [alert textFieldAtIndex:0].text;
+        NSCharacterSet *cs = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+        NSArray *parts = [input componentsSeparatedByCharactersInSet:cs];
+        if (!parts || [parts count] < 2) {
+            badInput = input;
+        } else {
+            w = [parts[0] integerValue];
+            h = [parts[1] integerValue];
+            if (!w || !h) {
+                badInput = input;
+            }
+        }
+        [alert dismissWithClickedButtonIndex:1 animated:YES];
+        
+        if (badInput) {
+            UIAlertView *subAlert = [[UIAlertView alloc] initWithTitle:@"入力エラー"
+                                        message:@"問題の大きさが不正です。" delegate:nil
+                                        cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+            [subAlert show];
+        } else {
+            int *data = calloc(w * h, sizeof(int));
+            for (int i = 0, n = w * h; i < n; i++) {
+                data[i] = -1;
+            }
+            
+            KSLProblem *problem = [[KSLProblem alloc] initWithWidth:w andHeight:h data:data];
+            self.problem = problem;
+            [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
+            [self updateProblemInfo];
+        }
+    }];
+    alert = [[UIAlertView alloc] initWithTitle:@"新規問題"
+                                        message:@"問題の大きさを 整数x整数 の形式で入力して下さい。"
+                                        cancelButtonItem:cancelItem
+                                        otherButtonItems:deleteItem, nil];
+    alert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    [alert show];
+}
+
+/**
+ * チェックボタン押下時
+ */
+- (IBAction)checkClicked:(id)sender
+{
+    KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:_problem]];
+    NSError *error;
+    if ([solver solveWithError:&error]) {
+        _problem.status = KSLProblemStatusNotStarted;
+    }
+    [self showProblemCheckMessage:error];
+    
+    [self updateProblemInfo];
+}
+
+/**
+ * モード選択セグメント変更時
+ */
+- (IBAction)modeChanged:(id)sender
+{
+    switch (self.modeSegmentedCtrl.selectedSegmentIndex) {
+        case 0:
+            _zoomedView.mode = KSLProblemViewModeScroll;
+            break;
+        case 1:
+            _zoomedView.mode = KSLProblemViewModeInputNumber;
+            break;
+    }
+}
+
+/**
+ * アンドゥボタン押下時
+ */
+- (IBAction)undoClicked:(id)sender
+{
+    if (_player.currentIndex >= 0) {
+        [_player undo];
+        _lastAction = nil;
+        [self refreshBoard];
+    }
+}
+
+
+#pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker
                     didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -185,7 +287,10 @@
     KSLProblemDetector *ir = [KSLProblemDetector new];
     KSLProblem *problem = [ir detectProblemFromImage:image];
     if (!problem) {
-        // TODO 認識エラーのメッセージの表示
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"認識エラー"
+                        message:@"問題を認識できませんでした。" delegate:nil
+                        cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+        [alert show];
         return;
     }
 
@@ -193,13 +298,7 @@
     KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
     if (![solver solveWithError:&error]) {
-        switch (error.code) {
-            case KSLSolverErrorNoLoop:
-                // TODO メッセージ表示
-            case KSLSolverErrorMultipleLoops:
-                // TODO メッセージ表示
-                return;
-        }
+        [self showProblemCheckMessage:error];
         problem.status = KSLProblemStatusEditing;
     }
     self.problem = problem;
@@ -209,18 +308,66 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
+#pragma mark - ヘルパメソッド群
+
+/**
+ * 問題情報の表示内容の更新
+ */
 - (void)updateProblemInfo
 {
     _titleText.text = _problem.title;
-    _sizeLabel.text = [NSString stringWithFormat:@"サイズ：%d X %d", _problem.width, _problem.height];
+    _sizeLabel.text = [NSString stringWithFormat:@"%d X %d", _problem.width, _problem.height];
     _difficultyText.text = [NSString stringWithFormat:@"%d", _problem.difficulty];
     _statusLabel.text = _problem.statusString;
-    _evaluationText.text = [NSString stringWithFormat:@"%d", _problem.evaluation];
+    _evaluationSegmentedCtrl.selectedSegmentIndex = _problem.evaluation - 1;
     _elapsedLabel.text = _problem.elapsedTimeString;
     
     if (!_addNew) {
-        
+        self.cameraButton.enabled = NO;
+        self.pictureButton.enabled = NO;
+        self.createButton.enabled = NO;
+        self.modeSegmentedCtrl.enabled = NO;
     }
+    if (_problem.status != KSLProblemStatusEditing) {
+        self.checkButton.enabled = NO;
+    }
+}
+
+/**
+ * 盤面のビューの更新
+ */
+- (void)refreshBoard
+{
+    [_overallView setNeedsDisplay];
+    [_zoomedView setNeedsDisplay];
+}
+
+/**
+ * 問題が完成しているかチェックした結果を、アラートに表示する
+ * @param error エラーコード、問題が完成している場合はnil;
+ */
+- (void)showProblemCheckMessage:(NSError *)error
+{
+    UIAlertView *alert = nil;
+    if (error) {
+        switch (error.code) {
+            case KSLSolverErrorNoLoop:
+                alert = [[UIAlertView alloc] initWithTitle:@"不完全な問題"
+                                                   message:@"解答が存在しません。" delegate:nil
+                                         cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+                break;
+            case KSLSolverErrorMultipleLoops:
+                alert = [[UIAlertView alloc] initWithTitle:@"不完全な問題"
+                                                   message:@"複数の解答が存在します。" delegate:nil
+                                         cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+                break;
+        }
+    } else {
+        alert = [[UIAlertView alloc] initWithTitle:@"問題の完成"
+                                           message:@"問題が完成しました。" delegate:nil
+                                 cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+    }
+    [alert show];
 }
 
 @end

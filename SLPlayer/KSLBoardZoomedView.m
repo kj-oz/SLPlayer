@@ -151,7 +151,6 @@
 
 }
 
-
 /**
  * ズームされた際のアクション
  */
@@ -161,6 +160,9 @@
     [self zoomZoomedArea:scale];
 }
 
+/**
+ * タップされた際のアクション
+ */
 - (IBAction)tapped:(id)sender
 {
     CGPoint track = [_panGr locationInView:self];
