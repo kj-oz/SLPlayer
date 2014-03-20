@@ -42,10 +42,10 @@
     if (grid) {
         NSInteger numCol = grid.numCol;
         NSInteger numRow = grid.numRow;
-        NSInteger *values = malloc(numCol * numRow * 4);
-        NSInteger *v = values;
-        for (int r = 0; r < numRow; r++) {
-            for (int c = 0; c < numCol; c++) {
+        int *values = malloc(numCol * numRow * 4);
+        int *v = values;
+        for (NSInteger r = 0; r < numRow; r++) {
+            for (NSInteger c = 0; c < numCol; c++) {
                 *v++ = -1;
             }
         }
@@ -63,7 +63,7 @@
         NSInteger hmax = (NSInteger)(pitch * 0.8);
         KLIMNumberDetecter *nd = [[KLIMNumberDetecter alloc]
                                   initWithBorderCheckWidth:MIN(2, pitch * 0.1)];
-        for (int i = 1; i < li.blocks.count; i++) {
+        for (NSInteger i = 1; i < li.blocks.count; i++) {
             KLIMLabelingBlock *block = li.blocks[i];
             if (wmin < block.width && block.width < wmax &&
                 hmin < block.height && block.height < hmax) {
@@ -76,7 +76,7 @@
                     if (n > 3) {
                         n = block.numHole ? 0 : 3;
                     }
-                    values[r * numCol + c] = n;
+                    values[r * numCol + c] = (int)n;
                 }
             }
         }

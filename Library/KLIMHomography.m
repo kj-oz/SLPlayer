@@ -57,8 +57,8 @@
     UInt8 *bufferPtr = dstBuffer;
     UInt8 color[3];
     
-    for (int y = 0; y < size.height; y++) {
-        for (int x = 0; x < size.width; x++) {
+    for (NSInteger y = 0; y < size.height; y++) {
+        for (NSInteger x = 0; x < size.width; x++) {
             CGPoint srcPt = [self invertFromPoint:CGPointMake(x/size.width , y/size.height)];
             [self getSourceColorOnPoint:srcPt color:color];
             *bufferPtr++ = color[0];
@@ -103,10 +103,10 @@
     
     // X座標に関する配分係数を得る
     double m, n;
-    int x0 = (int)floorf(x);
-    int x1 = (int)ceilf(x);
+    NSInteger x0 = (NSInteger)floorf(x);
+    NSInteger x1 = (NSInteger)ceilf(x);
     
-    int ox = 0;		// X方向のピクセルごとのオフセット(0で初期化)
+    NSInteger ox = 0;		// X方向のピクセルごとのオフセット(0で初期化)
     if (x0 == x1) {
         // Xがちょうどピクセル上
         m = 0.0; n = 1.0;
@@ -118,10 +118,10 @@
 
     // Y座標に関する配分係数を得る
     double s, t;
-    int y0 = (int)floorf(y);
-    int y1 = (int)ceilf(y);
+    NSInteger y0 = (NSInteger)floorf(y);
+    NSInteger y1 = (NSInteger)ceilf(y);
     
-    int oy = 0;
+    NSInteger oy = 0;
     if (y0 == y1) {
         // Yがちょうどピクセル上
         s = 0.0; t = 1.0;
@@ -138,7 +138,7 @@
     UInt8 *p11 = p01 + ox;
     
     // RGB毎の比例配分
-    for (int i = 0; i < 3; i++) {
+    for (NSInteger i = 0; i < 3; i++) {
         color[i] = (UInt8)(t * (n * *p00++ + m * *p10++) +
                           s * (n * *p01++ + m * *p11++) + 0.5);
     }

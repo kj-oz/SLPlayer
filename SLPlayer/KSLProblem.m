@@ -14,7 +14,7 @@
 @implementation KSLAction
 
 - (id)initWithType:(KSLActionType)aType target:(id)aTarget
-         fromValue:(int)aOldValue toValue:(int)aNewValue
+         fromValue:(NSInteger)aOldValue toValue:(NSInteger)aNewValue
 {
     self = [super init];
     if (self) {
@@ -28,7 +28,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%d:%@:%d:%d", _type, _target, _oldValue, _newValue];
+    return [NSString stringWithFormat:@"%ld:%@:%ld:%ld", _type, _target, _oldValue, _newValue];
 }
 
 @end
@@ -47,7 +47,7 @@
 
 #pragma mark - 初期化
 
-- (id)initWithWidth:(NSInteger)width andHeight:(NSInteger)height data:(NSInteger *)data
+- (id)initWithWidth:(NSInteger)width andHeight:(NSInteger)height data:(int *)data
 {
     self = [super init];
     if (self) {
@@ -62,7 +62,7 @@
         _height = height;
         NSInteger count = width * height;
         _data = [NSMutableArray arrayWithCapacity:count];
-        for (int i = 0; i < count; i++) {
+        for (NSInteger i = 0; i < count; i++) {
             _data[i] = data ? @(data[i]) : @(-1);
         }
         _elapsedSeconds = [NSMutableArray array];
@@ -161,11 +161,11 @@
 
 - (void)dump
 {
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
-            int val = [self valueOfX:x andY:y];
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
+            NSInteger val = [self valueOfX:x andY:y];
             if (val >= 0) {
-                printf("%d", val);
+                printf("%ld", val);
             } else {
                 printf("-");
             }
@@ -183,7 +183,7 @@
             return @"未着手";
         case KSLProblemStatusSolving:
         {
-            int sec = ((NSNumber *)[_elapsedSeconds lastObject]).intValue;
+            NSInteger sec = ((NSNumber *)[_elapsedSeconds lastObject]).intValue;
             return [NSString stringWithFormat:@"未了（%.1f分）", (sec / 60.0)];
         }
         case KSLProblemStatusSolved:
@@ -195,12 +195,12 @@
 
 - (NSString *)elapsedTimeString
 {
-    int finishedCount = _elapsedSeconds.count - (_status == KSLProblemStatusSolving ? 1 : 0);
+    NSInteger finishedCount = _elapsedSeconds.count - (_status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {
         NSMutableString *elapsed = [NSMutableString stringWithString:@"("];
-        for (int i = 0; i < finishedCount; i++) {
-            int minute = (int)(((NSNumber *)_elapsedSeconds[i]).intValue / 60.0 + 0.5);
-            [elapsed appendFormat:@"%d分,", minute];
+        for (NSInteger i = 0; i < finishedCount; i++) {
+            NSInteger minute = (NSInteger)(((NSNumber *)_elapsedSeconds[i]).intValue / 60.0 + 0.5);
+            [elapsed appendFormat:@"%ld分,", minute];
         }
         [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
         

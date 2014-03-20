@@ -182,12 +182,12 @@
  * @param hdir 水平方向位置（0:左側、1:右側）
  * @param vdir 鉛直方向位置（0:上側、1:下側）
  */
-- (void)_initCornerWithHDir:(int)hdir andVDir:(int)vdir
+- (void)_initCornerWithHDir:(NSInteger)hdir andVDir:(NSInteger)vdir
 {
-    int x = hdir ? _board.width - 1 : 0;
-    int y = vdir ? _board.height - 1 : 0;
-    int dx = hdir ? -1 : 1;
-    int dy = vdir ? -1 : 1;
+    NSInteger x = hdir ? _board.width - 1 : 0;
+    NSInteger y = vdir ? _board.height - 1 : 0;
+    NSInteger dx = hdir ? -1 : 1;
+    NSInteger dy = vdir ? -1 : 1;
     
     switch ([_board cellAtX:x andY:y].number) {
         case 1:
@@ -216,8 +216,8 @@
  */
 - (void)_initZero
 {
-    for (int y = 0; y < _board.height; y++) {
-        for (int x = 0; x < _board.width; x++) {
+    for (NSInteger y = 0; y < _board.height; y++) {
+        for (NSInteger x = 0; x < _board.width; x++) {
             KSLCell *cell = [_board cellAtX:x andY:y];
             if (cell.number == 0) {
                 [self _changeEdge:cell.topEdge status:KSLEdgeStatusOff];
@@ -234,8 +234,8 @@
  */
 - (void)_initThree
 {
-    for (int y = 0; y < _board.height; y++) {
-        for (int x = 0; x < _board.width; x++) {
+    for (NSInteger y = 0; y < _board.height; y++) {
+        for (NSInteger x = 0; x < _board.width; x++) {
             KSLCell *cell = [_board cellAtX:x andY:y];
             if (cell.number == 3) {
                 if (x < _board.width - 1) {
@@ -324,11 +324,11 @@
  * 左右の外周の数字で確定する辺を設定する.
  * @param hdir 水平方向位置（0:左側、1:右側）
  */
-- (void)_initVBorderWithHDir:(int)hdir
+- (void)_initVBorderWithHDir:(NSInteger)hdir
 {
-    int x = hdir ? _board.width - 1 : 0;
+    NSInteger x = hdir ? _board.width - 1 : 0;
     
-    for (int y = 1; y < _board.height - 1; y++) {
+    for (NSInteger y = 1; y < _board.height - 1; y++) {
         KSLCell *cell = [_board cellAtX:x andY:y];
         if (cell.number == 1) {
             KSLCell *aCell = [_board cellAtX:x andY:y-1];
@@ -353,11 +353,11 @@
  * 上下の外周の数字で確定する辺を設定する.
  * @param vdir 鉛直方向位置（0:上側、1:下側）
  */
-- (void)_initHBorderWithVDir:(int)vdir
+- (void)_initHBorderWithVDir:(NSInteger)vdir
 {
-    int y = vdir ? _board.height - 1 : 0;
+    NSInteger y = vdir ? _board.height - 1 : 0;
     
-    for (int x = 1; x < _board.width - 1; x++) {
+    for (NSInteger x = 1; x < _board.width - 1; x++) {
         KSLCell *cell = [_board cellAtX:x andY:y];
         if (cell.number == 1) {
             KSLCell *aCell = [_board cellAtX:x-1 andY:y];
@@ -387,12 +387,12 @@
 - (BOOL)_tryOneStep
 {
     [self _startNewStep];
-    for (int y = 0; y <= _board.height; y++) {
-        for (int x = 0; x <= _board.width; x++) {
+    for (NSInteger y = 0; y <= _board.height; y++) {
+        for (NSInteger x = 0; x <= _board.width; x++) {
             KSLNode *node = [_board nodeAtX:x andY:y];
             if (node.onCount == 1) {
                 NSArray *branches = [self _createBranchesFromNode:node];
-                for (int b = 0; b < branches.count; b++) {
+                for (NSInteger b = 0; b < branches.count; b++) {
                     KSLBranch *branch = branches[b];
                     if ([self _tryWithEdge:branch.edge withStatus:KSLEdgeStatusOn]) {
                         return YES;
@@ -516,7 +516,7 @@
                 KSLBranch *branch = branches[0];
                 [branches removeObjectAtIndex:0];
                 @try {
-                    printf("LEVEL%2d BRANCH:%s.%s ", level,
+                    printf("LEVEL%2ld BRANCH:%s.%s ", level,
                            branch.root.description.UTF8String, branch.edge.description.UTF8String);
                     [_changedEdges removeAllObjects];
                     [_affectedCells removeAllObjects];
@@ -571,7 +571,7 @@
 {
     _clearling = YES;
     
-    for (int i = _currentStep.count - 1; i >= 0; i--) {
+    for (NSInteger i = _currentStep.count - 1; i >= 0; i--) {
         KSLAction *action = _currentStep[i];
         KSLEdge *edge = nil;
         KSLNode *node = nil;
@@ -992,24 +992,24 @@
 {
     switch (cell.number) {
         case 1:
-            for (int h = 0; h < 2; h++) {
-                for (int v = 0; v < 2; v++) {
+            for (NSInteger h = 0; h < 2; h++) {
+                for (NSInteger v = 0; v < 2; v++) {
                     [self _checkAffectedCell1:cell cornerH:h andV:v];
                 }
             }
             break;
             
         case 2:
-            for (int h = 0; h < 2; h++) {
-                for (int v = 0; v < 2; v++) {
+            for (NSInteger h = 0; h < 2; h++) {
+                for (NSInteger v = 0; v < 2; v++) {
                     [self _checkAffectedCell2:cell cornerH:h andV:v];
                 }
             }
             break;
             
         case 3:
-            for (int h = 0; h < 2; h++) {
-                for (int v = 0; v < 2; v++) {
+            for (NSInteger h = 0; h < 2; h++) {
+                for (NSInteger v = 0; v < 2; v++) {
                     [self _checkAffectedCell3:cell cornerH:h andV:v];
                 }
             }
@@ -1023,7 +1023,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell1:(KSLCell *)cell cornerH:(int)h andV:(int)v
+- (void)_checkAffectedCell1:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1083,7 +1083,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell2:(KSLCell *)cell cornerH:(int)h andV:(int)v
+- (void)_checkAffectedCell2:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1107,8 +1107,8 @@
                     // 対象のコーナーの外側のいずれかの辺がOnならOpen
                     gateStatus = KSLGateStatusOpen;
                 } else {
-                    int dx = h ? 1 : -1;
-                    int dy = v ? 1 : -1;
+                    NSInteger dx = h ? 1 : -1;
+                    NSInteger dy = v ? 1 : -1;
                     if ([_board get3Across2FromCell:cell withDx:dx dy:dy]) {
                         // 対象コーナーの斜め延長上に(間に2を挟んで)3があればOpen
                         gateStatus = KSLGateStatusOpen;
@@ -1196,7 +1196,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell3:(KSLCell *)cell cornerH:(int)h andV:(int)v
+- (void)_checkAffectedCell3:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1437,11 +1437,11 @@
  */
 - (void)_dumpStepsFromIndex:(NSInteger)index
 {
-    int i = 0;
+    NSInteger i = 0;
     for (NSArray *step in _steps) {
         if (i >= index) {
-            printf("STEP%02d:", i);
-            int m = 0;
+            printf("STEP%02ld:", i);
+            NSInteger m = 0;
             for (KSLAction *action in step) {
                 if (action.type == KSLActionTypeEdgeStatus) {
                     m++;
@@ -1449,7 +1449,7 @@
                         printf("\n       ");
                         m = 0;
                     }
-                    printf("%s-%d,", ((KSLEdge *)(action.target)).description.UTF8String,
+                    printf("%s-%ld,", ((KSLEdge *)(action.target)).description.UTF8String,
                            action.newValue);
                 }
             }

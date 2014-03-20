@@ -63,7 +63,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     NSMutableArray *dirs = [NSMutableArray array];
     NSArray *files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
     BOOL isDir;
-    for (int i = 0, n = files.count; i < n; i++) {
+    for (NSInteger i = 0, n = files.count; i < n; i++) {
         [fm fileExistsAtPath:[_documentDir stringByAppendingPathComponent:files[i]] isDirectory:&isDir];
         if (isDir) {
             [dirs addObject:files[i]];

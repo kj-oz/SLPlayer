@@ -116,7 +116,7 @@
 - (void)loadStepsFromJson:(NSArray *)jsonArray
 {
     _steps = [NSMutableArray arrayWithCapacity:[jsonArray count]];
-    int index = 0;
+    NSInteger index = 0;
     for (NSArray *actions in jsonArray) {
         NSMutableArray *step = [NSMutableArray arrayWithCapacity:[actions count]];
         for (NSString *actionString in actions) {

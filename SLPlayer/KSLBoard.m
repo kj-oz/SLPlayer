@@ -13,7 +13,7 @@
 
 @implementation KSLCell
 
-- (id)initWithNumber:(int)aNumber
+- (id)initWithNumber:(NSInteger)aNumber
 {
     self = [super init];
     if (self) {
@@ -25,7 +25,7 @@
 - (NSString *)description
 {
     KSLNode *node = [_topEdge nodeOfLH:0];
-    return [NSString stringWithFormat:@"C%02d%02d", node.x, node.y];
+    return [NSString stringWithFormat:@"C%02ld%02ld", node.x, node.y];
 }
 
 - (KSLEdge *)oppsiteEdgeOfEdge:(KSLEdge *)edge
@@ -73,7 +73,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"N%02d%02d", _x, _y];
+    return [NSString stringWithFormat:@"N%02ld%02ld", _x, _y];
 }
 
 - (KSLEdge *)onEdgeConnectToEdge:(KSLEdge *)edge
@@ -90,12 +90,12 @@
     return nil;
 }
 
-- (KSLGateStatus)gateStatusOfDir:(int)dir
+- (KSLGateStatus)gateStatusOfDir:(NSInteger)dir
 {
     return _gateStatus[dir];
 }
 
-- (void)setGateStatusOfDir:(int)dir toStatus:(KSLGateStatus)status
+- (void)setGateStatusOfDir:(NSInteger)dir toStatus:(KSLGateStatus)status
 {
     _gateStatus[dir] = status;
 }
@@ -142,7 +142,7 @@
     if (!_node[0] || !_node[1]) {
         return [NSString stringWithFormat:@"%cDUMM", dir];
     }
-    return [NSString stringWithFormat:@"%c%02d%02d", dir, _node[0].x, _node[0].y];
+    return [NSString stringWithFormat:@"%c%02ld%02ld", dir, _node[0].x, _node[0].y];
 }
 
 - (void)setStatus:(KSLEdgeStatus)aStatus
@@ -182,32 +182,32 @@
     return (_node[0] == aNode) ? _node[1] : _node[0];
 }
 
-- (KSLCell *)cellOfDir:(int)dir
+- (KSLCell *)cellOfDir:(NSInteger)dir
 {
     return _cell[dir];
 }
 
-- (void)setCellOfDir:(int)dir toCell:(KSLCell *)aCell
+- (void)setCellOfDir:(NSInteger)dir toCell:(KSLCell *)aCell
 {
     _cell[dir] = aCell;
 }
 
-- (KSLNode *)nodeOfLH:(int)lh
+- (KSLNode *)nodeOfLH:(NSInteger)lh
 {
     return _node[lh];
 }
 
-- (void)setNodeOfLH:(int)lh toNode:(KSLNode *)aNode
+- (void)setNodeOfLH:(NSInteger)lh toNode:(KSLNode *)aNode
 {
     _node[lh] = aNode;
 }
 
-- (KSLEdge *)straightEdgeOfLH:(int)lh
+- (KSLEdge *)straightEdgeOfLH:(NSInteger)lh
 {
     return _straightEdge[lh];
 }
 
-- (void)setStraightEdgeOfLH:(int)lh toEdge:(KSLEdge *)edge
+- (void)setStraightEdgeOfLH:(NSInteger)lh toEdge:(KSLEdge *)edge
 {
     _straightEdge[lh] = edge;
 }
@@ -280,7 +280,7 @@
 
 - (KSLCell *)findCellForBranch
 {
-    for (int n = 3; n > 0; n--) {
+    for (NSInteger n = 3; n > 0; n--) {
         for (KSLCell *cell in _cells) {
             if (cell.number == n && cell.onCount == n - 1 && cell.offCount + cell.onCount < 4) {
                 return cell;
@@ -315,11 +315,11 @@
     return nil;
 }
 
-- (KSLCell *)get3Across2FromCell:(KSLCell *)cell withDx:(int)dx dy:(int)dy
+- (KSLCell *)get3Across2FromCell:(KSLCell *)cell withDx:(NSInteger)dx dy:(NSInteger)dy
 {
     KSLNode *node = [cell.topEdge nodeOfLH:0];
-    int x = node.x + dx;
-    int y = node.y + dy;
+    NSInteger x = node.x + dx;
+    NSInteger y = node.y + dy;
     while (0 <= x && x < _width && 0 <= y && y < _height) {
         cell = [self cellAtX:x andY:y];
         if (cell.number == 2) {
@@ -334,8 +334,8 @@
 
 - (KSLEdge *)getJointEdgeOfNodes:(KSLNode *)node1 and:(KSLNode *)node2
 {
-    int x1 = node1.x, y1 = node1.y;
-    int x2 = node2.x, y2 = node2.y;
+    NSInteger x1 = node1.x, y1 = node1.y;
+    NSInteger x2 = node2.x, y2 = node2.y;
     if (x1 == x2 && ABS(y1 - y2) == 1) {
         return [self vEdgeAtX:x1 andY:MIN(y1, y2)];
     } else if (y1 == y2 && ABS(x1 - x2) == 1) {
@@ -362,14 +362,14 @@
 - (KSLEdge *)findEdgeWithId:(NSString *)identifier
 {
     char dir = [identifier characterAtIndex:0];
-    int x = [[identifier substringWithRange:NSMakeRange(1, 2)] intValue];
-    int y = [[identifier substringWithRange:NSMakeRange(3, 2)] intValue];
+    NSInteger x = [[identifier substringWithRange:NSMakeRange(1, 2)] intValue];
+    NSInteger y = [[identifier substringWithRange:NSMakeRange(3, 2)] intValue];
     return dir == 'H' ? [self hEdgeAtX:x andY:y] : [self vEdgeAtX:x andY:y];
 }
 
 #pragma mark - その他の情報の取得
 
-- (int)nodeIndex:(KSLNode *)node
+- (NSInteger)nodeIndex:(KSLNode *)node
 {
     if (node) {
         return node.y * (_width + 1) + node.x;
@@ -386,7 +386,7 @@
     
     KSLNode *root = [edge nodeOfLH:0];
     KSLNode *node = [edge nodeOfLH:1];
-    int conCount = 1;
+    NSInteger conCount = 1;
     while (node != root) {
         edge = [node onEdgeConnectToEdge:edge];
         if (!edge) {
@@ -419,7 +419,7 @@
 
 - (NSInteger)countOnEdge
 {
-    int onCount = 0;
+    NSInteger onCount = 0;
     for (KSLEdge *edge in _hEdges) {
         if (edge.status == KSLEdgeStatusOn) {
             onCount++;
@@ -465,19 +465,19 @@
 
 - (void)dump
 {
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
             KSLEdge *edge = [self hEdgeAtX:x andY:y];
             printf("+ %c ", [self edgeStatusCharH:edge]);
         }
         printf("+\n");
         
-        for (int x = 0; x < _width; x++) {
+        for (NSInteger x = 0; x < _width; x++) {
             KSLEdge *edge = [self vEdgeAtX:x andY:y];
             printf("%c ", [self edgeStatusCharV:edge]);
             KSLCell *cell = [self cellAtX:x andY:y];
             if (cell.number >= 0) {
-                printf("%d ", cell.number);
+                printf("%ld ", cell.number);
             } else {
                 printf("  ");
             }
@@ -485,7 +485,7 @@
         KSLEdge *edge = [self vEdgeAtX:_width andY:y];
         printf("%c\n", [self edgeStatusCharV:edge]);
     }
-    for (int x = 0; x < _width; x++) {
+    for (NSInteger x = 0; x < _width; x++) {
         KSLEdge *edge = [self hEdgeAtX:x andY:_height];
         printf("+ %c ", [self edgeStatusCharH:edge]);
     }
@@ -534,9 +534,9 @@
     CGContextSetLineWidth(context, crossLineW);
     CGContextSetShouldAntialias(context, NO);
     
-    for (int v = 0; v <= _height; v++) {
+    for (NSInteger v = 0; v <= _height; v++) {
         CGFloat y = y0 + v * pitch;
-        for (int u = 0; u <= _width; u++) {
+        for (NSInteger u = 0; u <= _width; u++) {
             CGFloat x = x0 + u * pitch;
             CGRect rect = CGRectMake(x-pointR, y-pointR, pointR * 2, pointR * 2);
             CGContextFillRect(context, rect);
@@ -549,20 +549,20 @@
     CGSize size = [@"0" sizeWithFont:font];
     CGFloat nx = (pitch - size.width) * 0.5 + 0.5;
     CGFloat ny = (pitch - size.height) * 0.5;
-    for (int v = 0; v < _height; v++) {
+    for (NSInteger v = 0; v < _height; v++) {
         CGFloat y = y0 + v * pitch + ny;
-        for (int u = 0; u < _width; u++) {
+        for (NSInteger u = 0; u < _width; u++) {
             CGFloat x = x0 + u * pitch + nx;
-            int number = [self cellAtX:u andY:v].number;
+            NSInteger number = [self cellAtX:u andY:v].number;
             if (number >= 0) {
                 [chars[number] drawAtPoint:CGPointMake(x, y) withFont:font];
             }
         }
     }
     
-    for (int v = 0; v <= _height; v++) {
+    for (NSInteger v = 0; v <= _height; v++) {
         CGFloat y = y0 + v * pitch;
-        for (int u = 0; u < _width; u++) {
+        for (NSInteger u = 0; u < _width; u++) {
             CGFloat x = x0 + u * pitch;
             KSLEdge *edge = [self hEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
@@ -576,9 +576,9 @@
         }
     }
     
-    for (int v = 0; v < _height; v++) {
+    for (NSInteger v = 0; v < _height; v++) {
         CGFloat y = y0 + v * pitch;
-        for (int u = 0; u <= _width; u++) {
+        for (NSInteger u = 0; u <= _width; u++) {
             CGFloat x = x0 + u * pitch;
             KSLEdge *edge = [self vEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
@@ -606,25 +606,25 @@
     _dummyVEdge = [[KSLEdge alloc] initWithStatus:KSLEdgeStatusOff andHorizontal:NO];
     _dummyCell = [[KSLCell alloc] initWithNumber:-1];
     
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
             [_cells addObject:[[KSLCell alloc] initWithNumber:[problem valueOfX:x andY:y]]];
         }
     }
     
-    for (int y = 0; y <= _height; y++) {
-        for (int x = 0; x <= _width; x++) {
+    for (NSInteger y = 0; y <= _height; y++) {
+        for (NSInteger x = 0; x <= _width; x++) {
             [_nodes addObject:[[KSLNode alloc] initWithX:x andY:y]];
         }
     }
     
-    int n = _width * (_height + 1);
-    for (int i = 0; i < n; i++) {
+    NSInteger n = _width * (_height + 1);
+    for (NSInteger i = 0; i < n; i++) {
         KSLEdge *edge = [[KSLEdge alloc] initWithHorizontal:YES];
         [_hEdges addObject:edge];
     }
     n = (_width  + 1) * _height;
-    for (int i = 0; i < n; i++) {
+    for (NSInteger i = 0; i < n; i++) {
         KSLEdge *edge = [[KSLEdge alloc] initWithHorizontal:NO];
         [_vEdges addObject:edge];
     }
@@ -640,8 +640,8 @@
     [_dummyVEdge setCellOfDir:0 toCell:_dummyCell];
     [_dummyVEdge setCellOfDir:1 toCell:_dummyCell];
     
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
             KSLCell *cell = _cells[y * _width + x];
             KSLEdge *topEdge = _hEdges[y * _width + x];
             KSLEdge *bottomEdge = _hEdges[(y + 1) * _width + x];
@@ -675,8 +675,8 @@
         }
     }
     
-    for (int y = 0; y <= _height; y++) {
-        for (int x = 0; x <= _width; x++) {
+    for (NSInteger y = 0; y <= _height; y++) {
+        for (NSInteger x = 0; x <= _width; x++) {
             KSLNode *node = _nodes[y * (_width + 1) + x];
             
             if (x == 0) {
@@ -717,16 +717,16 @@
         }
     }
     
-    for (int y = 0; y <= _height; y++) {
-        for (int x = 0; x < _width; x++) {
+    for (NSInteger y = 0; y <= _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
             KSLEdge *edge = _hEdges[y * _width + x];
             [edge setStraightEdgeOfLH:0 toEdge:[edge nodeOfLH:0].leftEdge];
             [edge setStraightEdgeOfLH:1 toEdge:[edge nodeOfLH:1].rightEdge];
         }
     }
     
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x <= _width; x++) {
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x <= _width; x++) {
             KSLEdge *edge = _vEdges[y * (_width + 1) + x];
             [edge setStraightEdgeOfLH:0 toEdge:[edge nodeOfLH:0].upEdge];
             [edge setStraightEdgeOfLH:1 toEdge:[edge nodeOfLH:1].downEdge];

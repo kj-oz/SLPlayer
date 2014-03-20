@@ -13,7 +13,7 @@
 /**
  * 動作を巻き戻せるよう処理履歴に残すアクションの種類の定義
  */
-typedef enum {
+typedef enum : NSInteger {
     KSLActionTypeEdgeStatus,        // Edgeの状態の変更
     KSLActionTypeOppositeNode,      // Nodeの(一連の辺の)逆端のNodeを変更
     KSLActionTypeLUGateStatus,      // Nodeの右下から左上方向へのGateの状態の変更
@@ -24,7 +24,7 @@ typedef enum {
 /**
  * 問題の状態
  */
-typedef enum {
+typedef enum : NSInteger {
     KSLProblemStatusEditing,        // 編集中
     KSLProblemStatusNotStarted,     // 未着手
     KSLProblemStatusSolving,        // 未了
@@ -46,10 +46,10 @@ typedef enum {
 @property (nonatomic, readonly) id target;
 
 // 実行前の値
-@property (nonatomic, readonly) int oldValue;
+@property (nonatomic, readonly) NSInteger oldValue;
 
 // 実行後の値
-@property (nonatomic, readonly) int newValue;
+@property (nonatomic, readonly) NSInteger newValue;
 
 /**
  * 与えられたパラメータの新規のアクションを生成する.
@@ -60,7 +60,7 @@ typedef enum {
  * @return 新たなアクション
  */
 - (id)initWithType:(KSLActionType)aType target:(id)aTarget
-         fromValue:(int)aOldValue toValue:(int)aNewValue;
+         fromValue:(NSInteger)aOldValue toValue:(NSInteger)aNewValue;
 
 @end
 
@@ -106,7 +106,7 @@ typedef enum {
  * @param data 数字の（C形式の）配列
  * @return 問題オブジェクト
  */
-- (id)initWithWidth:(NSInteger)width andHeight:(NSInteger)height data:(NSInteger *)data;
+- (id)initWithWidth:(NSInteger)width andHeight:(NSInteger)height data:(int *)data;
 
 /**
  * 与えられたパスのファイルから問題を読み込む.

@@ -153,12 +153,12 @@
     NSTimeInterval t = [now timeIntervalSinceDate:_start];
     switch (problem.status) {
         case KSLProblemStatusSolving:
-            [problem updateElapsedSecond:_elapsed + (int)t];
+            [problem updateElapsedSecond:_elapsed + (NSInteger)t];
             break;
             
         case KSLProblemStatusNotStarted:
             problem.status = KSLProblemStatusSolving;
-            [problem addElapsedSecond:(int)t];
+            [problem addElapsedSecond:(NSInteger)t];
             break;
             
         default:
@@ -300,8 +300,8 @@
     NSDate *now = [NSDate date];
     NSTimeInterval t = [now timeIntervalSinceDate:_start];
     
-    NSInteger sec = _elapsed + (int)t;
-    NSString *time = [NSString stringWithFormat:@"%d:%02d:%02d", sec / 3600, (sec % 3600) / 60, sec % 60];
+    NSInteger sec = _elapsed + (NSInteger)t;
+    NSString *time = [NSString stringWithFormat:@"%ld:%02ld:%02ld", sec / 3600, (sec % 3600) / 60, sec % 60];
     _elapsedLabel.text = time;
 }
 

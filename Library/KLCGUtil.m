@@ -15,7 +15,7 @@ CGFloat KLCGClumpValue(CGFloat value, CGFloat min, CGFloat max)
     return value < min ? min : value > max ? max : value;
 }
 
-int KLCGClumpInt(int value, int min, int max)
+NSInteger KLCGClumpInt(NSInteger value, NSInteger min, NSInteger max)
 {
     return value < min ? min : value > max ? max : value;
 }

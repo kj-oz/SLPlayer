@@ -72,7 +72,7 @@
     // プレイヤ・オブジェクト
     KSLPlayer *_player;
     
-    // 1ステップ分の複数のアクションを保持する配列、同じ配列を使い回す.
+    // 直前のアクション
     KSLAction *_lastAction;
     
     // 以下KSLProblemViewDelegateのプロパティ用変数
@@ -134,6 +134,8 @@
     CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_MINIMUM_PITCH;
     CGRect zoomArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN, zoomedW, zoomedH);
     [self setZoomedArea:zoomArea];
+    
+    _lastAction = nil;
 }
 
 - (void)setZoomedArea:(CGRect)zoomedArea
@@ -145,6 +147,9 @@
 
 - (void)actionPerformed:(KSLAction *)action
 {
+    if (action.target == _lastAction.target) {
+        
+    }
     // TODO 直前のアクションとtargetが同じならまとめる
     //[_step addObject:action];
 }
@@ -192,16 +197,16 @@
     __block NSString *badInput = nil;
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"生成" action:^{
-        int w = 0;
-        int h = 0;
+        NSInteger w = 0;
+        NSInteger h = 0;
         NSString *input = [alert textFieldAtIndex:0].text;
         NSCharacterSet *cs = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
         NSArray *parts = [input componentsSeparatedByCharactersInSet:cs];
         if (!parts || [parts count] < 2) {
             badInput = input;
         } else {
-            w = [parts[0] integerValue];
-            h = [parts[1] integerValue];
+            w = [parts[0] intValue];
+            h = [parts[1] intValue];
             if (!w || !h) {
                 badInput = input;
             }
@@ -209,13 +214,15 @@
         [alert dismissWithClickedButtonIndex:1 animated:YES];
         
         if (badInput) {
-            UIAlertView *subAlert = [[UIAlertView alloc] initWithTitle:@"入力エラー"
-                                        message:@"問題の大きさが不正です。" delegate:nil
-                                        cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+            UIAlertView *subAlert = [[UIAlertView alloc]
+                                     initWithTitle:@"入力エラー"
+                                     message:@"問題の大きさが不正です。"
+                                     delegate:nil cancelButtonTitle:nil
+                                     otherButtonTitles:@"了解", nil];
             [subAlert show];
         } else {
             int *data = calloc(w * h, sizeof(int));
-            for (int i = 0, n = w * h; i < n; i++) {
+            for (NSInteger i = 0, n = w * h; i < n; i++) {
                 data[i] = -1;
             }
             
@@ -316,8 +323,8 @@
 - (void)updateProblemInfo
 {
     _titleText.text = _problem.title;
-    _sizeLabel.text = [NSString stringWithFormat:@"%d X %d", _problem.width, _problem.height];
-    _difficultyText.text = [NSString stringWithFormat:@"%d", _problem.difficulty];
+    _sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld", _problem.width, _problem.height];
+    _difficultyText.text = [NSString stringWithFormat:@"%ld", _problem.difficulty];
     _statusLabel.text = _problem.statusString;
     _evaluationSegmentedCtrl.selectedSegmentIndex = _problem.evaluation - 1;
     _elapsedLabel.text = _problem.elapsedTimeString;

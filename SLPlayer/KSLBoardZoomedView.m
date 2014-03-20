@@ -171,8 +171,8 @@
         case KSLProblemViewModeInputNumber:{
             KSLCell *cell = [self findCell:track];
             if (cell) {
-                int oldNumber = cell.number;
-                int newNumber = oldNumber == 3 ? -1 : oldNumber + 1;
+                NSInteger oldNumber = cell.number;
+                NSInteger newNumber = oldNumber == 3 ? -1 : oldNumber + 1;
                 KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeCellNumber
                                             target:cell fromValue:oldNumber toValue:newNumber];
                 [cell changeNumber:newNumber];
@@ -259,8 +259,8 @@
     KSLBoard *board = _delegate.board;
     CGFloat xp = (point.x - _x0) / _pitch;
     CGFloat yp = (point.y - _y0) / _pitch;
-    int xi = (int)(xp + 0.5);
-    int yi = (int)(yp + 0.5);
+    NSInteger xi = (NSInteger)(xp + 0.5);
+    NSInteger yi = (NSInteger)(yp + 0.5);
     xi = KLCGClumpInt(xi, 0, board.width - 1);
     yi = KLCGClumpInt(yi, 0, board.height - 1);
     
@@ -277,8 +277,8 @@
     KSLBoard *board = _delegate.board;
     CGFloat xp = (point.x - _x0) / _pitch;
     CGFloat yp = (point.y - _y0) / _pitch;
-    int xi = (int)xp;
-    int yi = (int)yp;
+    NSInteger xi = (NSInteger)xp;
+    NSInteger yi = (NSInteger)yp;
     xi = KLCGClumpInt(xi, 0, board.width - 1);
     yi = KLCGClumpInt(yi, 0, board.height - 1);
     
@@ -295,8 +295,8 @@
     KSLBoard *board = _delegate.board;
     CGFloat xp = (point.x - _x0) / _pitch;
     CGFloat yp = (point.y - _y0) / _pitch;
-    int xi = (int)(xp + 0.5);
-    int yi = (int)(yp + 0.5);
+    NSInteger xi = (NSInteger)(xp + 0.5);
+    NSInteger yi = (NSInteger)(yp + 0.5);
     xi = KLCGClumpInt(xi, 0, board.width - 1);
     yi = KLCGClumpInt(yi, 0, board.height - 1);
     
@@ -304,13 +304,13 @@
     CGFloat dy = (yp - yi) * _pitch;
     
     if (abs(dx) < abs(dy)) {
-        yi = (int)yp;
+        yi = (NSInteger)yp;
         dy = (yp - (yi + 0.5)) * _pitch;
         if (dx * dx + dy * dy < _r * _r) {
             return [board vEdgeAtX:xi andY:yi];
         }
     } else {
-        xi = (int)xp;
+        xi = (NSInteger)xp;
         dx = (xp - (xi + 0.5)) * _pitch;
         if (dx * dx + dy * dy < _r * _r) {
             return [board hEdgeAtX:xi andY:yi];

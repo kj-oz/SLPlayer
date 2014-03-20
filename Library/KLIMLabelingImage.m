@@ -29,12 +29,12 @@
         
         _blocks = [NSMutableArray array];
         [_blocks addObject:[NSNull null]];
-        int label = 0;  //最初のラベル番号 - 1
-        int code;
+        NSInteger label = 0;  //最初のラベル番号 - 1
+        NSInteger code;
         //始点の調査
-        for (int y = 1; y < _height - 1; y++) {
-            for (int x = 1; x < _width - 1; x++) {
-                int c = y * _width + x;
+        for (NSInteger y = 1; y < _height - 1; y++) {
+            for (NSInteger x = 1; x < _width - 1; x++) {
+                NSInteger c = y * _width + x;
                 if (image.buffer[c] && !_pixels[c]) {
                     // 未追跡
                     if (!image.buffer[c-1]) {
@@ -46,8 +46,8 @@
                     } else if (!image.buffer[c+1]) {
                         // 右側が0-画素
                         code = 3;
-                        int label0 = 0; //仮の値
-                        for (int xi = 1; xi < x - 1; xi++) {
+                        NSInteger label0 = 0; //仮の値
+                        for (NSInteger xi = 1; xi < x - 1; xi++) {
                             if (_pixels[c-xi]) {
                                 label0 = _pixels[c-xi];   //外側境界のラベルと同じくする
                                 break;
@@ -62,9 +62,9 @@
         }
         
         //内側のラベリング
-        for (int y = 1; y < _height - 1; y++) {
-            for (int x = 1; x < _width; x++) {
-                int c = y * _width + x;
+        for (NSInteger y = 1; y < _height - 1; y++) {
+            for (NSInteger x = 1; x < _width; x++) {
+                NSInteger c = y * _width + x;
                 if (_pixels[c] && !_pixels[c-1]) {
                     [_blocks[_pixels[c]] addPixelWithX:x andY:y];
                 }
@@ -101,8 +101,8 @@
     UInt8 *imagePtr = malloc(self.width * self.height * 4);
     UInt32 *bufferPtr = self.pixels;
     
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
             
             // ピクセルのポインタを取得する
             UInt8* pixelPtr = imagePtr + (y * self.width + x) * 4;
@@ -150,11 +150,11 @@
  * @param label 番号
  * @param bin 2値化画像のバッファ
  */
-- (void)labelingBorderWithX:(int)x y:(int)y code:(int)code label:(int)label binBuffer:(UInt8 *)bin
+- (void)labelingBorderWithX:(NSInteger)x y:(NSInteger)y code:(NSInteger)code label:(NSInteger)label binBuffer:(UInt8 *)bin
 {
-    int startX, startY; //始点
-    int x1, y1;         //現在位置
-    int x2, y2;         //探索位置
+    NSInteger startX, startY; //始点
+    NSInteger x1, y1;         //現在位置
+    NSInteger x2, y2;         //探索位置
     
     startX = x; x1 = x;
     startY = y; y1 = y;
@@ -205,7 +205,7 @@
         }
         
         if (bin[y2*_width+x2]) {
-            _pixels[y2*_width+x2] = label;
+            _pixels[y2*_width+x2] = (UInt32)label;
             x1 = x2; y1 = y2;   //現在位置の更新
         }
     }

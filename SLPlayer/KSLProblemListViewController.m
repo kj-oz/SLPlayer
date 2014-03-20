@@ -48,7 +48,7 @@
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
-    int problemIndex;
+    NSUInteger problemIndex;
     if (app.restoring) {
         if (app.lastProblem) {
             problemIndex = [pm.currentWorkbook.problems indexOfObject:app.lastProblem];
@@ -102,10 +102,10 @@
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %dX%d %@ %@", problem.title, problem.width,
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %ldX%ld %@ %@", problem.title, problem.width,
                            problem.height, [problem difficultyString], [problem statusString]];
     
-    int finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
+    NSInteger finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {
         cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@ %@", [problem evaluationString],
                                      [problem elapsedTimeString]];

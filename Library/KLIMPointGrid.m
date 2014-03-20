@@ -68,7 +68,7 @@
         _blocks = [NSMutableArray array];
         
         // 以下の判定基準は、1000X1000程度のイメージを想定
-        for (int i = 1; i < _li.blocks.count; i++) {
+        for (NSInteger i = 1; i < _li.blocks.count; i++) {
             KLIMLabelingBlock *block = _li.blocks[i];
             if (1 < block.width && block.width < 14 &&
                 1 < block.height && block.height < 14 &&
@@ -82,7 +82,7 @@
         _searchDistance = image.width / 10;
         NSArray *centerBlocks = [self sortByDistanceFromPoint:
                 CGPointMake(image.width/2, image.height/2) maxCount:16 maxDistance:_searchDistance];
-        for (int c = 0; c < centerBlocks.count; c++) {
+        for (NSInteger c = 0; c < centerBlocks.count; c++) {
             KLIMLabelingBlock *centerBlock = centerBlocks[c];
             if ([self generateGridWithCenter:centerBlock]) {
                 break;
@@ -133,7 +133,7 @@
 - (UIImage *)createImageOfCtrlPoint
 {
     NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
-    for (int i = 0; i < 9; i++) {
+    for (NSInteger i = 0; i < 9; i++) {
         KLIMLabelingBlock *block = _ctrlBlocks[i];
         [indexes addIndex:block.label];
     }
@@ -309,12 +309,12 @@
     CGFloat pitch = KLCGPointLength(bvec);
     
     NSInteger imax = length / pitch;
-    for (int i = imax; i > 3; i--) {
+    for (NSInteger i = imax; i > 3; i--) {
         CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(bvec, i));
         
         NSArray *blocks = [self sortByDistanceFromPoint:pt
                                                maxCount:4 maxDistance:_searchDistance];
-        for (int b = 0; b < blocks.count; b++) {
+        for (NSInteger b = 0; b < blocks.count; b++) {
             KLIMLabelingBlock *block = blocks[b];
             // 中央点と起点の座標を元に推定される点と実際の点の距離の差が長さの3%以内（経験則）か
             CGFloat dmax = i * pitch * 0.03;
@@ -369,7 +369,7 @@
                                            maxCount:4 maxDistance:_searchDistance];
     // 中央点と２つの端点の座標を元に推定される点と実際の点の距離の差が長さの5%以内（経験則）か
     CGFloat dmax = KLCGPointDistance(pt, center) * 0.05;
-    for (int i = 0; i < blocks.count; i++) {
+    for (NSInteger i = 0; i < blocks.count; i++) {
         KLIMLabelingBlock *block = blocks[i];
         if (KLCGPointDistance2(block.center, pt) < dmax * dmax) {
             if ([self isOnGridWithPoint:block.center
@@ -394,7 +394,7 @@
 {
     // 与えられた点から軸上の点に向かって4つ（但し軸に達してしまう場合はそれ以下）の点が想定する位置に存在するかを調べる
     CGPoint vec = KLCGPointDevide(KLCGPointSubtract(point, center), n);
-    for (int i = n - 1; i > n - 4 && i > 1; i--) {
+    for (NSInteger i = n - 1; i > n - 4 && i > 1; i--) {
         CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(vec, i));
         
         NSArray *blocks = [self sortByDistanceFromPoint:pt
@@ -426,7 +426,7 @@
     CGFloat ymax = pt.y + distance;
     
     NSMutableArray *nearBlocks = [NSMutableArray array];
-    for (int i = 0; i < _blocks.count; i++) {
+    for (NSInteger i = 0; i < _blocks.count; i++) {
         KLIMLabelingBlock *block = _blocks[i];
         CGFloat cx = block.center.x;
         CGFloat cy = block.center.y;
@@ -458,7 +458,7 @@
     xmin = xmax = xminB.center.x;
     ymin = ymax = yminB.center.y;
     
-    for (int i = 1; i < blocks.count; i++) {
+    for (NSInteger i = 1; i < blocks.count; i++) {
         KLIMLabelingBlock *b = blocks[i];
         CGPoint p = b.center;
         if (p.x < xmin) {

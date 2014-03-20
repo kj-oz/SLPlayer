@@ -16,7 +16,7 @@
 /**
  * Edgeの状態
  */
-typedef enum {
+typedef enum : NSInteger {
     KSLEdgeStatusUnset = -1,        // 未設定
     KSLEdgeStatusOff = 0,           // 線無し
     KSLEdgeStatusOn = 1             // 線有り
@@ -25,7 +25,7 @@ typedef enum {
 /**
  * NodeのGate（斜め方向のOnEdgeの通過状態）の状態
  */
-typedef enum {
+typedef enum : NSInteger {
     KSLGateStatusUnset = -1,        // 未設定
     KSLGateStatusClose = 0,         // 不通過
     KSLGateStatusOpen = 1           // 通過
@@ -34,7 +34,7 @@ typedef enum {
 /**
  * NodeのGateの方向
  */
-typedef enum {
+typedef enum : NSInteger {
     KSLGateDirLU,                   // 右下から左上へのGate
     KSLGateDirRU                    // 左下から右上へのGate
 } KSLGateDir;
@@ -48,13 +48,13 @@ typedef enum {
 @interface KSLCell : NSObject
 
 // 中の数値、空の場合は-1
-@property (nonatomic, assign) int number;
+@property (nonatomic, assign) NSInteger number;
 
 // 四周Edgeの中のOnのEdgeの数
-@property (nonatomic, assign) int onCount;
+@property (nonatomic, assign) NSInteger onCount;
 
 // 四周Edgeの中のOffのEdgeの数
-@property (nonatomic, assign) int offCount;
+@property (nonatomic, assign) NSInteger offCount;
 
 // 上側Edge
 @property (nonatomic, unsafe_unretained) KSLEdge *topEdge;
@@ -99,16 +99,16 @@ typedef enum {
 @interface KSLNode : NSObject
 
 // X座標
-@property (nonatomic, readonly) int x;
+@property (nonatomic, readonly) NSInteger x;
 
 // Y座標
-@property (nonatomic, readonly) int y;
+@property (nonatomic, readonly) NSInteger y;
 
 // 接続する4本のEdgeの中の状態がOnのEdgeの数
-@property (nonatomic, assign) int onCount;
+@property (nonatomic, assign) NSInteger onCount;
 
 // 接続する4本のEdgeの中の状態がOffのEdgeの数
-@property (nonatomic, assign) int offCount;
+@property (nonatomic, assign) NSInteger offCount;
 
 // 自身が連続線の端点の場合の逆側の端点のNode
 @property (nonatomic, unsafe_unretained) KSLNode *oppositeNode;
@@ -145,14 +145,14 @@ typedef enum {
  * @param dir 方向
  * @return Gateの状態
  */
-- (KSLGateStatus)gateStatusOfDir:(int)dir;
+- (KSLGateStatus)gateStatusOfDir:(NSInteger)dir;
 
 /**
  * 指定の方向のGateの状態を、与えられた状態に設定する.
  * @param dir 方向
  * @param status Gateの状態
  */
-- (void)setGateStatusOfDir:(int)dir toStatus:(KSLGateStatus)status;
+- (void)setGateStatusOfDir:(NSInteger)dir toStatus:(KSLGateStatus)status;
 
 @end
 
@@ -200,42 +200,42 @@ typedef enum {
  * @param dir 左右方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @return Cell
  */
-- (KSLCell *)cellOfDir:(int)dir;
+- (KSLCell *)cellOfDir:(NSInteger)dir;
 
 /**
  * 指定の方向のCellを設定する.
  * @param dir 左右方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @param cell 対象のCell
  */
-- (void)setCellOfDir:(int)dir toCell:(KSLCell *)cell;
+- (void)setCellOfDir:(NSInteger)dir toCell:(KSLCell *)cell;
 
 /**
  * 指定の方向のNodeを返す.
  * @param lh 前後方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @return Node
  */
-- (KSLNode *)nodeOfLH:(int)lh;
+- (KSLNode *)nodeOfLH:(NSInteger)lh;
 
 /**
  * 指定の方向のNodeを設定する.
  * @param lh 前後方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @param node 対象のNode
  */
-- (void)setNodeOfLH:(int)lh toNode:(KSLNode *)node;
+- (void)setNodeOfLH:(NSInteger)lh toNode:(KSLNode *)node;
 
 /**
  * 自分の延長上のEdgeを得る.
  * @param lh 前後方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @return 自分の延長上のEdge
  */
-- (KSLEdge *)straightEdgeOfLH:(int)lh;
+- (KSLEdge *)straightEdgeOfLH:(NSInteger)lh;
 
 /**
  * 自分の延長上のEdgeを設定する.
  * @param lh 前後方向（0:インデックスの小さい方、1:インデックスの大きい方）
  * @param 自分の延長上のEdge
  */
-- (void)setStraightEdgeOfLH:(int)lh toEdge:(KSLEdge *)edge;
+- (void)setStraightEdgeOfLH:(NSInteger)lh toEdge:(KSLEdge *)edge;
 
 @end
 
@@ -340,7 +340,7 @@ typedef enum {
  * @param node Node
  * @return 配列内のインデックス
  */
-- (int)nodeIndex:(KSLNode *)node;
+- (NSInteger)nodeIndex:(KSLNode *)node;
 
 /**
  * 指定した斜め方向にいくつかの2のセルの向こうに3のセルが続いている場合にその3のセルを返す.
@@ -349,7 +349,7 @@ typedef enum {
  * @param dy 斜めのベクトルの鉛直方向成分
  * @return (0〜X個の）連続した2のセルの向こうに3のセルが見つかった場合にその3のセル、見つからなければnil
  */
-- (KSLCell *)get3Across2FromCell:(KSLCell *)cell withDx:(int)dx dy:(int)dy;
+- (KSLCell *)get3Across2FromCell:(KSLCell *)cell withDx:(NSInteger)dx dy:(NSInteger)dy;
 
 /**
  * 与えれた2つのNodeを結ぶEdgeが存在すればそれを返す.

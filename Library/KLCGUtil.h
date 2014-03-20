@@ -24,7 +24,7 @@ CGFloat KLCGClumpValue(CGFloat value, CGFloat min, CGFloat max);
  * @param max 最大値
  * @return 補正後の値
  */
-int KLCGClumpInt(int value, int min, int max);
+NSInteger KLCGClumpInt(NSInteger value, NSInteger min, NSInteger max);
 
 /**
  * 与えられた長方形の位置を、与えられた境界長方形内に入るように補正する.
