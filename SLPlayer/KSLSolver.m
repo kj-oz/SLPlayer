@@ -94,6 +94,7 @@
     _changedEdges = [NSMutableArray array];
     _affectedCells = [NSMutableOrderedSet orderedSet];
     
+    
     @try {
         [self _initCorner];
         [self _initZero];
@@ -130,7 +131,7 @@
 //        return NO;
 //    }
     
-    //[_board dumpWithEdeg:nil];
+    [_board dump];
     NSArray *branches = nil;
     KSLNode *root = [_board findOpenNode];
     if (root) {
@@ -516,7 +517,7 @@
                 KSLBranch *branch = branches[0];
                 [branches removeObjectAtIndex:0];
                 @try {
-                    printf("LEVEL%2ld BRANCH:%s.%s ", level,
+                    printf("LEVEL%2ld BRANCH:%s.%s ", (long)level,
                            branch.root.description.UTF8String, branch.edge.description.UTF8String);
                     [_changedEdges removeAllObjects];
                     [_affectedCells removeAllObjects];
@@ -1440,7 +1441,7 @@
     NSInteger i = 0;
     for (NSArray *step in _steps) {
         if (i >= index) {
-            printf("STEP%02ld:", i);
+            printf("STEP%02ld:", (long)i);
             NSInteger m = 0;
             for (KSLAction *action in step) {
                 if (action.type == KSLActionTypeEdgeStatus) {
@@ -1450,7 +1451,7 @@
                         m = 0;
                     }
                     printf("%s-%ld,", ((KSLEdge *)(action.target)).description.UTF8String,
-                           action.newValue);
+                           (long)action.newValue);
                 }
             }
             printf("\n");

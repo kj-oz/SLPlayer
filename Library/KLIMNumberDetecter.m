@@ -61,27 +61,39 @@
                 return 6;
             } else {
                 // ほぼ均等なら0
+                printf("0\n");
                 return 0;
             }
         case 0: {
             // 穴なし
             if ([self aspectRatio] < 0.6) {
                 // 縦横比が0.6以下なら1
+                printf("1\n");
                 return 1;
             }
+            NSInteger ans;
             CGFloat bDensity = [self bottomDensity];
+            CGFloat tDensity = [self topDensity];
+            CGFloat lDensity = [self leftDensity];
+            CGFloat rDensity = [self rightLHDensity];
             //　底辺の密度を調べて
-            if (bDensity > 0.9) {
-                // 0.9以上あれば2
-                return 2;
-            } else if ([self topDensity] > 0.9) {
-                // 上辺が0.9以上なら
+            if (bDensity > 0.95) {
+                // 0.95以上あれば2
+                ans = 2;
+            } else if ([self topDensity] > 0.95) {
+                // 上辺が0.95以上なら
                 // 底辺が0.2より大きければ5、それ以下なら7
-                return bDensity > 0.2 ? 5 : 7;
+                ans = bDensity > 0.2 ? 5 : 7;
+            } else if ([self rightLHDensity] < 0.5) {
+                // 右辺下半分が0.5以下なら2
+                // 下辺が0.95以下のケースもあるため
+                ans = 2;
             } else {
                 // 残りは3
-                return 3;
+                ans = 3;
             }
+            printf("%ld,%.2f,%.2f,%.2f,%.2f\n", (long)ans, bDensity, tDensity, lDensity, rDensity);
+            return ans;
         }
         default:
             // 認識に失敗
@@ -119,6 +131,18 @@
 }
 
 /**
+ * 中央の水平線の割合を得る.
+ * @return 中央の水平線の割合
+ */
+- (CGFloat)centerHDensity
+{
+    NSInteger center = (_block.ymax + _block.ymin) / 2;
+    NSInteger y0 = center - _borderCheckWidth / 2;
+    NSInteger y1 = y0 + _borderCheckWidth / 2 - 1;
+    return [self horizontalDensityFromY0:y0 toY1:y1];
+}
+                       
+/**
  * 与えられた上限から下限の間の水平方向の線の割合を得る.
  * @param y0 上限
  * @param y1 下限
@@ -144,7 +168,8 @@
  */
 - (CGFloat)leftDensity
 {
-    return [self verticalDensityFromX0:_block.xmin toX1:(_block.xmin + _borderCheckWidth - 1)];
+    return [self verticalDensityFromX0:_block.xmin toX1:(_block.xmin + _borderCheckWidth - 1)
+                                  atY0:_block.ymin toY1:_block.ymax];
 }
 
 /**
@@ -153,7 +178,19 @@
  */
 - (CGFloat)rightDensity
 {
-    return [self verticalDensityFromX0:(_block.xmax - _borderCheckWidth + 1) toX1:_block.xmax];
+    return [self verticalDensityFromX0:(_block.xmax - _borderCheckWidth + 1) toX1:_block.xmax
+                                  atY0:_block.ymin toY1:_block.ymax];
+}
+
+/**
+ * 右辺下半分の線の割合を得る.
+ * @return 右辺下半分の線の割合
+ */
+- (CGFloat)rightLHDensity
+{
+    NSInteger h0 = (_block.ymax + _block.ymin) / 2;
+    return [self verticalDensityFromX0:(_block.xmax - _borderCheckWidth + 1) toX1:_block.xmax
+                                  atY0:h0 toY1:_block.ymax];
 }
 
 /**
@@ -162,10 +199,10 @@
  * @param x1 右端
  * @return 鉛直方向の線の割合
  */
-- (CGFloat)verticalDensityFromX0:(NSInteger)x0 toX1:(NSInteger)x1
+- (CGFloat)verticalDensityFromX0:(NSInteger)x0 toX1:(NSInteger)x1 atY0:(NSInteger)y0 toY1:(NSInteger)y1
 {
     NSInteger count = 0;
-    for (NSInteger y = _block.ymin; y <= _block.ymax; y++) {
+    for (NSInteger y = y0; y <= y1; y++) {
         for (NSInteger x = x0; x <= x1; x++) {
             if (_bin.buffer[y * _bin.width + x]) {
                 count++;
@@ -173,7 +210,7 @@
             }
         }
     }
-    return (CGFloat)count / _block.height;
+    return (CGFloat)count / (y1 - y0 + 1);
 }
 
 @end

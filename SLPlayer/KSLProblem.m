@@ -28,7 +28,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%ld:%@:%ld:%ld", _type, _target, _oldValue, _newValue];
+    return [NSString stringWithFormat:@"%ld:%@:%ld:%ld", (long)_type, _target, (long)_oldValue, (long)_newValue];
 }
 
 @end
@@ -165,7 +165,7 @@
         for (NSInteger x = 0; x < _width; x++) {
             NSInteger val = [self valueOfX:x andY:y];
             if (val >= 0) {
-                printf("%ld", val);
+                printf("%ld", (long)val);
             } else {
                 printf("-");
             }
@@ -200,7 +200,7 @@
         NSMutableString *elapsed = [NSMutableString stringWithString:@"("];
         for (NSInteger i = 0; i < finishedCount; i++) {
             NSInteger minute = (NSInteger)(((NSNumber *)_elapsedSeconds[i]).intValue / 60.0 + 0.5);
-            [elapsed appendFormat:@"%ld分,", minute];
+            [elapsed appendFormat:@"%ld分,", (long)minute];
         }
         [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
         

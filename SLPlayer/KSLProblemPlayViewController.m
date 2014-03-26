@@ -301,7 +301,8 @@
     NSTimeInterval t = [now timeIntervalSinceDate:_start];
     
     NSInteger sec = _elapsed + (NSInteger)t;
-    NSString *time = [NSString stringWithFormat:@"%ld:%02ld:%02ld", sec / 3600, (sec % 3600) / 60, sec % 60];
+    NSString *time = [NSString stringWithFormat:@"%ld:%02ld:%02ld",
+                      (long)(sec / 3600), (long)(sec % 3600) / 60, (long)(sec % 60)];
     _elapsedLabel.text = time;
 }
 

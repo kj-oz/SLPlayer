@@ -59,7 +59,7 @@
         if ([app.lastView isEqualToString:@"Play"]) {
             [self performSegueWithIdentifier:@"PlayProblem" sender:self];
         } else if ([app.lastView isEqualToString:@"Edit"]) {
-            //TODO 将来対応予定
+            //TODO 編集ビューの状態保存は将来対応予定
             //self.editing = YES;
             //[self performSegueWithIdentifier:@"EditProblem" sender:self];
         }
@@ -102,8 +102,8 @@
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %ldX%ld %@ %@", problem.title, problem.width,
-                           problem.height, [problem difficultyString], [problem statusString]];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %ldX%ld %@ %@", problem.title, (long)problem.width,
+                           (long)problem.height, [problem difficultyString], [problem statusString]];
     
     NSInteger finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
     if (finishedCount) {

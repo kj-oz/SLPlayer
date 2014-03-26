@@ -17,7 +17,7 @@
     static char buffer[256];
     static char format[64];
     
-    sprintf(format, "%%.%ldf/%%.%ldf", precision, precision);
+    sprintf(format, "%%.%ldf/%%.%ldf", (long)precision, (long)precision);
     sprintf(buffer, format, point.x, point.y);
     return (const char*)buffer;
 }
@@ -27,7 +27,7 @@
     static char buffer[256];
     static char format[64];
     
-    sprintf(format, "%%.%ldf/%%.%ldf", precision, precision);
+    sprintf(format, "%%.%ldf/%%.%ldf", (long)precision, (long)precision);
     sprintf(buffer, format, size.width, size.height);
     return (const char*)buffer;
 }

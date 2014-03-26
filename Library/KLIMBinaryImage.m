@@ -7,6 +7,7 @@
 //
 
 #import "KLIMBinaryImage.h"
+#include <CommonCrypto/CommonDigest.h>
 
 @implementation KLIMBinaryImage
 
@@ -60,10 +61,23 @@
         UInt8* imagePtr = (UInt8 *)CFDataGetBytePtr(dataRef);
         size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
         
+//        // ハッシュ値の出力
+//        unsigned char hash[16];
+//        CC_MD5(imagePtr, CFDataGetLength(dataRef), hash);
+//        NSData *out =
+//        [NSData dataWithBytes:hash length:16];
+//        NSString *str=[out description];
+//        str = [str stringByReplacingOccurrencesOfString:@" " withString:@""];
+//        str = [str stringByReplacingOccurrencesOfString:@"<" withString:@""];
+//        str = [str stringByReplacingOccurrencesOfString:@">" withString:@""];
+//        printf("HASH:%s\n", str.UTF8String);
+        
         _buffer = malloc(_width * _height);
+        memset(_buffer, 0, _width * _height);
         UInt8 *bufferPtr = _buffer;
         
         UInt32 *accumBuffer = malloc(_width * _height * 4);
+        memset(accumBuffer, 0, _width * _height * 4);
         UInt32 *accumPtr = accumBuffer;
         
         for (NSInteger y = 0; y < _height; y++) {

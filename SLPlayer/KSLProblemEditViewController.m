@@ -302,6 +302,7 @@
     }
 
     // 問題チェック
+    [problem dump];
     KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
     if (![solver solveWithError:&error]) {
@@ -323,8 +324,8 @@
 - (void)updateProblemInfo
 {
     _titleText.text = _problem.title;
-    _sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld", _problem.width, _problem.height];
-    _difficultyText.text = [NSString stringWithFormat:@"%ld", _problem.difficulty];
+    _sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld", (long)_problem.width, (long)_problem.height];
+    _difficultyText.text = [NSString stringWithFormat:@"%ld", (long)_problem.difficulty];
     _statusLabel.text = _problem.statusString;
     _evaluationSegmentedCtrl.selectedSegmentIndex = _problem.evaluation - 1;
     _elapsedLabel.text = _problem.elapsedTimeString;

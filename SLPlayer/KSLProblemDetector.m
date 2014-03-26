@@ -72,6 +72,7 @@
                 NSInteger c = block.xmin / pitch;
                 NSInteger r = block.ymin / pitch;
                 if (c == block.xmax / pitch && r == block.ymax / pitch) {
+                    printf("%ld,%ld,", (long)c, (long)r);
                     NSInteger n = [nd detectWithBlock:block ofImage:normalizedBin];
                     if (n > 3) {
                         n = block.numHole ? 0 : 3;

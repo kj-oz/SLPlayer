@@ -25,7 +25,7 @@
 - (NSString *)description
 {
     KSLNode *node = [_topEdge nodeOfLH:0];
-    return [NSString stringWithFormat:@"C%02ld%02ld", node.x, node.y];
+    return [NSString stringWithFormat:@"C%02ld%02ld", (long)node.x, (long)node.y];
 }
 
 - (KSLEdge *)oppsiteEdgeOfEdge:(KSLEdge *)edge
@@ -73,7 +73,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"N%02ld%02ld", _x, _y];
+    return [NSString stringWithFormat:@"N%02ld%02ld", (long)_x, (long)_y];
 }
 
 - (KSLEdge *)onEdgeConnectToEdge:(KSLEdge *)edge
@@ -142,7 +142,7 @@
     if (!_node[0] || !_node[1]) {
         return [NSString stringWithFormat:@"%cDUMM", dir];
     }
-    return [NSString stringWithFormat:@"%c%02ld%02ld", dir, _node[0].x, _node[0].y];
+    return [NSString stringWithFormat:@"%c%02ld%02ld", dir, (long)_node[0].x, (long)_node[0].y];
 }
 
 - (void)setStatus:(KSLEdgeStatus)aStatus
@@ -477,7 +477,7 @@
             printf("%c ", [self edgeStatusCharV:edge]);
             KSLCell *cell = [self cellAtX:x andY:y];
             if (cell.number >= 0) {
-                printf("%ld ", cell.number);
+                printf("%ld ", (long)cell.number);
             } else {
                 printf("  ");
             }
