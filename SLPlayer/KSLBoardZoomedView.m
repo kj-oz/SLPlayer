@@ -297,8 +297,8 @@
     CGFloat yp = (point.y - _y0) / _pitch;
     NSInteger xi = (NSInteger)(xp + 0.5);
     NSInteger yi = (NSInteger)(yp + 0.5);
-    xi = KLCGClumpInt(xi, 0, board.width - 1);
-    yi = KLCGClumpInt(yi, 0, board.height - 1);
+    xi = KLCGClumpInt(xi, 0, board.width);
+    yi = KLCGClumpInt(yi, 0, board.height);
     
     CGFloat dx = (xp - xi) * _pitch;
     CGFloat dy = (yp - yi) * _pitch;
