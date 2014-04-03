@@ -96,6 +96,13 @@
     [_board fixStatus];
 }
 
+- (void)changeAction:(NSInteger)newValue
+{
+    NSArray *step = [_steps objectAtIndex:_currentIndex];
+    KSLAction *action = [step lastObject];
+    [action changeNewValueTo:newValue];
+}
+
 - (void)undo
 {
     if (_currentIndex > _fixedIndex) {

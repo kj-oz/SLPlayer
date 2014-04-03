@@ -56,6 +56,9 @@
     // 1ステップ分の複数のアクションを保持する配列、同じ配列を使い回す.
     NSMutableArray *_step;
     
+    // ステップ実行中か
+    BOOL _stepping;
+    
     // プレイ開始時刻
     NSDate *_start;
     
@@ -219,17 +222,35 @@
 - (void)stepBegan
 {
     [_step removeAllObjects];
+    _stepping = YES;
+}
+
+- (void)actionChanged:(NSInteger)newValue
+{
+    [_player changeAction:newValue];
+    [self refreshBoard];
 }
 
 - (void)actionPerformed:(KSLAction *)action
 {
-    [_step addObject:action];
+    if (_stepping) {
+        [_step addObject:action];
+    } else {
+        [_player addStep:[NSArray arrayWithObject:action]];
+    }
     [self refreshBoard];
 }
 
 - (void)stepEnded
 {
     [_player addStep:_step];
+    _stepping = NO;
+}
+
+- (void)undo
+{
+    [_player undo];
+    [self refreshBoard];
 }
 
 #pragma mark - 各種アクション

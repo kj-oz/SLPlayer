@@ -54,6 +54,8 @@
 
 - (void)fix;
 
+- (void)changeAction:(NSInteger)newValue;
+
 - (void)undo;
 
 @end

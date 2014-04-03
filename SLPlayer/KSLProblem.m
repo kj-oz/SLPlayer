@@ -31,6 +31,11 @@
     return [NSString stringWithFormat:@"%ld:%@:%ld:%ld", (long)_type, _target, (long)_oldValue, (long)_newValue];
 }
 
+- (void)changeNewValueTo:(NSInteger)aNewValue
+{
+    _newValue = aNewValue;
+}
+
 @end
 
 

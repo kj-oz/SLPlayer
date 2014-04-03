@@ -133,16 +133,15 @@
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="Mev-oH-5Fd"/>
                                             <barButtonItem style="plain" id="m7Y-1j-fdC">
                                                 <view key="customView" opaque="NO" contentMode="scaleToFill" id="Wh3-Rw-6jv">
-                                                    <rect key="frame" x="253" y="6" width="132" height="33"/>
+                                                    <rect key="frame" x="275" y="6" width="88" height="33"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="OKg-2s-G0M">
-                                                            <rect key="frame" x="0.0" y="2" width="132" height="29"/>
+                                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="OKg-2s-G0M">
+                                                            <rect key="frame" x="0.0" y="2" width="88" height="29"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <segments>
-                                                                <segment title="範囲"/>
-                                                                <segment title="描"/>
-                                                                <segment title="消"/>
+                                                                <segment title="ー"/>
+                                                                <segment title="×"/>
                                                             </segments>
                                                             <connections>
                                                                 <action selector="modeChanged:" destination="Vkt-xv-pXA" eventType="valueChanged" id="ybP-gV-h91"/>

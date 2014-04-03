@@ -19,6 +19,7 @@
     UIPanGestureRecognizer *_panGr;
     UIPinchGestureRecognizer *_pinchGr;
     UITapGestureRecognizer *_tapGr;
+    UILongPressGestureRecognizer *_lpGr;
 //    KSLBoard *_board;
     CGFloat _x0;
     CGFloat _y0;
@@ -26,6 +27,11 @@
     NSMutableArray *_tracks;
     CGFloat _r;
     KSLNode *_prevNode;
+    KSLEdgeStatus _firstStatus;
+    KSLEdge *_prevEdge;
+    KSLEdgeStatus _prevStatus;
+    NSInteger _tapCount;
+    KSLAction *_prevAction;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -47,12 +53,16 @@
     _panGr = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     _pinchGr = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinched:)];
     _tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
+    _lpGr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressed:)];
     
     [self addGestureRecognizer:_panGr];
     [self addGestureRecognizer:_pinchGr];
     [self addGestureRecognizer:_tapGr];
+    [self addGestureRecognizer:_lpGr];
     _tracks = [NSMutableArray array];
-    _r = 16;
+    _r = 20;
+    _firstStatus = KSLEdgeStatusOn;
+    _prevEdge = nil;
     KLDBGPrintMethodName("> ");
 }
 
@@ -93,24 +103,37 @@
  */
 - (IBAction)panned:(id)sender
 {
-    switch (_mode) {
-        case KSLProblemViewModeScroll:{
-            CGPoint translation = [_panGr translationInView:self];
-            [_panGr setTranslation:CGPointZero inView:self];
-            [self panZoomedArea:translation];
-            break;
-        }
-        case KSLProblemViewModeInputLine:
-        case KSLProblemViewModeErase:{
+//    CGPoint translation = [_panGr translationInView:self];
+//    [_panGr setTranslation:CGPointZero inView:self];
+//    [self panZoomedArea:translation];
+    
+//    switch (_mode) {
+//        case KSLProblemViewModeScroll:{
+//            CGPoint translation = [_panGr translationInView:self];
+//            [_panGr setTranslation:CGPointZero inView:self];
+//            [self panZoomedArea:translation];
+//            break;
+//        }
+//        case KSLProblemViewModeInputLine:
+//        case KSLProblemViewModeErase:{
             UIGestureRecognizerState state = _panGr.state;
             if (state == UIGestureRecognizerStateBegan) {
                 [_tracks removeAllObjects];
                 _prevNode = nil;
                 [_delegate stepBegan];
+                
+                CGPoint translation = [_panGr translationInView:self];
+                CGPoint track = [_panGr locationInView:self];
+                track = KLCGPointSubtract(track, translation);
+                [_tracks addObject:[NSValue valueWithCGPoint:track]];
+                KSLNode *node = [self findNode:track];
+                if (node) {
+                    _prevNode = node;
+                }
             }
             CGPoint track = [_panGr locationInView:self];
             [_tracks addObject:[NSValue valueWithCGPoint:track]];
-            if (_mode == KSLProblemViewModeInputLine) {
+//            if (_mode == KSLProblemViewModeInputLine) {
                 KSLNode *node = [self findNode:track];
                 if (node && node != _prevNode) {
                     if (_prevNode) {
@@ -127,15 +150,15 @@
                     }
                     _prevNode = node;
                 }
-            } else {
-                KSLEdge *edge = [self findEdge:track];
-                if (edge && edge.status != KSLEdgeStatusUnset && !edge.fixed) {
-                    KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
-                                        target:edge fromValue:edge.status toValue:KSLEdgeStatusUnset];
-                    edge.status = KSLEdgeStatusUnset;
-                    [_delegate actionPerformed:action];
-                }
-            }
+//            } else {
+//                KSLEdge *edge = [self findEdge:track];
+//                if (edge && edge.status != KSLEdgeStatusUnset && !edge.fixed) {
+//                    KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+//                                        target:edge fromValue:edge.status toValue:KSLEdgeStatusUnset];
+//                    edge.status = KSLEdgeStatusUnset;
+//                    [_delegate actionPerformed:action];
+//                }
+//            }
             
             [self setNeedsDisplay];
             
@@ -143,11 +166,11 @@
                 [_delegate stepEnded];
                 [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
             }
-            break;
-        }
-        default:
-            break;
-    }
+//            break;
+//        }
+//        default:
+//            break;
+//    }
 
 }
 
@@ -165,7 +188,7 @@
  */
 - (IBAction)tapped:(id)sender
 {
-    CGPoint track = [_panGr locationInView:self];
+    CGPoint track = [_tapGr locationInView:self];
     [_tracks addObject:[NSValue valueWithCGPoint:track]];
     switch (_mode) {
         case KSLProblemViewModeInputNumber:{
@@ -182,12 +205,48 @@
         }
         case KSLProblemViewModeInputLine:{
             KSLEdge *edge = [self findEdge:track];
-            if (edge && edge.status == KSLEdgeStatusUnset) {
-                KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
-                                        target:edge fromValue:edge.status toValue:KSLEdgeStatusOff];
-                edge.status = KSLEdgeStatusOff;
-                [_delegate actionPerformed:action];
+            if (!edge || edge.fixed) {
+                break;
             }
+//            if (edge != _prevEdge) {
+//                _prevEdge = edge;
+//                _tapCount = 1;
+                _prevStatus = edge.status;
+                KSLEdgeStatus nextStatus = _prevStatus == KSLEdgeStatusUnset ?
+                                                        KSLEdgeStatusOff : KSLEdgeStatusUnset;
+                _prevAction = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+                                        target:edge fromValue:edge.status toValue:nextStatus];
+                edge.status = nextStatus;
+                [_delegate actionPerformed:_prevAction];
+//            } else {
+//                if (_tapCount == 1) {
+//                    KSLEdgeStatus secondStatus;
+//                    _tapCount = 2;
+//                    if (_prevStatus == KSLEdgeStatusUnset) {
+//                        secondStatus = _firstStatus == KSLEdgeStatusOn ?
+//                                                    KSLEdgeStatusOff : KSLEdgeStatusOn;
+//                    } else {
+//                        secondStatus = _prevStatus == KSLEdgeStatusOn ?
+//                                                    KSLEdgeStatusOff : KSLEdgeStatusOn;
+//                    }
+//                    edge.status = secondStatus;
+//                    [_delegate actionChanged:secondStatus];
+//                    //_firstStatus = secondStatus;
+//                } else if (_tapCount == 2) {
+//                    _tapCount = 0;
+//                    _prevEdge = nil;
+//                    edge.status = _prevStatus;
+//                    [_delegate undo];
+//                }
+//            }
+            KLDBGPrint("taped (%d)\n", _tapCount);
+            
+//            if (edge && edge.status == KSLEdgeStatusUnset) {
+//                KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+//                                        target:edge fromValue:edge.status toValue:KSLEdgeStatusOff];
+//                edge.status = KSLEdgeStatusOff;
+//                [_delegate actionPerformed:action];
+//            }
             break;
         }
         case KSLProblemViewModeErase:{
@@ -205,6 +264,38 @@
     }
     [self setNeedsDisplay];
     [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
+}
+
+/**
+ * タップされた際のアクション
+ */
+- (IBAction)longPressed:(id)sender
+{
+    if (_lpGr.state == UIGestureRecognizerStateEnded) {
+        CGPoint track = [_lpGr locationInView:self];
+        [_tracks addObject:[NSValue valueWithCGPoint:track]];
+        
+//        KSLEdge *edge = [self findEdge:track];
+//        if (!edge || edge.fixed) {
+//            return;
+//        }
+//        KSLEdgeStatus secondStatus;
+//        if (edge.status == KSLEdgeStatusUnset) {
+//            secondStatus = _firstStatus == KSLEdgeStatusOn ?
+//                KSLEdgeStatusOff : KSLEdgeStatusOn;
+//        } else {
+//            secondStatus = edge.status == KSLEdgeStatusOn ?
+//                KSLEdgeStatusOff : KSLEdgeStatusOn;
+//        }
+//        KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+//                                               target:edge fromValue:edge.status toValue:secondStatus];
+//        edge.status = secondStatus;
+//        [_delegate actionPerformed:action];
+//        _firstStatus = secondStatus;
+//        
+//        [self setNeedsDisplay];
+//        [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
+    }
 }
 
 - (void)panZoomedArea:(CGPoint)translation
@@ -261,8 +352,8 @@
     CGFloat yp = (point.y - _y0) / _pitch;
     NSInteger xi = (NSInteger)(xp + 0.5);
     NSInteger yi = (NSInteger)(yp + 0.5);
-    xi = KLCGClumpInt(xi, 0, board.width - 1);
-    yi = KLCGClumpInt(yi, 0, board.height - 1);
+    xi = KLCGClumpInt(xi, 0, board.width);
+    yi = KLCGClumpInt(yi, 0, board.height);
     
     CGFloat dx = (xp - xi) * _pitch;
     CGFloat dy = (yp - yi) * _pitch;
@@ -305,14 +396,18 @@
     
     if (abs(dx) < abs(dy)) {
         yi = (NSInteger)yp;
+        if (yi == board.height) yi--;
         dy = (yp - (yi + 0.5)) * _pitch;
         if (dx * dx + dy * dy < _r * _r) {
+            KLDBGPrint("VE:%ld/%ld (%.1f/%.1f)\n", (long)xi, (long)yi, xp, yp);
             return [board vEdgeAtX:xi andY:yi];
         }
     } else {
         xi = (NSInteger)xp;
+        if (xi == board.width) xi--;
         dx = (xp - (xi + 0.5)) * _pitch;
         if (dx * dx + dy * dy < _r * _r) {
+            KLDBGPrint("HE:%ld/%ld (%.1f/%.1f)\n", (long)xi, (long)yi, xp, yp);
             return [board hEdgeAtX:xi andY:yi];
         }
     }

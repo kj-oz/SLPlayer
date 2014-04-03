@@ -566,6 +566,7 @@
             CGFloat x = x0 + u * pitch;
             KSLEdge *edge = [self hEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
+            CGContextSetStrokeColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             KSLEdgeStatus status = edge.status;
             if (status == KSLEdgeStatusOn) {
                 CGRect rect = CGRectMake(x+pointR, y-lineW*0.5, pitch-2*pointR, lineW);

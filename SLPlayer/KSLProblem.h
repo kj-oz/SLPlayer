@@ -62,6 +62,8 @@ typedef enum : NSInteger {
 - (id)initWithType:(KSLActionType)aType target:(id)aTarget
          fromValue:(NSInteger)aOldValue toValue:(NSInteger)aNewValue;
 
+- (void)changeNewValueTo:(NSInteger)aNewValue;
+
 @end
 
 

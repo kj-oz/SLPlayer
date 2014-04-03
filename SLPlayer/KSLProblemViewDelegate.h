@@ -42,7 +42,13 @@
 // 何らかの操作が行われた
 - (void)actionPerformed:(KSLAction *)action;
 
+// 直前の操作と同じ対象に対して異なる操作が続けて行われた
+- (void)actionChanged:(NSInteger)newValue;
+
 // 線の入力／消去時のステップの終了
 - (void)stepEnded;
+
+// 直前の操作が取り消された
+- (void)undo;
 
 @end
