@@ -18,9 +18,6 @@
 // 拡大表示時の最小ピッチ（ピクセル単位）
 #define KSLPROBLEM_MINIMUM_PITCH    44
 
-// 拡大表示時の最大ピッチ（ピクセル単位）
-#define KSLPROBLEM_MAXIMUM_PITCH    88
-
 @class KSLAction;
 @class KSLBoard;
 

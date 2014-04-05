@@ -11,37 +11,37 @@
 #import "KSLWorkbook.h"
 #import "KSLProblem.h"
 
-@implementation UIViewController (OrientationFix)
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
-}
-
-- (BOOL)shouldAutorotate {
-    return YES;
-}
-
-- (NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
-}
-
-@end
-
-@implementation UIImagePickerController (OrientationFix)
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
-}
-
-- (BOOL)shouldAutorotate {
-    return YES;
-}
-
-- (NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
-}
-
-@end
+//@implementation UIViewController (OrientationFix)
+//
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+//    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
+//}
+//
+//- (BOOL)shouldAutorotate {
+//    return YES;
+//}
+//
+//- (NSUInteger)supportedInterfaceOrientations {
+//    return UIInterfaceOrientationMaskLandscape;
+//}
+//
+//@end
+//
+//@implementation UIImagePickerController (OrientationFix)
+//
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+//    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
+//}
+//
+//- (BOOL)shouldAutorotate {
+//    return YES;
+//}
+//
+//- (NSUInteger)supportedInterfaceOrientations {
+//    return UIInterfaceOrientationMaskLandscape;
+//}
+//
+//@end
 
 @implementation KSLAppDelegate
 

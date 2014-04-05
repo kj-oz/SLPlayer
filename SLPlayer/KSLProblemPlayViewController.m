@@ -8,7 +8,7 @@
 
 #import "KSLProblemPlayViewController.h"
 #import "KSLBoardOverallView.h"
-#import "KSLBoardZoomedView.h"
+#import "KSLProblemView.h"
 #import "KSLBoard.h"
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
@@ -23,13 +23,13 @@
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 
 // 拡大ビュー
-@property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
+@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
 
 // クリアボタン
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *clearButton;
+@property (weak, nonatomic) IBOutlet UIButton *clearButton;
 
 // 固定ボタン
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *fixButton;
+@property (weak, nonatomic) IBOutlet UIButton *fixButton;
 
 // モード選択セグメント
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
@@ -204,13 +204,7 @@
 
 - (void)setBoard:(KSLBoard *)board
 {
-    _board = board;
-    _problemArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN,
-                              board.width + 2 * KSLPROBLEM_MARGIN, board.height + 2 * KSLPROBLEM_MARGIN);
-    CGFloat zoomedW = _zoomedView.frame.size.width / KSLPROBLEM_MINIMUM_PITCH;
-    CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_MINIMUM_PITCH;
-    CGRect zoomArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN, zoomedW, zoomedH);
-    [self setZoomedArea:zoomArea];
+    _zoomedView.board = board;
 }
 
 - (void)setZoomedArea:(CGRect)zoomedArea

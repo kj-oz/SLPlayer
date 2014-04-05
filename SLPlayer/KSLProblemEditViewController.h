@@ -10,7 +10,7 @@
 #import "KSLProblemViewDelegate.h"
 
 @class KSLBoardOverallView;
-@class KSLBoardZoomedView;
+@class KSLProblemView;
 @class KSLProblem;
 
 @interface KSLProblemEditViewController : UIViewController

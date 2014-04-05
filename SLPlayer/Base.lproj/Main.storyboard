@@ -90,91 +90,21 @@
                         <viewControllerLayoutGuide type="bottom" id="z8e-nS-dSD"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="E2H-qa-Ty9">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9jy-Rf-hPq">
-                                <rect key="frame" x="0.0" y="64" width="384" height="704"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gA6-TY-Q09">
-                                        <rect key="frame" x="0.0" y="0.0" width="384" height="44"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <items>
-                                            <barButtonItem title="クリア" id="M2x-sp-VGu">
-                                                <connections>
-                                                    <action selector="clearClicked:" destination="Vkt-xv-pXA" id="K5F-mn-MVD"/>
-                                                </connections>
-                                            </barButtonItem>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="cGJ-sI-dbT"/>
-                                            <barButtonItem title="固定" id="0PC-bi-7Ey">
-                                                <connections>
-                                                    <action selector="fixClicked:" destination="Vkt-xv-pXA" id="byR-6W-8k0"/>
-                                                </connections>
-                                            </barButtonItem>
-                                        </items>
-                                    </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kEy-9o-GNE" customClass="KSLBoardOverallView">
-                                        <rect key="frame" x="0.0" y="44" width="384" height="660"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Awj-nv-COJ">
-                                <rect key="frame" x="385" y="64" width="639" height="704"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
+                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6zq-W5-IQa">
-                                        <rect key="frame" x="0.0" y="0.0" width="639" height="44"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <items>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="Mev-oH-5Fd"/>
-                                            <barButtonItem style="plain" id="m7Y-1j-fdC">
-                                                <view key="customView" opaque="NO" contentMode="scaleToFill" id="Wh3-Rw-6jv">
-                                                    <rect key="frame" x="275" y="6" width="88" height="33"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <subviews>
-                                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="OKg-2s-G0M">
-                                                            <rect key="frame" x="0.0" y="2" width="88" height="29"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <segments>
-                                                                <segment title="ー"/>
-                                                                <segment title="×"/>
-                                                            </segments>
-                                                            <connections>
-                                                                <action selector="modeChanged:" destination="Vkt-xv-pXA" eventType="valueChanged" id="ybP-gV-h91"/>
-                                                            </connections>
-                                                        </segmentedControl>
-                                                    </subviews>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                </view>
-                                            </barButtonItem>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="bDB-hg-AHB"/>
-                                            <barButtonItem systemItem="undo" id="5a4-jz-DkL">
-                                                <connections>
-                                                    <action selector="undoClicked:" destination="Vkt-xv-pXA" id="5TS-la-fj5"/>
-                                                </connections>
-                                            </barButtonItem>
-                                        </items>
-                                    </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLBoardZoomedView">
-                                        <rect key="frame" x="0.0" y="44" width="640" height="660"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    </view>
-                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" id="fZq-5n-rSl">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="bO4-cu-mbV">
                             <view key="customView" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="GjQ-Y1-6qQ">
-                                <rect key="frame" x="781" y="5" width="227" height="33"/>
+                                <rect key="frame" x="425" y="5" width="327" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="★★★★★★★★★★★★★" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIO-3j-OaD">
@@ -189,6 +119,26 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QXw-mH-bfN">
+                                        <rect key="frame" x="281" y="3" width="46" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Fix">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="fixClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="Bxz-EU-cKz"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cz5-Os-dWl">
+                                        <rect key="frame" x="235" y="3" width="46" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Clr">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="clearClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="dFH-Gb-9Av"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <accessibility key="accessibilityConfiguration">
@@ -198,15 +148,12 @@
                         </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
-                        <outlet property="clearButton" destination="M2x-sp-VGu" id="jrX-7F-98e"/>
+                        <outlet property="clearButton" destination="bO4-cu-mbV" id="8uG-PQ-mMN"/>
                         <outlet property="difficultyLabel" destination="rIO-3j-OaD" id="5oZ-14-ZsI"/>
                         <outlet property="elapsedLabel" destination="0gJ-gH-pCs" id="77Y-em-5JV"/>
-                        <outlet property="fixButton" destination="0PC-bi-7Ey" id="9i4-VP-LuH"/>
-                        <outlet property="modeSegmentedCtrl" destination="OKg-2s-G0M" id="TIV-Tr-53n"/>
-                        <outlet property="overallView" destination="kEy-9o-GNE" id="STu-pc-kyS"/>
-                        <outlet property="undoButton" destination="0PC-bi-7Ey" id="mlF-hZ-Ahb"/>
+                        <outlet property="fixButton" destination="bO4-cu-mbV" id="c3v-D6-DCO"/>
                         <outlet property="zoomedView" destination="Rdf-db-Ys1" id="zd5-oW-10X"/>
                     </connections>
                 </viewController>
@@ -374,7 +321,7 @@
                                                     </barButtonItem>
                                                 </items>
                                             </toolbar>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLBoardZoomedView">
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLProblemView">
                                                 <rect key="frame" x="0.0" y="44" width="639" height="616"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

@@ -13,7 +13,7 @@
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
 #import "KSLBoardOverallView.h"
-#import "KSLBoardZoomedView.h"
+#import "KSLProblemView.h"
 #import "UIAlertView+Blocks.h"
 
 #pragma mark - エクステンション
@@ -24,7 +24,7 @@
 @property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 
 // 拡大ビュー
-@property (weak, nonatomic) IBOutlet KSLBoardZoomedView *zoomedView;
+@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
 
 // 問題名称入力欄
 @property (weak, nonatomic) IBOutlet UITextField *titleText;
