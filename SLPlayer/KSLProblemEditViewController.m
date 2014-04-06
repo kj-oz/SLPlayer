@@ -19,9 +19,6 @@
 
 @interface KSLProblemEditViewController ()
 
-// 全体ビュー
-@property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
-
 // 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
 
@@ -31,17 +28,8 @@
 // 難易度入力欄
 @property (weak, nonatomic) IBOutlet UITextField *difficultyText;
 
-// 評価選択セグメント
-@property (weak, nonatomic) IBOutlet UISegmentedControl *evaluationSegmentedCtrl;
-
-// 盤面サイズ表示ラベル
-@property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
-
 // 状態表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
-
-// 経過時間表示ラベル
-@property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
 
 // 撮影ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *cameraButton;
@@ -55,12 +43,6 @@
 // 問題が正しいかどうかのチェックのボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *checkButton;
 
-// モード選択セグメント
-@property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
-
-// アンドゥボタン
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
-
 @end
 
 
@@ -72,22 +54,8 @@
     KSLPlayer *_player;
     
     // 直前のアクション
-    KSLAction *_lastAction;
-    
-    // 以下KSLProblemViewDelegateのプロパティ用変数
-    // 盤面オブジェクト
-    KSLBoard *_board;
-    
-    // 問題座標系での拡大領域
-    CGRect _zoomedArea;
-    
-    // 問題座標系での問題の全領域
-    CGRect _problemArea;
+    KSLAction *_lastAction;    
 }
-
-// プロトコルのプロパティの内部変数は自動設定してくれない
-@synthesize board = _board;
-
 
 #pragma mark - ビューのライフサイクル
 
@@ -103,42 +71,28 @@
     _zoomedView.mode = KSLProblemViewModeInputNumber;
     
     self.title = _addNew ? @"新規追加" : _problem.title;
-    [self setBoard:[[KSLBoard alloc] initWithProblem:_problem]];
+    _player = [[KSLPlayer alloc] initWithProblem:_problem];
+    [self setBoard:_player.board];
     [self updateProblemInfo];
 }
 
-#pragma mark - ビューの回転
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return UIInterfaceOrientationLandscapeRight;
-}
+//#pragma mark - ビューの回転
+//
+//- (NSUInteger)supportedInterfaceOrientations
+//{
+//    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
+//}
+//
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+//{
+//    return UIInterfaceOrientationLandscapeRight;
+//}
 
 #pragma mark - KSLProblemViewDelegateの実装
 
 - (void)setBoard:(KSLBoard *)board
 {
-    _board = board;
     _zoomedView.board = board;
-    _problemArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN,
-                              board.width + 2 * KSLPROBLEM_MARGIN, board.height + 2 * KSLPROBLEM_MARGIN);
-    CGFloat zoomedW = _zoomedView.frame.size.width / KSLPROBLEM_TOUCHABLE_PITCH;
-    CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_TOUCHABLE_PITCH;
-    CGRect zoomArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN, zoomedW, zoomedH);
-    [self setZoomedArea:zoomArea];
-    
-    _lastAction = nil;
-}
-
-- (void)setZoomedArea:(CGRect)zoomedArea
-{
-    _zoomedArea = zoomedArea;
-    [_zoomedView setNeedsDisplay];
 }
 
 - (void)actionPerformed:(KSLAction *)action
@@ -279,7 +233,8 @@
         problem.status = KSLProblemStatusEditing;
     }
     self.problem = problem;
-    [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
+    _player = [[KSLPlayer alloc] initWithProblem:_problem];
+    [self setBoard:_player.board];
     [self updateProblemInfo];
     
     [self dismissViewControllerAnimated:YES completion:NULL];
@@ -293,21 +248,18 @@
 - (void)updateProblemInfo
 {
     _titleText.text = _problem.title;
-    _sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld", (long)_problem.width, (long)_problem.height];
     _difficultyText.text = [NSString stringWithFormat:@"%ld", (long)_problem.difficulty];
     _statusLabel.text = _problem.statusString;
-    _evaluationSegmentedCtrl.selectedSegmentIndex = _problem.evaluation - 1;
-    _elapsedLabel.text = _problem.elapsedTimeString;
     
     if (!_addNew) {
         self.cameraButton.enabled = NO;
         self.pictureButton.enabled = NO;
         self.createButton.enabled = NO;
-        self.modeSegmentedCtrl.enabled = NO;
     }
     if (_problem.status != KSLProblemStatusEditing) {
         self.checkButton.enabled = NO;
     }
+    [self refreshBoard];
 }
 
 /**

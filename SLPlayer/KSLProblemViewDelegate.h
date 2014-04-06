@@ -23,8 +23,8 @@
 
 @protocol KSLProblemViewDelegate <NSObject>
 
-// 描画対象の盤面データ
-@property (nonatomic, readonly) KSLBoard *board;
+//// 描画対象の盤面データ
+//@property (nonatomic, readonly) KSLBoard *board;
 
 
 @optional

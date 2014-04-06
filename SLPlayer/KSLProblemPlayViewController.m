@@ -63,22 +63,7 @@
     
     // 経過時間の更新処理用のタイマー
     NSTimer *_timer;
-
-    // 以下、KSLProblemViewDelegateのプロパティ用変数
-    // 盤面オブジェクト
-    KSLBoard *_board;
-    
-    // 問題座標系での拡大領域
-    CGRect _zoomedArea;
-    
-    // 問題座標系での問題の全領域
-    CGRect _problemArea;
-    
 }
-
-// プロトコルのプロパティの内部変数は自動設定してくれない
-@synthesize board = _board;
-
 
 #pragma mark - ビューのライフサイクル
 
@@ -118,6 +103,11 @@
     [super viewWillDisappear:animated];
     
     [self stopPlay];
+}
+
+- (void)setBoard:(KSLBoard *)board
+{
+    _zoomedView.board = board;
 }
 
 /**
@@ -181,30 +171,19 @@
     [self startPlay];
 }
 
-#pragma mark - ビューの回転
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return UIInterfaceOrientationLandscapeRight;
-}
+//#pragma mark - ビューの回転
+//
+//- (NSUInteger)supportedInterfaceOrientations
+//{
+//    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
+//}
+//
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+//{
+//    return UIInterfaceOrientationLandscapeRight;
+//}
 
 #pragma mark - KSLProblemViewDelegateの実装
-
-- (void)setBoard:(KSLBoard *)board
-{
-    _zoomedView.board = board;
-}
-
-- (void)setZoomedArea:(CGRect)zoomedArea
-{
-    _zoomedArea = zoomedArea;
-    [self refreshBoard];
-}
 
 - (void)stepBegan
 {

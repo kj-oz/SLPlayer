@@ -54,6 +54,11 @@
     
     // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
+    
+    //
+    CGFloat _dx;
+    CGFloat _dy;
+    NSTimer *_timer;
 }
 
 #pragma mark - 初期化
@@ -80,6 +85,10 @@
 
 - (void)setBoard:(KSLBoard *)board
 {
+    NSLog(@"%@", board);
+    if (!board) {
+        NSLog(@"BUG!");
+    }
     _board = board;
     [self calculateOverallParameter];
     [self calculateZoomedParameter];
@@ -127,7 +136,7 @@
 {
     _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
     _r = _zpitch * 0.5;
-    _scrollStep = _zpitch * 0.5;
+    _scrollStep = _zpitch * 0.3;
 
     CGFloat w = self.frame.size.width / _zpitch;
     CGFloat h = self.frame.size.height / _zpitch;
@@ -190,20 +199,20 @@
             
             // タッチの余韻描画
             CGContextSetFillColorWithColor(context,
-                                        [UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:0.1].CGColor);
+                                        [UIColor colorWithRed:0.0 green:1.0 blue:1.0 alpha:0.05].CGColor);
             for (NSValue *val in _tracks) {
                 CGPoint track = val.CGPointValue;
                 CGContextFillEllipseInRect(context, CGRectMake(track.x - _r, track.y - _r, 2 * _r, 2 * _r));
             }
             
             [_board drawImageWithContext:context origin:CGPointMake(_zx0, _zy0) pitch:_zpitch
-                          erasableColor:[UIColor blueColor].CGColor];
+                          erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
         } else {
             CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
             [_board drawImageWithContext:context origin:CGPointMake(_ax0, _ay0) pitch:_apitch
-                          erasableColor:[UIColor blueColor].CGColor];
+                          erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
             
             CGContextSetFillColorWithColor(context,
                                            [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:0.2].CGColor);
@@ -385,28 +394,39 @@
  */
 - (IBAction)longPressed:(id)sender
 {
-    UIGestureRecognizerState state = _lpGr.state;
-    KLDBGPrint("lp-state:%ld\n", (long)state);
     if (_zoomed) {
-        NSInteger dx = 0;
-        NSInteger dy = 0;
-        CGPoint point = [_lpGr locationInView:self];
-        CGFloat xp = point.x / self.bounds.size.width;
-        if (xp < 0.25) {
-            dx = 1;
-        } else if (xp > 0.75) {
-            dx = -1;
+        UIGestureRecognizerState state = _lpGr.state;
+        KLDBGPrint("lp-state:%ld\n", (long)state);
+        if (state == UIGestureRecognizerStateBegan) {
+            CGPoint point = [_lpGr locationInView:self];
+            _dx = 0;
+            _dy = 0;
+            CGFloat xp = point.x / self.bounds.size.width;
+            if (xp < 0.25) {
+                _dx = 1;
+            } else if (xp > 0.75) {
+                _dx = -1;
+            }
+            CGFloat yp = point.y / self.bounds.size.height;
+            if (yp < 0.25) {
+                _dy = 1;
+            } else if (yp > 0.75) {
+                _dy = -1;
+            }
+            if (_dx != 0 || _dy != 0) {
+                _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                        target:self selector:@selector(autoScroll) userInfo:nil repeats:YES];
+            }
+        } else if (state == UIGestureRecognizerStateEnded) {
+            [_timer invalidate];
         }
-        CGFloat yp = point.y / self.bounds.size.height;
-        if (yp < 0.25) {
-            dy = 1;
-        } else if (yp > 0.75) {
-            dy = -1;
-        }
-        
-        [self panZoomedArea:CGPointMake(dx * _scrollStep, dy * _scrollStep)];
-        [self setNeedsDisplay];
     }
+}
+
+- (void)autoScroll
+{
+    [self panZoomedArea:CGPointMake(_dx * _scrollStep, _dy * _scrollStep)];
+    [self setNeedsDisplay];
 }
 
 /**

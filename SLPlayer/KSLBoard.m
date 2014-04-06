@@ -443,7 +443,7 @@
         }
     }
     for (KSLEdge *edge in _vEdges) {
-        if (edge.status == KSLEdgeStatusOn) {
+        if (edge.status != KSLEdgeStatusUnset) {
             edge.fixed = YES;
         }
     }

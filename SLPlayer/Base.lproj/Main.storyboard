@@ -239,7 +239,11 @@
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="t2k-LI-qe4"/>
-                                            <barButtonItem systemItem="stop" id="QG3-eT-ugI"/>
+                                            <barButtonItem systemItem="stop" id="QG3-eT-ugI">
+                                                <connections>
+                                                    <action selector="checkClicked:" destination="eQF-aD-vjA" id="7oB-2J-BW7"/>
+                                                </connections>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
@@ -269,11 +273,13 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
                         <outlet property="cameraButton" destination="jph-Vg-SjD" id="eV3-fO-H7y"/>
+                        <outlet property="checkButton" destination="QG3-eT-ugI" id="Dp3-eU-idZ"/>
                         <outlet property="createButton" destination="nj7-xS-Qf9" id="MK9-KX-19f"/>
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
                         <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
                         <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
+                        <outlet property="zoomedView" destination="KHN-a3-8D6" id="sgT-qQ-Mhc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xOj-Ev-BlJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
