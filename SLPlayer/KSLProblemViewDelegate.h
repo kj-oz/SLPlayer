@@ -16,7 +16,7 @@
 #define KSLPROBLEM_BORDER_WIDTH     0.2
 
 // 拡大表示時の最小ピッチ（ピクセル単位）
-#define KSLPROBLEM_MINIMUM_PITCH    44
+#define KSLPROBLEM_TOUCHABLE_PITCH    44
 
 @class KSLAction;
 @class KSLBoard;
@@ -26,13 +26,9 @@
 // 描画対象の盤面データ
 @property (nonatomic, readonly) KSLBoard *board;
 
-// 拡大画面で表示中の領域（問題座標系）
-@property (nonatomic, assign) CGRect zoomedArea;
-
-// 問題全体を表示するのに必要な領域（問題座標系）
-@property (nonatomic, readonly) CGRect problemArea;
 
 @optional
+
 // 線の入力／消去時のステップの開始
 - (void)stepBegan;
 

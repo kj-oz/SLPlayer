@@ -7,7 +7,6 @@
 //
 
 #import "KSLProblemPlayViewController.h"
-#import "KSLBoardOverallView.h"
 #import "KSLProblemView.h"
 #import "KSLBoard.h"
 #import "KSLProblem.h"
@@ -18,9 +17,6 @@
 #pragma mark - エクステンション
 
 @interface KSLProblemPlayViewController ()
-
-// 全体ビュー
-@property (weak, nonatomic) IBOutlet KSLBoardOverallView *overallView;
 
 // 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
@@ -82,8 +78,6 @@
 
 // プロトコルのプロパティの内部変数は自動設定してくれない
 @synthesize board = _board;
-@synthesize zoomedArea = _zoomedArea;
-@synthesize problemArea = _problemArea;
 
 
 #pragma mark - ビューのライフサイクル
@@ -93,7 +87,6 @@
     [super viewDidLoad];
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
-    _overallView.delegate = self;
     _zoomedView.delegate = self;
     _zoomedView.mode = KSLProblemViewModeInputLine;
     
@@ -275,34 +268,6 @@
     [self refreshBoard];
 }
 
-/**
- * モード選択セグメント変更時
- */
-- (IBAction)modeChanged:(id)sender
-{
-    switch (self.modeSegmentedCtrl.selectedSegmentIndex) {
-        case 0:
-            _zoomedView.mode = KSLProblemViewModeScroll;
-            break;
-        case 1:
-            _zoomedView.mode = KSLProblemViewModeInputLine;
-            break;
-        case 2:
-            _zoomedView.mode = KSLProblemViewModeErase;
-            break;
-    }
-}
-
-/**
- * アンドゥボタン押下時
- */
-- (IBAction)undoClicked:(id)sender
-{
-    if (_player.currentIndex == _player.steps.count - 1) {
-        [_player undo];
-        [self refreshBoard];
-    }
-}
 
 #pragma mark - ヘルパメソッド群
 
@@ -326,7 +291,6 @@
  */
 - (void)refreshBoard
 {
-    [_overallView setNeedsDisplay];
     [_zoomedView setNeedsDisplay];
 }
 

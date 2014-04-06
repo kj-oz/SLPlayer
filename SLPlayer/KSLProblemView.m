@@ -16,58 +16,51 @@
 
 @implementation KSLProblemView
 {
+    // 各種ジェスチャーリコグナイザ
     UIPanGestureRecognizer *_panGr;
     UIPinchGestureRecognizer *_pinchGr;
     UITapGestureRecognizer *_tap1Gr;
     UITapGestureRecognizer *_tap2Gr;
     UILongPressGestureRecognizer *_lpGr;
     
-    BOOL _zoomed;
+    // ドラッグ、パンの軌跡
     NSMutableArray *_tracks;
-    CGFloat _r;
-    KSLNode *_prevNode;
-    KSLAction *_prevAction;
     
+    // タップ位置にノードが含まれているかどうかの判定の半径
+    CGFloat _r;
+    
+    // ドラッグ時の直前にたどったノード
+    KSLNode *_prevNode;
+    
+    // ロングプレス時のスクロールの速度
+    // TODO スクロールはアニメーションを使用するべき
     CGFloat _scrollStep;
     
+    // ズーム中かどうか
+    BOOL _zoomed;
+    
+    // 画面座標系でのズーム時の問題原点（左上）の座標と点の間隔
     CGFloat _zx0;
     CGFloat _zy0;
     CGFloat _zpitch;
     
-    
-    // 画面座標系での問題原点（左上）の座標と点の間隔
+    // 画面座標系での全体表示時の問題原点（左上）の座標と点の間隔
     CGFloat _ax0;
     CGFloat _ay0;
     CGFloat _apitch;
     
-    // 問題座標系での拡大領域
+    // 問題座標系でのズーム時の表示領域
     CGRect _zoomedArea;
     
-    // 問題座標系での問題の全領域（拡大領域の動ける範囲）
+    // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
-    
-//    NSInteger _tapCount;
-//    KSLBoard *_board;
-//    KSLEdgeStatus _firstStatus;
-//    KSLEdge *_prevEdge;
-//    KSLEdgeStatus _prevStatus;
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    return [super initWithCoder:aDecoder];
-}
+#pragma mark - 初期化
 
 - (void)awakeFromNib
 {
+    // NOTE この段階ではまだdelegateは設定されていない
     _panGr = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
     _pinchGr = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinched:)];
     _tap1Gr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped1:)];
@@ -81,34 +74,39 @@
     [self addGestureRecognizer:_tap2Gr];
     [self addGestureRecognizer:_lpGr];
     _tracks = [NSMutableArray array];
-    _r = 20;
-    _scrollStep = 16;
 }
+
+#pragma mark - プロパティ
 
 - (void)setBoard:(KSLBoard *)board
 {
     _board = board;
     [self calculateOverallParameter];
-    
-    // TODO ビューの初期状態の記録・復元
     [self calculateZoomedParameter];
     
+    // 拡大サイズでも画面より小さい場合は常に拡大
+    // TODO ビューの初期状態の記録・復元
     _zoomed = (_apitch == _zpitch);
     
+    // 初期拡大エリア
     CGFloat zoomedW = self.frame.size.width / _zpitch;
     CGFloat zoomedH = self.frame.size.height / _zpitch;
     [self setZoomedAreaWithRect:
                    CGRectMake(_zoomableArea.origin.x, _zoomableArea.origin.y, zoomedW, zoomedH)];
 }
 
+/**
+ * 全体表示時の位置や点の間隔を予め計算しておく
+ */
 - (void)calculateOverallParameter
 {
     CGFloat w = self.frame.size.width;
     CGFloat h = self.frame.size.height;
     CGFloat pitchH = w / (_board.width + 2 * KSLPROBLEM_MARGIN);
     CGFloat pitchV = h / (_board.height + 2 * KSLPROBLEM_MARGIN);
-    if (pitchH > KSLPROBLEM_MINIMUM_PITCH && pitchV > KSLPROBLEM_MINIMUM_PITCH) {
-        _apitch = KSLPROBLEM_MINIMUM_PITCH;
+    if (pitchH > KSLPROBLEM_TOUCHABLE_PITCH && pitchV > KSLPROBLEM_TOUCHABLE_PITCH) {
+        // 実際には常にズーム中として扱うため使用されない
+        _apitch = KSLPROBLEM_TOUCHABLE_PITCH;
         _ax0 = (w - _apitch * _board.width) / 2;
         _ay0 = (h - _apitch * _board.height) / 2;
     } else if (pitchH < pitchV) {
@@ -122,9 +120,15 @@
     }
 }
 
+/**
+ * ズーム時の位置や点の間隔を予め計算しておく
+ */
 - (void)calculateZoomedParameter
 {
-    _zpitch = KSLPROBLEM_MINIMUM_PITCH;
+    _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
+    _r = _zpitch * 0.5;
+    _scrollStep = _zpitch * 0.5;
+
     CGFloat w = self.frame.size.width / _zpitch;
     CGFloat h = self.frame.size.height / _zpitch;
     
@@ -133,14 +137,14 @@
     CGFloat zymin;
     CGFloat zymax;
     
-    if (_zpitch * (_board.width + 2 * KSLPROBLEM_MARGIN) < w) {
+    if (_board.width + 2 * KSLPROBLEM_MARGIN < w) {
         zxmin = zxmax = (w - _board.width) / 2;
     } else {
         zxmin = w - (_board.width + KSLPROBLEM_MARGIN);
         zxmax = KSLPROBLEM_MARGIN;
     }
     
-    if (_zpitch * (_board.height + 2 * KSLPROBLEM_MARGIN) < h) {
+    if (_board.height + 2 * KSLPROBLEM_MARGIN < h) {
         zymin = zymax = (h - _board.height) / 2;
     } else {
         zymin = h - (_board.height + KSLPROBLEM_MARGIN);
@@ -150,12 +154,17 @@
     _zoomableArea = CGRectMake(-zxmax, -zymax, zxmax + w - zxmin, zymax + h - zymin);
 }
 
+/**
+ * 拡大表示領域を設定する
+ */
 - (void)setZoomedAreaWithRect:(CGRect)rect
 {
     _zoomedArea = KLCGClumpRect(rect, _zoomableArea);
     _zx0 = -_zoomedArea.origin.x * _zpitch;
     _zy0 = -_zoomedArea.origin.y * _zpitch;
 }
+
+#pragma mark - 描画
 
 - (void)drawRect:(CGRect)rect
 {
@@ -207,6 +216,10 @@
     }
 }
 
+/**
+ * 拡大領域の表示座標系上での位置を得る
+ * @return 拡大領域の表示座標系上での位置
+ */
 - (CGRect)zoomedAreaInView
 {
     CGFloat x = _ax0 + _zoomedArea.origin.x * _apitch;
@@ -217,9 +230,10 @@
     return CGRectMake(x, y, w, h);
 }
 
+#pragma mark - ジェスチャー
 
 /**
- * パンされた際のアクション
+ * パン：拡大時-線、全体表示時-ズーム位置移動
  */
 - (IBAction)panned:(id)sender
 {
@@ -280,7 +294,7 @@
 }
 
 /**
- * ズームされた際のアクション
+ * ピンチ：ズームの切替
  */
 - (IBAction)pinched:(id)sender
 {
@@ -301,7 +315,7 @@
 }
 
 /**
- * タップされた際のアクション
+ * タップ：×またはクリア
  */
 - (IBAction)tapped1:(id)sender
 {
@@ -349,7 +363,7 @@
 }
 
 /**
- * タップされた際のアクション
+ * 2本指タップ：ズームの切替
  */
 - (IBAction)tapped2:(id)sender
 {
@@ -367,12 +381,12 @@
 }
 
 /**
- * ロングプレスされた際のアクション
+ * ロングプレス：スクロール
  */
 - (IBAction)longPressed:(id)sender
 {
     UIGestureRecognizerState state = _lpGr.state;
-    KLDBGPrint("lp-state:%d\n", state);
+    KLDBGPrint("lp-state:%ld\n", (long)state);
     if (_zoomed) {
         NSInteger dx = 0;
         NSInteger dy = 0;
@@ -395,36 +409,27 @@
     }
 }
 
+/**
+ * 拡大領域を移動する
+ * @param translation 拡大領域を移動する量（表示座標系）
+ */
 - (void)panZoomedArea:(CGPoint)translation
 {
     [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
                                              -translation.x / _zpitch, -translation.y / _zpitch)];
 }
 
-//- (void)zoomZoomedArea:(CGFloat)scale
-//{
-//    [self calculateBoardParameter];
-//
-//    CGFloat p = KLCGClumpValue(_pitch * scale, KSLPROBLEM_MINIMUM_PITCH, KSLPROBLEM_MAXIMUM_PITCH);
-//    CGFloat w = self.frame.size.width / p;
-//    CGFloat h = self.frame.size.height / p;
-//
-//    CGFloat cx = CGRectGetMidX(_delegate.zoomedArea);
-//    CGFloat cy = CGRectGetMidY(_delegate.zoomedArea);
-//    
-//    CGFloat x = cx - w / 2;
-//    CGFloat y = cy - h / 2;
-//    
-//    [self setZoomedAreaWithRect:CGRectMake(x, y, w, h)];
-//}
-//
-
+/**
+ * 画面に表示中の軌跡をクリアする
+ */
 - (void)clearTrackes
 {
     [_tracks removeAllObjects];
     _prevNode = nil;
     [self setNeedsDisplay];
 }
+
+#pragma mark - ヘルパメソッド
 
 - (KSLNode *)findNode:(CGPoint)point
 {

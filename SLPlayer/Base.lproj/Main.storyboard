@@ -10,16 +10,15 @@
             <objects>
                 <tableViewController id="J4n-uI-lDX" customClass="KSLProblemListViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mVe-vZ-2Dm">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" showsReorderControl="YES" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ProblemCell" textLabel="bG8-l7-U4t" detailTextLabel="0Ea-xS-NIk" style="IBUITableViewCellStyleValue1" id="J6h-9I-kMH">
-                                <rect key="frame" x="0.0" y="86" width="1024" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="J6h-9I-kMH" id="K9d-Bv-98Y">
-                                    <rect key="frame" x="0.0" y="0.0" width="991" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="735" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bG8-l7-U4t">
@@ -30,7 +29,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0Ea-xS-NIk">
-                                            <rect key="frame" x="945" y="11" width="44" height="21"/>
+                                            <rect key="frame" x="689" y="11" width="44" height="21"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
@@ -50,7 +49,7 @@
                         <barButtonItem key="leftBarButtonItem" title="問題集" id="o5m-0f-AM7"/>
                         <barButtonItem key="rightBarButtonItem" width="96" id="Lss-oB-NUq">
                             <view key="customView" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" id="oWd-4L-fWA">
-                                <rect key="frame" x="912" y="5" width="96" height="33"/>
+                                <rect key="frame" x="656" y="5" width="96" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8BY-O8-UiE">
@@ -159,7 +158,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fp1-xO-Pof" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1740" y="-395"/>
+            <point key="canvasLocation" x="1828" y="-635"/>
         </scene>
         <!--Problem Edit View Controller-->
         <scene sceneID="ueE-jC-Jjy">
@@ -170,43 +169,37 @@
                         <viewControllerLayoutGuide type="bottom" id="eZp-Za-8Os"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="bYZ-Bh-wwP">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sJy-t4-uBu">
-                                <rect key="frame" x="0.0" y="64" width="1024" height="704"/>
+                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYR-dQ-7YT">
-                                        <rect key="frame" x="0.0" y="0.0" width="1024" height="44"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <items>
                                             <barButtonItem style="plain" id="hBP-es-Jxt">
                                                 <view key="customView" opaque="NO" contentMode="scaleToFill" id="58s-67-0OW">
-                                                    <rect key="frame" x="16" y="6" width="992" height="33"/>
+                                                    <rect key="frame" x="16" y="6" width="540" height="33"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="10 X 20" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QMY-i4-T2h">
-                                                            <rect key="frame" x="231" y="6" width="123" height="21"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
                                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="難易度：" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uwi-gZ-zpa">
-                                                            <rect key="frame" x="381" y="6" width="71" height="21"/>
+                                                            <rect key="frame" x="288" y="7" width="71" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="状態：未了（33.3分）" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jt7-7I-AXZ">
-                                                            <rect key="frame" x="518" y="6" width="176" height="21"/>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="状態：未了" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jt7-7I-AXZ">
+                                                            <rect key="frame" x="424" y="7" width="176" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mvZ-8b-37h">
-                                                            <rect key="frame" x="450" y="2" width="36" height="30"/>
+                                                            <rect key="frame" x="357" y="3" width="36" height="30"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <textInputTraits key="textInputTraits"/>
@@ -223,110 +216,35 @@
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <textInputTraits key="textInputTraits"/>
                                                         </textField>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="（24分、36分）" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ojj-pb-Mlp">
-                                                            <rect key="frame" x="850" y="6" width="142" height="21"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="kc4-je-OcL">
-                                                            <rect key="frame" x="716" y="2" width="132" height="29"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <segments>
-                                                                <segment title="駄作"/>
-                                                                <segment title="平凡"/>
-                                                                <segment title="秀作"/>
-                                                            </segments>
-                                                        </segmentedControl>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
                                             </barButtonItem>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="2L3-QO-bqG"/>
+                                            <barButtonItem systemItem="camera" id="jph-Vg-SjD">
+                                                <connections>
+                                                    <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
+                                            <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
+                                                <connections>
+                                                    <action selector="pictureClicked:" destination="eQF-aD-vjA" id="DKC-FX-Fo7"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="RP0-8V-ziR"/>
+                                            <barButtonItem systemItem="compose" id="nj7-xS-Qf9">
+                                                <connections>
+                                                    <action selector="createClicked:" destination="eQF-aD-vjA" id="KF8-0r-VJA"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="t2k-LI-qe4"/>
+                                            <barButtonItem systemItem="stop" id="QG3-eT-ugI"/>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0k1-WH-C4G">
-                                        <rect key="frame" x="0.0" y="44" width="384" height="660"/>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
+                                        <rect key="frame" x="0.0" y="44" width="768" height="916"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qp1-mD-xEf">
-                                                <rect key="frame" x="0.0" y="0.0" width="384" height="44"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <items>
-                                                    <barButtonItem systemItem="camera" id="jph-Vg-SjD">
-                                                        <connections>
-                                                            <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                    <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
-                                                    <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
-                                                        <connections>
-                                                            <action selector="pictureClicked:" destination="eQF-aD-vjA" id="DKC-FX-Fo7"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="gwn-Pq-DKI"/>
-                                                    <barButtonItem systemItem="compose" id="nj7-xS-Qf9">
-                                                        <connections>
-                                                            <action selector="createClicked:" destination="eQF-aD-vjA" id="KF8-0r-VJA"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                </items>
-                                            </toolbar>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="era-cR-KOj" customClass="KSLBoardOverallView">
-                                                <rect key="frame" x="0.0" y="44" width="384" height="616"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                            </view>
-                                        </subviews>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7a-nL-Pb3">
-                                        <rect key="frame" x="385" y="44" width="639" height="660"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UVj-GV-BKS">
-                                                <rect key="frame" x="0.0" y="0.0" width="639" height="44"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                <items>
-                                                    <barButtonItem systemItem="stop" id="J1T-v0-GID">
-                                                        <connections>
-                                                            <action selector="checkClicked:" destination="eQF-aD-vjA" id="c80-mC-0bL"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Lay-wm-kV3"/>
-                                                    <barButtonItem style="plain" id="P10-6N-bP8">
-                                                        <view key="customView" opaque="NO" contentMode="scaleToFill" id="w5v-vF-t3g">
-                                                            <rect key="frame" x="275" y="6" width="88" height="33"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <subviews>
-                                                                <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="JBl-vD-goB">
-                                                                    <rect key="frame" x="0.0" y="2" width="88" height="29"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                    <segments>
-                                                                        <segment title="範囲"/>
-                                                                        <segment title="数"/>
-                                                                    </segments>
-                                                                    <connections>
-                                                                        <action selector="modeChanged:" destination="eQF-aD-vjA" eventType="valueChanged" id="3LB-CA-1PI"/>
-                                                                    </connections>
-                                                                </segmentedControl>
-                                                            </subviews>
-                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        </view>
-                                                    </barButtonItem>
-                                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Ij7-Y9-HYw"/>
-                                                    <barButtonItem systemItem="undo" id="4B3-Pj-Ccc">
-                                                        <connections>
-                                                            <action selector="undoClicked:" destination="eQF-aD-vjA" id="4tF-Xu-SYH"/>
-                                                        </connections>
-                                                    </barButtonItem>
-                                                </items>
-                                            </toolbar>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7g-iV-S8c" customClass="KSLProblemView">
-                                                <rect key="frame" x="0.0" y="44" width="639" height="616"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                            </view>
-                                        </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
@@ -334,7 +252,6 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" id="5mM-Bb-AMp">
                         <nil key="title"/>
@@ -349,22 +266,14 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
                         <outlet property="cameraButton" destination="jph-Vg-SjD" id="eV3-fO-H7y"/>
-                        <outlet property="checkButton" destination="J1T-v0-GID" id="QrT-rm-2C5"/>
                         <outlet property="createButton" destination="nj7-xS-Qf9" id="MK9-KX-19f"/>
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
-                        <outlet property="elapsedLabel" destination="ojj-pb-Mlp" id="NYm-sX-sVI"/>
-                        <outlet property="evaluationSegmentedCtrl" destination="kc4-je-OcL" id="RRT-bk-2FH"/>
-                        <outlet property="modeSegmentedCtrl" destination="JBl-vD-goB" id="GEr-vE-sS1"/>
-                        <outlet property="overallView" destination="era-cR-KOj" id="ZrV-Sn-pQk"/>
                         <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
-                        <outlet property="sizeLabel" destination="QMY-i4-T2h" id="7oF-QM-FDU"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
                         <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
-                        <outlet property="undoButton" destination="4B3-Pj-Ccc" id="79i-2R-ouB"/>
-                        <outlet property="zoomedView" destination="f7g-iV-S8c" id="aps-No-xaY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xOj-Ev-BlJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -377,7 +286,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="CWj-pm-M5v" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="HLb-YD-sxI">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -396,7 +305,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="8aW-4u-QbU" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="2Oh-dU-7nN">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -408,7 +317,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="npa-Bg-RKd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1740" y="549"/>
+            <point key="canvasLocation" x="1836" y="557"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

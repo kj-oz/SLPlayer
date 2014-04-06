@@ -12,7 +12,6 @@
 #import "KSLSolver.h"
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
-#import "KSLBoardOverallView.h"
 #import "KSLProblemView.h"
 #import "UIAlertView+Blocks.h"
 
@@ -88,8 +87,6 @@
 
 // プロトコルのプロパティの内部変数は自動設定してくれない
 @synthesize board = _board;
-@synthesize zoomedArea = _zoomedArea;
-@synthesize problemArea = _problemArea;
 
 
 #pragma mark - ビューのライフサイクル
@@ -102,9 +99,8 @@
     [super viewDidLoad];
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
-    _overallView.delegate = self;
     _zoomedView.delegate = self;
-    _zoomedView.mode = KSLProblemViewModeScroll;
+    _zoomedView.mode = KSLProblemViewModeInputNumber;
     
     self.title = _addNew ? @"新規追加" : _problem.title;
     [self setBoard:[[KSLBoard alloc] initWithProblem:_problem]];
@@ -128,10 +124,11 @@
 - (void)setBoard:(KSLBoard *)board
 {
     _board = board;
+    _zoomedView.board = board;
     _problemArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN,
                               board.width + 2 * KSLPROBLEM_MARGIN, board.height + 2 * KSLPROBLEM_MARGIN);
-    CGFloat zoomedW = _zoomedView.frame.size.width / KSLPROBLEM_MINIMUM_PITCH;
-    CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_MINIMUM_PITCH;
+    CGFloat zoomedW = _zoomedView.frame.size.width / KSLPROBLEM_TOUCHABLE_PITCH;
+    CGFloat zoomedH = _zoomedView.frame.size.height / KSLPROBLEM_TOUCHABLE_PITCH;
     CGRect zoomArea = CGRectMake(-KSLPROBLEM_MARGIN, -KSLPROBLEM_MARGIN, zoomedW, zoomedH);
     [self setZoomedArea:zoomArea];
     
@@ -141,7 +138,6 @@
 - (void)setZoomedArea:(CGRect)zoomedArea
 {
     _zoomedArea = zoomedArea;
-    [_overallView setNeedsDisplay];
     [_zoomedView setNeedsDisplay];
 }
 
@@ -255,33 +251,6 @@
     [self updateProblemInfo];
 }
 
-/**
- * モード選択セグメント変更時
- */
-- (IBAction)modeChanged:(id)sender
-{
-    switch (self.modeSegmentedCtrl.selectedSegmentIndex) {
-        case 0:
-            _zoomedView.mode = KSLProblemViewModeScroll;
-            break;
-        case 1:
-            _zoomedView.mode = KSLProblemViewModeInputNumber;
-            break;
-    }
-}
-
-/**
- * アンドゥボタン押下時
- */
-- (IBAction)undoClicked:(id)sender
-{
-    if (_player.currentIndex >= 0) {
-        [_player undo];
-        _lastAction = nil;
-        [self refreshBoard];
-    }
-}
-
 
 #pragma mark - UIImagePickerControllerDelegate
 
@@ -346,7 +315,6 @@
  */
 - (void)refreshBoard
 {
-    [_overallView setNeedsDisplay];
     [_zoomedView setNeedsDisplay];
 }
 
