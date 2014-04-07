@@ -449,6 +449,20 @@
     }
 }
 
+- (void)erase
+{
+    for (KSLEdge *edge in _hEdges) {
+        if (edge.status != KSLEdgeStatusUnset && !edge.fixed) {
+            edge.status = KSLEdgeStatusUnset;
+        }
+    }
+    for (KSLEdge *edge in _vEdges) {
+        if (edge.status != KSLEdgeStatusUnset && !edge.fixed) {
+            edge.status = KSLEdgeStatusUnset;
+        }
+    }
+}
+
 - (void)clear
 {
     for (KSLEdge *edge in _hEdges) {
@@ -583,6 +597,7 @@
             CGFloat x = x0 + u * pitch;
             KSLEdge *edge = [self vEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
+            CGContextSetStrokeColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             KSLEdgeStatus status = edge.status;
             if (status == KSLEdgeStatusOn) {
                 CGRect rect = CGRectMake(x-lineW*0.5, y+pointR, lineW, pitch-2*pointR);

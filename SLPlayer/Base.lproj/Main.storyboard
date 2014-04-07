@@ -101,27 +101,36 @@
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="fZq-5n-rSl">
+                        <nil key="title"/>
+                        <view key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="ueF-ez-sdo">
+                            <rect key="frame" x="226" y="6" width="317" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="タイトル" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SPn-0k-m9E">
+                                    <rect key="frame" x="10" y="6" width="217" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0:00:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CNU-r8-Fhr">
+                                    <rect key="frame" x="240" y="9" width="57" height="16"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
                         <barButtonItem key="rightBarButtonItem" style="plain" id="bO4-cu-mbV">
                             <view key="customView" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="GjQ-Y1-6qQ">
-                                <rect key="frame" x="425" y="5" width="327" height="33"/>
+                                <rect key="frame" x="592" y="5" width="160" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="★★★★★★★★★★★★★" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rIO-3j-OaD">
-                                        <rect key="frame" x="0.0" y="0.0" width="227" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="100秒" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0gJ-gH-pCs">
-                                        <rect key="frame" x="0.0" y="17" width="227" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QXw-mH-bfN">
-                                        <rect key="frame" x="281" y="3" width="46" height="30"/>
+                                        <rect key="frame" x="124" y="3" width="46" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Fix">
+                                        <state key="normal" title="固定">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
@@ -129,13 +138,23 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cz5-Os-dWl">
-                                        <rect key="frame" x="235" y="3" width="46" height="30"/>
+                                        <rect key="frame" x="70" y="3" width="46" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Clr">
+                                        <state key="normal" title="消去">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="clearClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="dFH-Gb-9Av"/>
+                                            <action selector="eraseClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="W5a-hA-tbc"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vuq-lb-1Gp">
+                                        <rect key="frame" x="10" y="3" width="46" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="初期化">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="initClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="laB-Jy-j33"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -150,9 +169,9 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
                         <outlet property="clearButton" destination="bO4-cu-mbV" id="8uG-PQ-mMN"/>
-                        <outlet property="difficultyLabel" destination="rIO-3j-OaD" id="5oZ-14-ZsI"/>
-                        <outlet property="elapsedLabel" destination="0gJ-gH-pCs" id="77Y-em-5JV"/>
+                        <outlet property="elapsedLabel" destination="CNU-r8-Fhr" id="mlo-hz-Qy7"/>
                         <outlet property="fixButton" destination="bO4-cu-mbV" id="c3v-D6-DCO"/>
+                        <outlet property="titleLabel" destination="SPn-0k-m9E" id="kBu-Q2-Dai"/>
                         <outlet property="zoomedView" destination="Rdf-db-Ys1" id="zd5-oW-10X"/>
                     </connections>
                 </viewController>

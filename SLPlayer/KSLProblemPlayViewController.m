@@ -27,11 +27,8 @@
 // 固定ボタン
 @property (weak, nonatomic) IBOutlet UIButton *fixButton;
 
-// モード選択セグメント
-@property (weak, nonatomic) IBOutlet UISegmentedControl *modeSegmentedCtrl;
-
-// アンドゥボタン
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
+// タイトル
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
 // 難易度表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
@@ -92,8 +89,8 @@
 {
     [super viewDidAppear:animated];
     
-    self.title = _player.problem.title;
-    self.difficultyLabel.text = _player.problem.difficultyString;
+    self.titleLabel.text = [NSString stringWithFormat:@"%@（★%d）",
+                            _player.problem.title, _player.problem.difficulty];
     
     [self startPlay];
 }
@@ -222,17 +219,34 @@
 #pragma mark - 各種アクション
 
 /**
- * クリアボタン押下時
+ * 初期化ボタン押下時
  */
-- (IBAction)clearClicked:(id)sender
+- (IBAction)initClicked:(id)sender
 {
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"いいえ" action:nil];
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
         [_player clear];
         [self refreshBoard];
     }];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"クリア"
-                        message:@"盤面をクリアしてもよろしいですか？"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"初期化"
+                        message:@"盤面を全て初期化してもよろしいですか？"
+                                           cancelButtonItem:cancelItem
+                                           otherButtonItems:deleteItem, nil];
+    [alert show];
+}
+
+/**
+ * 消去ボタン押下時
+ */
+- (IBAction)eraseClicked:(id)sender
+{
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"いいえ" action:nil];
+    RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
+        [_player erase];
+        [self refreshBoard];
+    }];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"消去"
+                        message:@"固定されていない部分を消去してもよろしいですか？"
                                                cancelButtonItem:cancelItem
                                                otherButtonItems:deleteItem, nil];
     [alert show];

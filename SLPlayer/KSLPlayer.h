@@ -52,6 +52,8 @@
 
 - (void)clear;
 
+- (void)erase;
+
 - (void)fix;
 
 - (void)changeAction:(NSInteger)newValue;

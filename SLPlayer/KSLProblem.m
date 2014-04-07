@@ -217,7 +217,7 @@
 
 - (NSString *)difficultyString
 {
-    return [@"★★★★★★★★★★★★" substringToIndex:_difficulty];
+    return [NSString stringWithFormat:@"★%d", _difficulty];
 }
 
 - (NSString *)evaluationString

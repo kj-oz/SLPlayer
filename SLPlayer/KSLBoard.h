@@ -392,6 +392,8 @@ typedef enum : NSInteger {
 
 - (void)clear;
 
+- (void)erase;
+
 /**
  * 文字で盤面を出力する.
  */

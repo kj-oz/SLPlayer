@@ -90,6 +90,15 @@
     [_board clear];
 }
 
+- (void)erase
+{
+    _currentIndex = _fixedIndex;
+    while (_currentIndex < _steps.count - 1) {
+        [_steps removeLastObject];
+    }
+    [_board erase];
+}
+
 - (void)fix
 {
     _fixedIndex = _currentIndex;

@@ -199,7 +199,7 @@
             
             // タッチの余韻描画
             CGContextSetFillColorWithColor(context,
-                                        [UIColor colorWithRed:0.0 green:1.0 blue:1.0 alpha:0.05].CGColor);
+                                        [UIColor colorWithRed:0.0 green:1.0 blue:1.0 alpha:0.03].CGColor);
             for (NSValue *val in _tracks) {
                 CGPoint track = val.CGPointValue;
                 CGContextFillEllipseInRect(context, CGRectMake(track.x - _r, track.y - _r, 2 * _r, 2 * _r));
