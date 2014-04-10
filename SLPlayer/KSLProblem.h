@@ -86,9 +86,6 @@ typedef enum : NSInteger {
 // 難易度
 @property (nonatomic, assign) NSInteger difficulty;
 
-// 感想、評価
-@property (nonatomic, assign) NSInteger evaluation;
-
 // 水平方向のセルの数
 @property (nonatomic, readonly) NSInteger width;
 
@@ -98,8 +95,8 @@ typedef enum : NSInteger {
 // セルの数値の配列（空のセルは-1）
 @property (nonatomic, readonly) NSArray *data;
 
-// 解くにかかった秒数の配列（完了した回数分＋未了であればその分）
-@property (nonatomic, strong) NSArray *elapsedSeconds;
+// 解くにかかった秒数
+@property (nonatomic, assign) NSInteger elapsedSecond;
 
 /**
  * 与えられたサイズとデータの問題を生成する.
@@ -167,11 +164,5 @@ typedef enum : NSInteger {
 - (NSString *)elapsedTimeString;
 
 - (NSString *)difficultyString;
-
-- (NSString *)evaluationString;
-
-- (void)updateElapsedSecond:(NSInteger)sec;
-
-- (void)addElapsedSecond:(NSInteger)sec;
 
 @end

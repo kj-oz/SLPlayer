@@ -89,8 +89,8 @@
 {
     [super viewDidAppear:animated];
     
-    self.titleLabel.text = [NSString stringWithFormat:@"%@（★%d）",
-                            _player.problem.title, _player.problem.difficulty];
+    self.titleLabel.text = [NSString stringWithFormat:@"%@（★%ld）",
+                            _player.problem.title, (long)_player.problem.difficulty];
     
     [self startPlay];
 }
@@ -115,8 +115,7 @@
     if (_player.problem.status == KSLProblemStatusSolved) {
         _player.problem.status = KSLProblemStatusNotStarted;
     }
-    _elapsed = _player.problem.status == KSLProblemStatusNotStarted ? 0 :
-                ((NSNumber *)[_player.problem.elapsedSeconds lastObject]).intValue;
+    _elapsed = _player.problem.elapsedSecond;
     _start = [NSDate date];
     [self updateElapsedlabel:nil];
     
@@ -136,12 +135,12 @@
     NSTimeInterval t = [now timeIntervalSinceDate:_start];
     switch (problem.status) {
         case KSLProblemStatusSolving:
-            [problem updateElapsedSecond:_elapsed + (NSInteger)t];
+            problem.elapsedSecond = _elapsed + (NSInteger)t;
             break;
             
         case KSLProblemStatusNotStarted:
             problem.status = KSLProblemStatusSolving;
-            [problem addElapsedSecond:(NSInteger)t];
+            problem.elapsedSecond = (NSInteger)t;
             break;
             
         default:
@@ -208,6 +207,25 @@
 {
     [_player addStep:_step];
     _stepping = NO;
+    
+    if ([_player isFinished]) {
+        // TODO 完成
+        [_timer invalidate];
+        
+        KSLProblem *problem = _player.problem;
+        NSDate *now = [NSDate date];
+        NSTimeInterval t = [now timeIntervalSinceDate:_start];
+        
+        problem.status = KSLProblemStatusSolved;
+        NSInteger sec = _elapsed + (NSInteger)t;
+        problem.elapsedSecond = sec;
+        NSString *msg = [NSString stringWithFormat:@"正解です。所要時間%@",
+                         [self elapsedlabelString:sec]];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完成"
+                                 message:msg delegate:nil cancelButtonTitle:nil
+                                 otherButtonTitles:@"了解", nil];
+        [alert show];
+    }
 }
 
 - (void)undo
@@ -274,9 +292,17 @@
     NSTimeInterval t = [now timeIntervalSinceDate:_start];
     
     NSInteger sec = _elapsed + (NSInteger)t;
-    NSString *time = [NSString stringWithFormat:@"%ld:%02ld:%02ld",
+    _elapsedLabel.text = [self elapsedlabelString:sec];
+}
+
+/**
+ * 経過時間表示ラベルの更新
+ * @param timer 呼び出し元のタイマー
+ */
+- (NSString *)elapsedlabelString:(NSInteger)sec
+{
+    return [NSString stringWithFormat:@"%ld:%02ld:%02ld",
                       (long)(sec / 3600), (long)(sec % 3600) / 60, (long)(sec % 60)];
-    _elapsedLabel.text = time;
 }
 
 /**

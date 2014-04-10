@@ -62,7 +62,6 @@
         self.title = @"未定";
         self.status = KSLProblemStatusNotStarted;
         self.difficulty = 0;
-        self.evaluation = 0;
         _width = width;
         _height = height;
         NSInteger count = width * height;
@@ -89,11 +88,10 @@
         self.title = json[@"title"];
         self.status = [json[@"status"] integerValue];
         self.difficulty = [json[@"difficulty"] integerValue];
-        self.evaluation = [json[@"evaluation"] integerValue];
         _width = [json[@"width"] integerValue];
         _height = [json[@"height"] integerValue];
         _data = [json[@"data"] mutableCopy];
-        self.elapsedSeconds = [json[@"elapsedSeconds"] mutableCopy];
+        self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
     }
     return self;
 }
@@ -108,11 +106,10 @@
         self.title = original.title;
         self.status = original.status;
         self.difficulty = original.difficulty;
-        self.evaluation = original.evaluation;
         _width = original.width;
         _height = original.height;
         _data = [original.data mutableCopy];
-        self.elapsedSeconds = [original.elapsedSeconds mutableCopy];
+        self.elapsedSecond = original.elapsedSecond;
     }
     return self;
 }
@@ -121,7 +118,6 @@
 {
     self.title = original.title;
     self.difficulty = original.difficulty;
-    self.evaluation = original.evaluation;
     _data = [original.data mutableCopy];
 }
 
@@ -136,11 +132,10 @@
     json[@"title"] = _title;
     json[@"status"] = @(_status);
     json[@"difficulty"] = @(_difficulty);
-    json[@"evaluation"] = @(_evaluation);
     json[@"width"] = @(_width);
     json[@"height"] = @(_height);
     json[@"data"] = _data;
-    json[@"elapsedSeconds"] = _elapsedSeconds;
+    json[@"elapsedSecond"] = @(_elapsedSecond);
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]
@@ -187,10 +182,7 @@
         case KSLProblemStatusNotStarted:
             return @"未着手";
         case KSLProblemStatusSolving:
-        {
-            NSInteger sec = ((NSNumber *)[_elapsedSeconds lastObject]).intValue;
-            return [NSString stringWithFormat:@"未了（%.1f分）", (sec / 60.0)];
-        }
+            return [NSString stringWithFormat:@"未了（%@）", [self elapsedTimeString]];
         case KSLProblemStatusSolved:
             return @"完了";
         default:
@@ -200,16 +192,10 @@
 
 - (NSString *)elapsedTimeString
 {
-    NSInteger finishedCount = _elapsedSeconds.count - (_status == KSLProblemStatusSolving ? 1 : 0);
-    if (finishedCount) {
-        NSMutableString *elapsed = [NSMutableString stringWithString:@"("];
-        for (NSInteger i = 0; i < finishedCount; i++) {
-            NSInteger minute = (NSInteger)(((NSNumber *)_elapsedSeconds[i]).intValue / 60.0 + 0.5);
-            [elapsed appendFormat:@"%ld分,", (long)minute];
-        }
-        [elapsed replaceCharactersInRange:NSMakeRange(elapsed.length - 2, 1) withString:@")"];
-        
-        return elapsed;
+    if (_elapsedSecond > 0) {        
+        return [NSString stringWithFormat:@"%ld:%02ld:%02ld",
+                (long)(_elapsedSecond / 3600), (long)(_elapsedSecond % 3600) / 60,
+                (long)(_elapsedSecond % 60)];
     } else {
         return @"";
     }
@@ -217,23 +203,7 @@
 
 - (NSString *)difficultyString
 {
-    return [NSString stringWithFormat:@"★%d", _difficulty];
+    return [NSString stringWithFormat:@"★%ld", (long)_difficulty];
 }
-
-- (NSString *)evaluationString
-{
-    return @[@"", @"駄作", @"平凡", @"秀作"][_evaluation];
-}
-
-- (void)updateElapsedSecond:(NSInteger)sec
-{
-    [_elapsedSeconds setObject:@(sec) atIndexedSubscript:_elapsedSeconds.count - 1];
-}
-
-- (void)addElapsedSecond:(NSInteger)sec
-{
-    [_elapsedSeconds addObject:@(sec)];
-}
-
 
 @end

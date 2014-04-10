@@ -95,7 +95,8 @@
     
     // 拡大サイズでも画面より小さい場合は常に拡大
     // TODO ビューの初期状態の記録・復元
-    _zoomed = (_apitch == _zpitch);
+    // _zoomed = (_apitch == _zpitch);
+    _zoomed = YES;
     
     // 初期拡大エリア
     CGFloat zoomedW = self.frame.size.width / _zpitch;
@@ -136,7 +137,7 @@
 {
     _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
     _r = _zpitch * 0.5;
-    _scrollStep = _zpitch * 0.3;
+    _scrollStep = _zpitch * 0.2;
 
     CGFloat w = self.frame.size.width / _zpitch;
     CGFloat h = self.frame.size.height / _zpitch;
@@ -249,6 +250,7 @@
     if (_zoomed) {
         UIGestureRecognizerState state = _panGr.state;
         if (state == UIGestureRecognizerStateBegan) {
+            KLDBGPrint(">>START\n");
             [_tracks removeAllObjects];
             _prevNode = nil;
             [_delegate stepBegan];
@@ -258,6 +260,7 @@
             track = KLCGPointSubtract(track, translation);
             [_tracks addObject:[NSValue valueWithCGPoint:track]];
             KSLNode *node = [self findNode:track];
+            KLDBGPrint("node0:%s\n", node ? node.description.UTF8String : "(nil)");
             if (node) {
                 _prevNode = node;
             }
@@ -266,12 +269,12 @@
         [_tracks addObject:[NSValue valueWithCGPoint:track]];
         
         KSLNode *node = [self findNode:track];
+        KLDBGPrint("node:%s-%s\n", node ? node.description.UTF8String : "(nil)",
+                   _prevNode ? _prevNode.description.UTF8String : "(nil)");
         if (node && node != _prevNode) {
             if (_prevNode) {
-                KLDBGPrint("node:%s-%s\n", node.description.UTF8String,
-                           _prevNode.description.UTF8String);
                 KSLEdge *edge = [_board getJointEdgeOfNodes:_prevNode and:node];
-                KLDBGPrint("edge:%s\n", edge.description.UTF8String);
+                KLDBGPrint("> edge:%s\n", edge ? edge.description.UTF8String : "(nil)");
                 if (edge && edge.status == KSLEdgeStatusUnset) {
                     KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                 target:edge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn];
@@ -414,7 +417,7 @@
                 _dy = -1;
             }
             if (_dx != 0 || _dy != 0) {
-                _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                _timer = [NSTimer scheduledTimerWithTimeInterval:0.05
                         target:self selector:@selector(autoScroll) userInfo:nil repeats:YES];
             }
         } else if (state == UIGestureRecognizerStateEnded) {
@@ -445,7 +448,6 @@
 - (void)clearTrackes
 {
     [_tracks removeAllObjects];
-    _prevNode = nil;
     [self setNeedsDisplay];
 }
 

@@ -123,6 +123,13 @@
     }
 }
 
+- (BOOL)isFinished
+{
+    KSLAction *action = [[_steps lastObject] lastObject];
+    KSLEdge *edge = action.target;
+    return [_board isLoopFinishedOfEdge:edge];
+}
+
 #pragma mark - プライベートメッソド（初期化)
 
 /**

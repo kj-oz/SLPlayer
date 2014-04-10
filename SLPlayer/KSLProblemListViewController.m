@@ -105,10 +105,8 @@
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %ldX%ld %@ %@", problem.title, (long)problem.width,
                            (long)problem.height, [problem difficultyString], [problem statusString]];
     
-    NSInteger finishedCount = problem.elapsedSeconds.count - (problem.status == KSLProblemStatusSolving ? 1 : 0);
-    if (finishedCount) {
-        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@ %@", [problem evaluationString],
-                                     [problem elapsedTimeString]];
+    if (problem.elapsedSecond > 0) {
+        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@", [problem elapsedTimeString]];
     } else {
         cell.detailTextLabel.text = @"";
     }

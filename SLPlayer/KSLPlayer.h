@@ -60,4 +60,6 @@
 
 - (void)undo;
 
+- (BOOL)isFinished;
+
 @end
