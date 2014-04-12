@@ -31,6 +31,58 @@
 @end
 
 
+#pragma mark - KLIMAxes
+
+/**
+ * グリッドの軸上の画素群を管理するクラス.
+ */
+@interface KLIMAxes : NSObject
+
+/**
+ * 与えられた画素群の配列からAxesオブジェクトを生成する.
+ * @param blocks 画素群の配列
+ * @return その画素群からなる軸オブジェクト
+ */
+- (id)initWithBlocks:(NSMutableArray *)blocks;
+
+/**
+ * 最も遠い画素群に対するオブジェクトを返す.このオブジェクトは管理対象から外される（従って
+ * 次にこのメソッドを呼び出す　と次ぎに遠いオブジェクトが返る）
+ * @return 座標軸上の画素群.
+ */
+- (KLIMAxesBlock *)farthestBlock;
+
+@end
+
+@implementation KLIMAxes
+{
+    NSMutableArray *_blocks;
+}
+
+- (id)initWithBlocks:(NSMutableArray *)blocks
+{
+    self = [super init];
+    if (self) {
+        _blocks = blocks;
+    }
+    return self;
+}
+
+- (KLIMAxesBlock *)farthestBlock
+{
+    KLIMLabelingBlock *block = [_blocks lastObject];
+    if (block) {
+        [_blocks removeLastObject];
+    }
+    KLIMAxesBlock *axes = [[KLIMAxesBlock alloc] init];
+    axes.distance = _blocks.count + 2;
+    axes.block = block;
+    return axes;
+}
+
+@end
+
+
 #pragma mark - KLIMGridDetector
 
 @implementation KLIMPointGrid
@@ -167,17 +219,22 @@
     }
     
     // X軸の仮確定
-    KLIMAxesBlock *xa0 = [self getAxesOfBasePoint:xminP center:cp maxLength:cp.x];
-    KLIMAxesBlock *xa1 = [self getAxesOfBasePoint:xmaxP center:cp maxLength:(_bin.width - cp.x)];
-    if (!xa0 || !xa1) {
+    KLIMAxes *xAxes0 = [self getAxesOfBasePoint:xminP center:cp maxLength:cp.x];
+    KLIMAxes *xAxes1 = [self getAxesOfBasePoint:xmaxP center:cp maxLength:(_bin.width - cp.x)];
+    if (!xAxes0 || !xAxes1) {
         return NO;        
     }
+    KLIMAxesBlock *xa0 = [xAxes0 farthestBlock];
+    KLIMAxesBlock *xa1 = [xAxes1 farthestBlock];
+
     // Y軸の仮確定
-    KLIMAxesBlock *ya0 = [self getAxesOfBasePoint:yminP center:cp maxLength:cp.y];
-    KLIMAxesBlock *ya1 = [self getAxesOfBasePoint:ymaxP center:cp maxLength:(_bin.height - cp.y)];
-    if (!ya0 || !ya1) {
+    KLIMAxes *yAxes0 = [self getAxesOfBasePoint:yminP center:cp maxLength:cp.y];
+    KLIMAxes *yAxes1 = [self getAxesOfBasePoint:ymaxP center:cp maxLength:(_bin.height - cp.y)];
+    if (!yAxes0 || !yAxes1) {
         return NO;
     }
+    KLIMAxesBlock *ya0 = [yAxes0 farthestBlock];
+    KLIMAxesBlock *ya1 = [yAxes1 farthestBlock];
     
     KLIMLabelingBlock *c00 = nil;
     KLIMLabelingBlock *c10 = nil;
@@ -201,13 +258,13 @@
         
         if (!c00) {
             if (!c01) {
-                xa0 = [self getNextAxesOf:xa0 center:cp];
+                xa0 = [xAxes0 farthestBlock];
                 if (!xa0) {
                     return NO;
                 }
                 continue;
             } else {
-                ya0 = [self getNextAxesOf:ya0 center:cp];
+                ya0 = [yAxes0 farthestBlock];
                 if (!ya0) {
                     return NO;
                 }
@@ -218,13 +275,13 @@
         
         if (!c10) {
             if (!c11) {
-                xa1 = [self getNextAxesOf:xa1 center:cp];
+                xa1 = [xAxes1 farthestBlock];
                 if (!xa1) {
                     return NO;
                 }
                 continue;
             } else {
-                ya0 = [self getNextAxesOf:ya0 center:cp];
+                ya0 = [yAxes0 farthestBlock];
                 if (!ya0) {
                     return NO;
                 }
@@ -234,7 +291,7 @@
         }
         
         if (!c01) {
-            ya1 = [self getNextAxesOf:ya1 center:cp];
+            ya1 = [yAxes1 farthestBlock];
             if (!ya1) {
                 return NO;
             }
@@ -243,8 +300,8 @@
         }
         
         if (!c11) {
-            ya1 = [self getNextAxesOf:ya1 center:cp];
-            if (!ya0) {
+            ya1 = [yAxes1 farthestBlock];
+            if (!ya1) {
                 return NO;
             }
             c01 = nil;
@@ -297,59 +354,41 @@
 }
 
 /**
- * 与えられた中央の点とその次の点を元に、延長上の端点を見つけ出す.
+ * 与えられた中央の点とその次の点を元に、延長上の画素群を見つけ出し軸オブジェクトを構築する.
  * @param bp 中央近傍の軸の起点の座標
  * @param center 中央の座標
  * @param length 端点を探す最大の距離
  * @return 与えられた起点の延長上の端点の画素群とその距離
  */
-- (KLIMAxesBlock *)getAxesOfBasePoint:(CGPoint)bp center:(CGPoint)center maxLength:(CGFloat)length
+- (KLIMAxes *)getAxesOfBasePoint:(CGPoint)bp center:(CGPoint)center maxLength:(CGFloat)length
 {
     CGPoint bvec = KLCGPointSubtract(bp, center);
     CGFloat pitch = KLCGPointLength(bvec);
-    
+    CGFloat dmax = pitch * 0.05;
     NSInteger imax = length / pitch;
-    for (NSInteger i = imax; i > 3; i--) {
-        CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(bvec, i));
+    
+    NSMutableArray *axesBlocks = [NSMutableArray array];
+    CGPoint prevPt = center;
+    CGPoint currPt = bp;
+    
+    for (NSInteger i = 2; i <= imax; i++) {
+        CGPoint nextPt = KLCGPointAdd(currPt, KLCGPointSubtract(currPt, prevPt));
         
-        NSArray *blocks = [self sortByDistanceFromPoint:pt
-                                               maxCount:4 maxDistance:_searchDistance];
-        for (NSInteger b = 0; b < blocks.count; b++) {
-            KLIMLabelingBlock *block = blocks[b];
-            // 中央点と起点の座標を元に推定される点と実際の点の距離の差が長さの3%以内（経験則）か
-            CGFloat dmax = i * pitch * 0.03;
-            if (KLCGPointDistance2(block.center, pt) < dmax * dmax) {
-                if ([self isOnGridWithPoint:block.center onNthGrid:i fromCenter:center]) {
-                    KLIMAxesBlock *axes = [[KLIMAxesBlock alloc] init];
-                    axes.distance = i;
-                    axes.block = block;
-                    return axes;
-                }
-            }
+        NSArray *blocks = [self sortByDistanceFromPoint:nextPt
+                                               maxCount:1 maxDistance:_searchDistance];
+        KLIMLabelingBlock *block = blocks[0];
+        // 直前の2点の座標を元に推定される点と実際の点の距離の差が長さの5%以内（経験則）か
+        if (KLCGPointDistance2(block.center, nextPt) < dmax * dmax) {
+            [axesBlocks addObject:block];
+        } else {
+            break;
         }
+        
+        prevPt = currPt;
+        currPt = block.center;
     }
-    return nil;
-}
-
-/**
- * 与えられた軸端点より１つ内側の端点を見つけ出す.
- * @param org 元の軸端点
- * @param center 中央の座標
- * @return 元の軸端点の１つ内側の軸端点
- */
-- (KLIMAxesBlock *)getNextAxesOf:(KLIMAxesBlock *)org center:(CGPoint)center
-{
-    CGPoint op = org.block.center;
-    CGPoint avec = KLCGPointDevide(KLCGPointSubtract(op, center), org.distance);
-    CGPoint pt = KLCGPointSubtract(op, avec);
-    // ここまでの認識が正しければほぼ正しい位置に点があるはずなので、検索半径を標準の半分にする
-    NSArray *blocks = [self sortByDistanceFromPoint:pt
-                                           maxCount:1 maxDistance:_searchDistance/2];
-    if (blocks.count) {
-        KLIMAxesBlock *axes = [[KLIMAxesBlock alloc] init];
-        axes.distance = org.distance - 1;
-        axes.block = blocks[0];
-        return axes;
+    if (axesBlocks.count) {
+        return [[KLIMAxes alloc] initWithBlocks:axesBlocks];
     }
     return nil;
 }
@@ -394,7 +433,7 @@
 {
     // 与えられた点から軸上の点に向かって4つ（但し軸に達してしまう場合はそれ以下）の点が想定する位置に存在するかを調べる
     CGPoint vec = KLCGPointDevide(KLCGPointSubtract(point, center), n);
-    for (NSInteger i = n - 1; i > n - 4 && i > 1; i--) {
+    for (NSInteger i = n - 1; i >= n / 2 && i > 2; i--) {
         CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(vec, i));
         
         NSArray *blocks = [self sortByDistanceFromPoint:pt

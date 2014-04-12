@@ -73,9 +73,10 @@
             }
             NSInteger ans;
             CGFloat bDensity = [self bottomDensity];
-            CGFloat tDensity = [self topDensity];
-            CGFloat lDensity = [self leftDensity];
-            CGFloat rDensity = [self rightLHDensity];
+//            CGFloat tDensity = [self topDensity];
+//            CGFloat lDensity = [self leftDensity];
+//            CGFloat rDensity = [self rightDensity];
+            CGFloat rlDensity = [self rightLHDensity];
             //　底辺の密度を調べて
             if (bDensity > 0.95) {
                 // 0.95以上あれば2
@@ -84,15 +85,15 @@
                 // 上辺が0.95以上なら
                 // 底辺が0.2より大きければ5、それ以下なら7
                 ans = bDensity > 0.2 ? 5 : 7;
-            } else if ([self rightLHDensity] < 0.5) {
-                // 右辺下半分が0.5以下なら2
+            } else if ([self rightLHDensity] < 0.4) {
+                // 右辺下半分が0.4以下なら2
                 // 下辺が0.95以下のケースもあるため
                 ans = 2;
             } else {
                 // 残りは3
                 ans = 3;
             }
-            printf("%ld,%.2f,%.2f,%.2f,%.2f\n", (long)ans, bDensity, tDensity, lDensity, rDensity);
+            printf("%ld,%.2f,%.2f\n", (long)ans, bDensity, rlDensity);
             return ans;
         }
         default:
