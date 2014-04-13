@@ -15,8 +15,9 @@
  * 問題表示ビューのモード
  */
 typedef enum {
+    KSLProblemViewModeScroll,       // 表示のみ
     KSLProblemViewModeInputLine,    // EdgeのOn、Offの指定
-    KSLProblemViewModeInputNumber  // 数字の入力
+    KSLProblemViewModeInputNumber   // 数字の入力
 } KSLProblemViewMode;
 
 

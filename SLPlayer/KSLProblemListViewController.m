@@ -102,11 +102,11 @@
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %ldX%ld %@ %@", problem.title, (long)problem.width,
-                           (long)problem.height, [problem difficultyString], [problem statusString]];
+    cell.textLabel.text = [NSString stringWithFormat:@"%ldX%ld　%@　%@", (long)problem.width,
+                           (long)problem.height, [problem difficultyString], problem.title];
     
     if (problem.elapsedSecond > 0) {
-        cell.detailTextLabel.text = [NSMutableString stringWithFormat:@"%@", [problem elapsedTimeString]];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
     } else {
         cell.detailTextLabel.text = @"";
     }
@@ -153,10 +153,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     if (self.editing) {
-        [self performSegueWithIdentifier:@"EditProblem" sender:self];
+        if (problem.status == KSLProblemStatusSolved ||
+                problem.status == KSLProblemStatusSolving) {
+            [self performSegueWithIdentifier:@"EditProblem" sender:self];
+        }
     } else {
-        [self performSegueWithIdentifier:@"PlayProblem" sender:self];
+        if (problem.status == KSLProblemStatusEditing) {
+            [self performSegueWithIdentifier:@"PlayProblem" sender:self];
+        }
     }
 }
 

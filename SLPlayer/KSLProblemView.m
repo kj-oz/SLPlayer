@@ -248,48 +248,50 @@
 - (IBAction)panned:(id)sender
 {
     if (_zoomed) {
-        UIGestureRecognizerState state = _panGr.state;
-        if (state == UIGestureRecognizerStateBegan) {
-            KLDBGPrint(">>START\n");
-            [_tracks removeAllObjects];
-            _prevNode = nil;
-            [_delegate stepBegan];
-            
-            CGPoint translation = [_panGr translationInView:self];
-            CGPoint track = [_panGr locationInView:self];
-            track = KLCGPointSubtract(track, translation);
-            [_tracks addObject:[NSValue valueWithCGPoint:track]];
-            KSLNode *node = [self findNode:track];
-            KLDBGPrint("node0:%s\n", node ? node.description.UTF8String : "(nil)");
-            if (node) {
-                _prevNode = node;
-            }
-        }
-        CGPoint track = [_panGr locationInView:self];
-        [_tracks addObject:[NSValue valueWithCGPoint:track]];
-        
-        KSLNode *node = [self findNode:track];
-        KLDBGPrint("node:%s-%s\n", node ? node.description.UTF8String : "(nil)",
-                   _prevNode ? _prevNode.description.UTF8String : "(nil)");
-        if (node && node != _prevNode) {
-            if (_prevNode) {
-                KSLEdge *edge = [_board getJointEdgeOfNodes:_prevNode and:node];
-                KLDBGPrint("> edge:%s\n", edge ? edge.description.UTF8String : "(nil)");
-                if (edge && edge.status == KSLEdgeStatusUnset) {
-                    KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
-                                target:edge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn];
-                    edge.status = KSLEdgeStatusOn;
-                    [_delegate actionPerformed:action];
+        if (_mode == KSLProblemViewModeInputLine) {
+            UIGestureRecognizerState state = _panGr.state;
+            if (state == UIGestureRecognizerStateBegan) {
+                KLDBGPrint(">>START\n");
+                [_tracks removeAllObjects];
+                _prevNode = nil;
+                [_delegate stepBegan];
+                
+                CGPoint translation = [_panGr translationInView:self];
+                CGPoint track = [_panGr locationInView:self];
+                track = KLCGPointSubtract(track, translation);
+                [_tracks addObject:[NSValue valueWithCGPoint:track]];
+                KSLNode *node = [self findNode:track];
+                KLDBGPrint("node0:%s\n", node ? node.description.UTF8String : "(nil)");
+                if (node) {
+                    _prevNode = node;
                 }
             }
-            _prevNode = node;
-        }
-        
-        [self setNeedsDisplay];
-        
-        if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled) {
-            [_delegate stepEnded];
-            [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
+            CGPoint track = [_panGr locationInView:self];
+            [_tracks addObject:[NSValue valueWithCGPoint:track]];
+            
+            KSLNode *node = [self findNode:track];
+            KLDBGPrint("node:%s-%s\n", node ? node.description.UTF8String : "(nil)",
+                       _prevNode ? _prevNode.description.UTF8String : "(nil)");
+            if (node && node != _prevNode) {
+                if (_prevNode) {
+                    KSLEdge *edge = [_board getJointEdgeOfNodes:_prevNode and:node];
+                    KLDBGPrint("> edge:%s\n", edge ? edge.description.UTF8String : "(nil)");
+                    if (edge && edge.status == KSLEdgeStatusUnset) {
+                        KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+                                    target:edge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn];
+                        edge.status = KSLEdgeStatusOn;
+                        [_delegate actionPerformed:action];
+                    }
+                }
+                _prevNode = node;
+            }
+            
+            [self setNeedsDisplay];
+            
+            if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled) {
+                [_delegate stepEnded];
+                [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
+            }
         }
     } else {
         CGPoint translation = [_panGr translationInView:self];

@@ -67,15 +67,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
-    _zoomedView.delegate = self;
-    _zoomedView.mode = KSLProblemViewModeInputLine;
-    
+
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentProblem;
     _player = [[KSLPlayer alloc] initWithProblem:problem];
     _step = [NSMutableArray array];
+    
+    // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
+    _zoomedView.delegate = self;
+    _zoomedView.mode = _player.problem.status == KSLProblemStatusSolved ?
+                                KSLProblemViewModeScroll : KSLProblemViewModeInputLine;
     
     // アプリケーションライフサイクルの通知受信
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -113,8 +114,9 @@
 - (void)startPlay
 {
     if (_player.problem.status == KSLProblemStatusSolved) {
-        _player.problem.status = KSLProblemStatusNotStarted;
+        return;
     }
+    
     _elapsed = _player.problem.elapsedSecond;
     _start = [NSDate date];
     [self updateElapsedlabel:nil];
@@ -128,6 +130,10 @@
  */
 - (void)stopPlay
 {
+    if (_player.problem.status == KSLProblemStatusSolved) {
+        return;
+    }
+
     [_timer invalidate];
     
     KSLProblem *problem = _player.problem;
@@ -167,17 +173,6 @@
     [self startPlay];
 }
 
-//#pragma mark - ビューの回転
-//
-//- (NSUInteger)supportedInterfaceOrientations
-//{
-//    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
-//}
-//
-//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-//{
-//    return UIInterfaceOrientationLandscapeRight;
-//}
 
 #pragma mark - KSLProblemViewDelegateの実装
 
@@ -219,6 +214,8 @@
         problem.status = KSLProblemStatusSolved;
         NSInteger sec = _elapsed + (NSInteger)t;
         problem.elapsedSecond = sec;
+        [_player fix];
+        
         NSString *msg = [NSString stringWithFormat:@"正解です。所要時間%@",
                          [self elapsedlabelString:sec]];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完成"

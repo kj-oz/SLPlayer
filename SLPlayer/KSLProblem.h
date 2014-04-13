@@ -128,6 +128,11 @@ typedef enum : NSInteger {
 - (void)updateWithProblem:(KSLProblem *)original;
 
 /**
+ *
+ */
+- (void)rotate;
+
+/**
  * 与えられたディレクトリーの下に問題をjson形式のファイルとして保存する.
  * @param directory 保存先ディレクトリー
  */

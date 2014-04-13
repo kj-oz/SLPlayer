@@ -121,6 +121,22 @@
     _data = [original.data mutableCopy];
 }
 
+- (void)rotate
+{
+    NSMutableArray *data = [_data mutableCopy];
+    for (NSInteger y = 0; y < _height; y++) {
+        for (NSInteger x = 0; x < _width; x++) {
+            NSInteger val = [self valueOfX:x andY:y];
+            NSInteger i = (_width - 1 - x) * _height + y;
+            data[i] = @(val);
+        }
+    }
+    
+    NSInteger work = _width;
+    _width = _height;
+    _height = work;
+}
+
 #pragma mark - 保存
 
 - (void)saveToFile:(NSString *)directory
@@ -178,13 +194,13 @@
 {
     switch (_status) {
         case KSLProblemStatusEditing:
-            return @"編集中";
+            return @"作成中";
         case KSLProblemStatusNotStarted:
             return @"未着手";
         case KSLProblemStatusSolving:
-            return [NSString stringWithFormat:@"未了（%@）", [self elapsedTimeString]];
+            return [self elapsedTimeString];
         case KSLProblemStatusSolved:
-            return @"完了";
+            return [NSString stringWithFormat:@"完了（%@）", [self elapsedTimeString]];
         default:
             return @"不明";
     }

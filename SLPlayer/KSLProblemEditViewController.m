@@ -66,12 +66,14 @@
 {
     [super viewDidLoad];
     
+    _player = [[KSLPlayer alloc] initWithProblem:_problem];
+
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
     _zoomedView.delegate = self;
-    _zoomedView.mode = KSLProblemViewModeInputNumber;
+    _zoomedView.mode = _problem.status == KSLProblemStatusEditing ?
+                KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
     
     self.title = _addNew ? @"新規追加" : _problem.title;
-    _player = [[KSLPlayer alloc] initWithProblem:_problem];
     [self setBoard:_player.board];
     [self updateProblemInfo];
 }
@@ -225,6 +227,9 @@
     }
 
     // 問題チェック
+    if (problem.width > problem.height) {
+        [problem rotate];
+    }
     [problem dump];
     KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
