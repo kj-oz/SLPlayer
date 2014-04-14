@@ -92,13 +92,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
                                 <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Rdf-db-Ys1" secondAttribute="trailing" id="4oY-VE-7Y5"/>
+                            <constraint firstItem="Rdf-db-Ys1" firstAttribute="leading" secondItem="E2H-qa-Ty9" secondAttribute="leading" id="5SW-Kb-4e2"/>
+                            <constraint firstItem="z8e-nS-dSD" firstAttribute="top" secondItem="Rdf-db-Ys1" secondAttribute="bottom" id="WHk-nh-Jg1"/>
+                            <constraint firstItem="Rdf-db-Ys1" firstAttribute="top" secondItem="U39-7D-nyG" secondAttribute="bottom" id="azj-1G-CPy"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="fZq-5n-rSl">
                         <nil key="title"/>
@@ -191,11 +197,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sJy-t4-uBu">
+                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sJy-t4-uBu">
                                 <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYR-dQ-7YT">
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYR-dQ-7YT">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
@@ -265,13 +271,19 @@
                                             </barButtonItem>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
+                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
                                         <rect key="frame" x="0.0" y="44" width="768" height="916"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="KHN-a3-8D6" firstAttribute="top" secondItem="dYR-dQ-7YT" secondAttribute="bottom" id="HBq-YQ-PJn"/>
+                                    <constraint firstItem="KHN-a3-8D6" firstAttribute="leading" secondItem="sJy-t4-uBu" secondAttribute="leading" id="ZHh-5K-fQH"/>
+                                    <constraint firstAttribute="trailing" secondItem="KHN-a3-8D6" secondAttribute="trailing" id="b8Y-5L-fuR"/>
+                                    <constraint firstAttribute="bottom" secondItem="KHN-a3-8D6" secondAttribute="bottom" id="q2l-Is-kgA"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

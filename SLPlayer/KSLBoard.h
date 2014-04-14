@@ -410,12 +410,13 @@ typedef enum : NSInteger {
 /**
  * 与えられたコンテキストに与えられたパラメータで盤面を描画する.
  * @param context 描画コンテキスト
- * @param origin 左上Nodeの位置
+ * @param origin 問題座標系左上Nodeの画面座標系上での位置
  * @param pitch セルの幅
+ * @param rotate 画面が回転しているかどうか
  * @param erasableColor 消去可能な部分の色
  */
 - (void)drawImageWithContext:(CGContextRef)context origin:(CGPoint)origin pitch:(CGFloat)pitch
-               erasableColor:(CGColorRef)erasableColor;
+                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor;
 
 @end
 

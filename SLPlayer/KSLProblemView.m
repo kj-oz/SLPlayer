@@ -39,6 +39,11 @@
     // ズーム中かどうか
     BOOL _zoomed;
     
+    // 回転しているかどうか
+    // 問題の縦横比と画面の縦横比の方向が一致していなければ回転
+    // 問題が正方形の場合縦向きとして扱う
+    BOOL _rotated;
+    
     // 画面座標系でのズーム時の問題原点（左上）の座標と点の間隔
     CGFloat _zx0;
     CGFloat _zy0;
@@ -55,7 +60,7 @@
     // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
     
-    //
+    // ロングプレス時の連続スクロールの定義
     CGFloat _dx;
     CGFloat _dy;
     NSTimer *_timer;
@@ -79,6 +84,11 @@
     [self addGestureRecognizer:_tap2Gr];
     [self addGestureRecognizer:_lpGr];
     _tracks = [NSMutableArray array];
+    
+    // 定数
+    _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
+    _r = _zpitch * 0.5;
+    _scrollStep = _zpitch * 0.2;
 }
 
 #pragma mark - プロパティ
@@ -90,6 +100,8 @@
         NSLog(@"BUG!");
     }
     _board = board;
+    _rotated = [self checkRotation];
+    
     [self calculateOverallParameter];
     [self calculateZoomedParameter];
     
@@ -110,8 +122,16 @@
  */
 - (void)calculateOverallParameter
 {
-    CGFloat w = self.frame.size.width;
-    CGFloat h = self.frame.size.height;
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        w = self.frame.size.height;
+        h = self.frame.size.width;
+    } else {
+        w = self.frame.size.width;
+        h = self.frame.size.height;
+    }
+    
     CGFloat pitchH = w / (_board.width + 2 * KSLPROBLEM_MARGIN);
     CGFloat pitchV = h / (_board.height + 2 * KSLPROBLEM_MARGIN);
     if (pitchH > KSLPROBLEM_TOUCHABLE_PITCH && pitchV > KSLPROBLEM_TOUCHABLE_PITCH) {
@@ -135,12 +155,15 @@
  */
 - (void)calculateZoomedParameter
 {
-    _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
-    _r = _zpitch * 0.5;
-    _scrollStep = _zpitch * 0.2;
-
-    CGFloat w = self.frame.size.width / _zpitch;
-    CGFloat h = self.frame.size.height / _zpitch;
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        w = self.frame.size.height;
+        h = self.frame.size.width;
+    } else {
+        w = self.frame.size.width;
+        h = self.frame.size.height;
+    }
     
     CGFloat zxmin;
     CGFloat zxmax;
@@ -170,8 +193,13 @@
 - (void)setZoomedAreaWithRect:(CGRect)rect
 {
     _zoomedArea = KLCGClumpRect(rect, _zoomableArea);
-    _zx0 = -_zoomedArea.origin.x * _zpitch;
-    _zy0 = -_zoomedArea.origin.y * _zpitch;
+    if (_rotated) {
+        _zx0 = -_zoomedArea.origin.y * _zpitch;
+        _zy0 = self.frame.size.height + _zoomedArea.origin.x * _zpitch;
+    } else {
+        _zx0 = -_zoomedArea.origin.x * _zpitch;
+        _zy0 = -_zoomedArea.origin.y * _zpitch;
+    }
 }
 
 #pragma mark - 描画
@@ -186,16 +214,44 @@
     CGContextFillRect(context, CGRectMake(0, 0, w, h));
     
     if (_board) {
+        BOOL rotated = [self checkRotation];
+        if (rotated != _rotated) {
+            _rotated = rotated;
+            [self calculateOverallParameter];
+            [self calculateZoomedParameter];
+            
+            CGFloat cx = CGRectGetMidX(_zoomedArea);
+            CGFloat cy = CGRectGetMidY(_zoomedArea);
+            
+            CGFloat zoomedW = self.frame.size.width / _zpitch;
+            CGFloat zoomedH = self.frame.size.height / _zpitch;
+            [self setZoomedAreaWithRect:
+                CGRectMake(cx - 0.5 * zoomedW, cy - 0.5 * zoomedH, zoomedW, zoomedH)];
+        }
+        
         if (_zoomed) {
             CGContextSetFillColorWithColor(context, [UIColor lightGrayColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
             CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
             
+            CGFloat x0;
+            CGFloat y0;
+            CGRect boardRect;
             float margin = (KSLPROBLEM_MARGIN - KSLPROBLEM_BORDER_WIDTH) * _zpitch;
-            CGRect boardRect = CGRectMake(_zx0 - margin, _zy0 - margin,
-                                          _board.width  * _zpitch + margin * 2,
-                                          _board.height * _zpitch + margin * 2);
+            if (_rotated) {
+                x0 = _zy0;
+                y0 = self.frame.size.height - _zx0;
+                boardRect = CGRectMake(x0 - margin, y0 - _board.width  * _zpitch - margin,
+                                       _board.height  * _zpitch + margin * 2,
+                                       _board.width * _zpitch + margin * 2);
+            } else {
+                x0 = _zx0;
+                y0 = _zy0;
+                boardRect = CGRectMake(x0 - margin, y0 - margin,
+                                              _board.width  * _zpitch + margin * 2,
+                                              _board.height * _zpitch + margin * 2);
+            }
             CGContextFillRect(context, boardRect);
             
             // タッチの余韻描画
@@ -206,13 +262,22 @@
                 CGContextFillEllipseInRect(context, CGRectMake(track.x - _r, track.y - _r, 2 * _r, 2 * _r));
             }
             
-            [_board drawImageWithContext:context origin:CGPointMake(_zx0, _zy0) pitch:_zpitch
+            [_board drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:_zpitch rotate:_rotated
                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
         } else {
             CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
-            [_board drawImageWithContext:context origin:CGPointMake(_ax0, _ay0) pitch:_apitch
+            CGFloat x0;
+            CGFloat y0;
+            if (_rotated) {
+                x0 = _ay0;
+                y0 = self.frame.size.height - _ax0;
+            } else {
+                x0 = _ax0;
+                y0 = _ay0;
+            }
+            [_board drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:_apitch  rotate:_rotated
                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
             
             CGContextSetFillColorWithColor(context,
@@ -232,11 +297,21 @@
  */
 - (CGRect)zoomedAreaInView
 {
-    CGFloat x = _ax0 + _zoomedArea.origin.x * _apitch;
-    CGFloat y = _ay0 + _zoomedArea.origin.y * _apitch;
-    CGFloat w = _zoomedArea.size.width * _apitch;
-    CGFloat h = _zoomedArea.size.height * _apitch;
-    
+    CGFloat x;
+    CGFloat y;
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        x = _ay0 + _zoomedArea.origin.y * _apitch;
+        y = _ax0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
+        w = _zoomedArea.size.height * _apitch;
+        h = _zoomedArea.size.width * _apitch;
+    } else {
+        x = _ax0 + _zoomedArea.origin.x * _apitch;
+        y = _ay0 + _zoomedArea.origin.y * _apitch;
+        w = _zoomedArea.size.width * _apitch;
+        h = _zoomedArea.size.height * _apitch;
+    }
     return CGRectMake(x, y, w, h);
 }
 
@@ -440,8 +515,13 @@
  */
 - (void)panZoomedArea:(CGPoint)translation
 {
-    [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
+    if (_rotated) {
+        [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
+                                             -translation.y / _zpitch, translation.x / _zpitch)];
+    } else {
+        [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
                                              -translation.x / _zpitch, -translation.y / _zpitch)];
+    }
 }
 
 /**
@@ -457,8 +537,15 @@
 
 - (KSLNode *)findNode:(CGPoint)point
 {
-    CGFloat xp = (point.x - _zx0) / _zpitch;
-    CGFloat yp = (point.y - _zy0) / _zpitch;
+    CGFloat xp;
+    CGFloat yp;
+    if (_rotated) {
+        xp = -(point.y - _zy0) / _zpitch;
+        yp = (point.x - _zx0) / _zpitch;
+    } else {
+        xp = (point.x - _zx0) / _zpitch;
+        yp = (point.y - _zy0) / _zpitch;
+    }
     NSInteger xi = (NSInteger)(xp + 0.5);
     NSInteger yi = (NSInteger)(yp + 0.5);
     xi = KLCGClumpInt(xi, 0, _board.width);
@@ -474,8 +561,15 @@
 
 - (KSLCell *)findCell:(CGPoint)point
 {
-    CGFloat xp = (point.x - _zx0) / _zpitch;
-    CGFloat yp = (point.y - _zy0) / _zpitch;
+    CGFloat xp;
+    CGFloat yp;
+    if (_rotated) {
+        xp = -(point.y - _zy0) / _zpitch;
+        yp = (point.x - _zx0) / _zpitch;
+    } else {
+        xp = (point.x - _zx0) / _zpitch;
+        yp = (point.y - _zy0) / _zpitch;
+    }
     NSInteger xi = (NSInteger)xp;
     NSInteger yi = (NSInteger)yp;
     xi = KLCGClumpInt(xi, 0, _board.width - 1);
@@ -491,8 +585,15 @@
 
 - (KSLEdge *)findEdge:(CGPoint)point
 {
-    CGFloat xp = (point.x - _zx0) / _zpitch;
-    CGFloat yp = (point.y - _zy0) / _zpitch;
+    CGFloat xp;
+    CGFloat yp;
+    if (_rotated) {
+        xp = -(point.y - _zy0) / _zpitch;
+        yp = (point.x - _zx0) / _zpitch;
+    } else {
+        xp = (point.x - _zx0) / _zpitch;
+        yp = (point.y - _zy0) / _zpitch;
+    }
     NSInteger xi = (NSInteger)(xp + 0.5);
     NSInteger yi = (NSInteger)(yp + 0.5);
     xi = KLCGClumpInt(xi, 0, _board.width);
@@ -519,6 +620,12 @@
         }
     }
     return nil;
+}
+
+- (BOOL)checkRotation
+{
+    return (_board.width > _board.height && self.frame.size.width <= self.frame.size.height) ||
+            (_board.width <= _board.height && self.frame.size.width > self.frame.size.height);
 }
 
 @end

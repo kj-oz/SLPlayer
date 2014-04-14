@@ -521,7 +521,7 @@
     CGFloat x0 = (imageWidth - pitch * _width) / 2;
     CGFloat y0 = (imageHeight - pitch * _height) / 2;
     
-    [self drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:pitch
+    [self drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:pitch rotate:NO
                  erasableColor:[UIColor blackColor].CGColor];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
@@ -529,9 +529,8 @@
     return image;
 }
 
-- (void)drawImageWithContext:(CGContextRef)context
-                      origin:(CGPoint)origin pitch:(CGFloat)pitch
-               erasableColor:(CGColorRef)erasableColor
+- (void)drawImageWithContext:(CGContextRef)context origin:(CGPoint)origin pitch:(CGFloat)pitch
+                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor
 {
     CGFloat charH = 0.8 * pitch;
     CGFloat pointR = 0.03 * pitch;
@@ -548,10 +547,20 @@
     CGContextSetLineWidth(context, crossLineW);
     CGContextSetShouldAntialias(context, NO);
     
+    CGFloat x;
+    CGFloat y;
     for (NSInteger v = 0; v <= _height; v++) {
-        CGFloat y = y0 + v * pitch;
+        if (rotate) {
+            x = x0 + v * pitch;
+        } else {
+            y = y0 + v * pitch;
+        }
         for (NSInteger u = 0; u <= _width; u++) {
-            CGFloat x = x0 + u * pitch;
+            if (rotate) {
+                y = y0 - u * pitch;
+            } else {
+                x = x0 + u * pitch;
+            }
             CGRect rect = CGRectMake(x-pointR, y-pointR, pointR * 2, pointR * 2);
             CGContextFillRect(context, rect);
         }
@@ -563,10 +572,19 @@
     CGSize size = [@"0" sizeWithFont:font];
     CGFloat nx = (pitch - size.width) * 0.5 + 0.5;
     CGFloat ny = (pitch - size.height) * 0.5;
+    
     for (NSInteger v = 0; v < _height; v++) {
-        CGFloat y = y0 + v * pitch + ny;
+        if (rotate) {
+            x = x0 + v * pitch + nx;
+        } else {
+            y = y0 + v * pitch + ny;
+        }
         for (NSInteger u = 0; u < _width; u++) {
-            CGFloat x = x0 + u * pitch + nx;
+            if (rotate) {
+                y = y0 - u * pitch - ny;
+            } else {
+                x = x0 + u * pitch + nx;
+            }
             NSInteger number = [self cellAtX:u andY:v].number;
             if (number >= 0) {
                 [chars[number] drawAtPoint:CGPointMake(x, y) withFont:font];
@@ -575,40 +593,76 @@
     }
     
     for (NSInteger v = 0; v <= _height; v++) {
-        CGFloat y = y0 + v * pitch;
+        if (rotate) {
+            x = x0 + v * pitch;
+        } else {
+            y = y0 + v * pitch;
+        }
         for (NSInteger u = 0; u < _width; u++) {
-            CGFloat x = x0 + u * pitch;
+            if (rotate) {
+                y = y0 - (u + 1) * pitch;
+            } else {
+                x = x0 + u * pitch;
+            }
             KSLEdge *edge = [self hEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             CGContextSetStrokeColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             KSLEdgeStatus status = edge.status;
             if (status == KSLEdgeStatusOn) {
-                CGRect rect = CGRectMake(x+pointR, y-lineW*0.5, pitch-2*pointR, lineW);
+                CGRect rect;
+                if (rotate) {
+                    rect = CGRectMake(x-lineW*0.5, y+pointR, lineW, pitch-2*pointR);
+                } else {
+                    rect = CGRectMake(x+pointR, y-lineW*0.5, pitch-2*pointR, lineW);
+                }
                 CGContextFillRect(context, rect);
             } else if (status == KSLEdgeStatusOff) {
-                [self drawCrossWithContext:context cx:x+0.5*pitch cy:y halfSize:crossR];
+                if (rotate) {
+                    [self drawCrossWithContext:context cx:x cy:y+0.5*pitch halfSize:crossR];
+                } else {
+                    [self drawCrossWithContext:context cx:x+0.5*pitch cy:y halfSize:crossR];
+                }
             }
         }
     }
     
     for (NSInteger v = 0; v < _height; v++) {
-        CGFloat y = y0 + v * pitch;
+        if (rotate) {
+            x = x0 + v * pitch;
+        } else {
+            y = y0 + v * pitch;
+        }
         for (NSInteger u = 0; u <= _width; u++) {
-            CGFloat x = x0 + u * pitch;
+            if (rotate) {
+                y = y0 - u * pitch;
+            } else {
+                x = x0 + u * pitch;
+            }
             KSLEdge *edge = [self vEdgeAtX:u andY:v];
             CGContextSetFillColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             CGContextSetStrokeColorWithColor(context, edge.fixed ? fixedColor : erasableColor);
             KSLEdgeStatus status = edge.status;
             if (status == KSLEdgeStatusOn) {
-                CGRect rect = CGRectMake(x-lineW*0.5, y+pointR, lineW, pitch-2*pointR);
+                CGRect rect;
+                if (rotate) {
+                    rect = CGRectMake(x+pointR, y-lineW*0.5, pitch-2*pointR, lineW);
+                } else {
+                    rect = CGRectMake(x-lineW*0.5, y+pointR, lineW, pitch-2*pointR);
+                }
                 CGContextFillRect(context, rect);
             } else if (status == KSLEdgeStatusOff) {
-                [self drawCrossWithContext:context cx:x cy:y+0.5*pitch halfSize:crossR];
+                if (rotate) {
+                    [self drawCrossWithContext:context cx:x+0.5*pitch cy:y halfSize:crossR];
+                } else {
+                    [self drawCrossWithContext:context cx:x cy:y+0.5*pitch halfSize:crossR];
+                }
             }
         }
     }
     
 }
+
+
 
 #pragma mark - プライベートメソッド
 
