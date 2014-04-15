@@ -111,8 +111,15 @@
     _zoomed = YES;
     
     // 初期拡大エリア
-    CGFloat zoomedW = self.frame.size.width / _zpitch;
-    CGFloat zoomedH = self.frame.size.height / _zpitch;
+    CGFloat zoomedW;
+    CGFloat zoomedH;
+    if (_rotated) {
+        zoomedW = self.frame.size.height / _zpitch;
+        zoomedH = self.frame.size.width / _zpitch;
+    } else {
+        zoomedW = self.frame.size.width / _zpitch;
+        zoomedH = self.frame.size.height / _zpitch;
+    }
     [self setZoomedAreaWithRect:
                    CGRectMake(_zoomableArea.origin.x, _zoomableArea.origin.y, zoomedW, zoomedH)];
 }
@@ -137,16 +144,31 @@
     if (pitchH > KSLPROBLEM_TOUCHABLE_PITCH && pitchV > KSLPROBLEM_TOUCHABLE_PITCH) {
         // 実際には常にズーム中として扱うため使用されない
         _apitch = KSLPROBLEM_TOUCHABLE_PITCH;
-        _ax0 = (w - _apitch * _board.width) / 2;
-        _ay0 = (h - _apitch * _board.height) / 2;
+        if (_rotated) {
+            _ax0 = (h - _apitch * _board.height) / 2;
+            _ay0 = w - (w - _apitch * _board.width) / 2;
+        } else {
+            _ax0 = (w - _apitch * _board.width) / 2;
+            _ay0 = (h - _apitch * _board.height) / 2;
+        }
     } else if (pitchH < pitchV) {
         _apitch = pitchH;
-        _ax0 = _apitch * KSLPROBLEM_MARGIN;
-        _ay0 = (h - _apitch * _board.height) / 2;
+        if (_rotated) {
+            _ax0 = (h - _apitch * _board.height) / 2;
+            _ay0 = w - _apitch * KSLPROBLEM_MARGIN;
+        } else {
+            _ax0 = _apitch * KSLPROBLEM_MARGIN;
+            _ay0 = (h - _apitch * _board.height) / 2;
+        }
     } else {
         _apitch = pitchV;
-        _ay0 = _apitch * KSLPROBLEM_MARGIN;
-        _ax0 = (w - _apitch * _board.width) / 2;
+        if (_rotated) {
+            _ax0 = _apitch * KSLPROBLEM_MARGIN;
+            _ay0 = w - (w - _apitch * _board.width) / 2;
+        } else {
+            _ax0 = (w - _apitch * _board.width) / 2;
+            _ay0 = _apitch * KSLPROBLEM_MARGIN;
+        }
     }
 }
 
@@ -158,11 +180,11 @@
     CGFloat w;
     CGFloat h;
     if (_rotated) {
-        w = self.frame.size.height;
-        h = self.frame.size.width;
+        w = self.frame.size.height / _zpitch;
+        h = self.frame.size.width / _zpitch;
     } else {
-        w = self.frame.size.width;
-        h = self.frame.size.height;
+        w = self.frame.size.width / _zpitch;
+        h = self.frame.size.height / _zpitch;
     }
     
     CGFloat zxmin;
@@ -210,8 +232,6 @@
     
     CGFloat w = self.frame.size.width;
     CGFloat h = self.frame.size.height;
-    CGContextSetFillColorWithColor(context, [UIColor lightGrayColor].CGColor);
-    CGContextFillRect(context, CGRectMake(0, 0, w, h));
     
     if (_board) {
         BOOL rotated = [self checkRotation];
@@ -223,8 +243,15 @@
             CGFloat cx = CGRectGetMidX(_zoomedArea);
             CGFloat cy = CGRectGetMidY(_zoomedArea);
             
-            CGFloat zoomedW = self.frame.size.width / _zpitch;
-            CGFloat zoomedH = self.frame.size.height / _zpitch;
+            CGFloat zoomedW;
+            CGFloat zoomedH;
+            if (_rotated) {
+                zoomedW = self.frame.size.height / _zpitch;
+                zoomedH = self.frame.size.width / _zpitch;
+            } else {
+                zoomedW = self.frame.size.width / _zpitch;
+                zoomedH = self.frame.size.height / _zpitch;
+            }
             [self setZoomedAreaWithRect:
                 CGRectMake(cx - 0.5 * zoomedW, cy - 0.5 * zoomedH, zoomedW, zoomedH)];
         }
@@ -235,22 +262,16 @@
 
             CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
             
-            CGFloat x0;
-            CGFloat y0;
             CGRect boardRect;
             float margin = (KSLPROBLEM_MARGIN - KSLPROBLEM_BORDER_WIDTH) * _zpitch;
             if (_rotated) {
-                x0 = _zy0;
-                y0 = self.frame.size.height - _zx0;
-                boardRect = CGRectMake(x0 - margin, y0 - _board.width  * _zpitch - margin,
-                                       _board.height  * _zpitch + margin * 2,
-                                       _board.width * _zpitch + margin * 2);
+                boardRect = CGRectMake(_zx0 - margin, _zy0 - _board.width * _zpitch - margin,
+                                        _board.height * _zpitch + margin * 2,
+                                        _board.width * _zpitch + margin * 2);
             } else {
-                x0 = _zx0;
-                y0 = _zy0;
-                boardRect = CGRectMake(x0 - margin, y0 - margin,
-                                              _board.width  * _zpitch + margin * 2,
-                                              _board.height * _zpitch + margin * 2);
+                boardRect = CGRectMake(_zx0 - margin, _zy0 - margin,
+                                        _board.width * _zpitch + margin * 2,
+                                        _board.height * _zpitch + margin * 2);
             }
             CGContextFillRect(context, boardRect);
             
@@ -262,22 +283,13 @@
                 CGContextFillEllipseInRect(context, CGRectMake(track.x - _r, track.y - _r, 2 * _r, 2 * _r));
             }
             
-            [_board drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:_zpitch rotate:_rotated
+            [_board drawImageWithContext:context origin:CGPointMake(_zx0, _zy0) pitch:_zpitch rotate:_rotated
                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
         } else {
             CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
-            CGFloat x0;
-            CGFloat y0;
-            if (_rotated) {
-                x0 = _ay0;
-                y0 = self.frame.size.height - _ax0;
-            } else {
-                x0 = _ax0;
-                y0 = _ay0;
-            }
-            [_board drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:_apitch  rotate:_rotated
+            [_board drawImageWithContext:context origin:CGPointMake(_ax0, _ay0) pitch:_apitch  rotate:_rotated
                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
             
             CGContextSetFillColorWithColor(context,
@@ -302,8 +314,8 @@
     CGFloat w;
     CGFloat h;
     if (_rotated) {
-        x = _ay0 + _zoomedArea.origin.y * _apitch;
-        y = _ax0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
+        x = _ax0 + _zoomedArea.origin.y * _apitch;
+        y = _ay0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
         w = _zoomedArea.size.height * _apitch;
         h = _zoomedArea.size.width * _apitch;
     } else {
@@ -375,8 +387,13 @@
         CGRect zoomedArea = [self zoomedAreaInView];
         
         if (CGRectContainsPoint(zoomedArea, location)) {
-            [self setZoomedAreaWithRect:
+            if (_rotated) {
+                [self setZoomedAreaWithRect:
+                    CGRectOffset(_zoomedArea, -translation.y / _apitch, translation.x / _apitch)];
+            } else {
+                [self setZoomedAreaWithRect:
                     CGRectOffset(_zoomedArea, translation.x / _apitch, translation.y / _apitch)];
+            }
             [self setNeedsDisplay];
         }
     }
@@ -517,7 +534,7 @@
 {
     if (_rotated) {
         [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
-                                             -translation.y / _zpitch, translation.x / _zpitch)];
+                                             translation.y / _zpitch, -translation.x / _zpitch)];
     } else {
         [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
                                              -translation.x / _zpitch, -translation.y / _zpitch)];

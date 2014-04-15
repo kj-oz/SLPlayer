@@ -92,7 +92,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
+                            <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-db-Ys1" customClass="KSLProblemView">
                                 <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -197,7 +197,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sJy-t4-uBu">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sJy-t4-uBu">
                                 <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
@@ -271,7 +271,7 @@
                                             </barButtonItem>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
+                                    <view contentMode="redraw" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
                                         <rect key="frame" x="0.0" y="44" width="768" height="916"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -287,6 +287,12 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="sJy-t4-uBu" secondAttribute="trailing" id="EJQ-3r-nZd"/>
+                            <constraint firstItem="eZp-Za-8Os" firstAttribute="top" secondItem="sJy-t4-uBu" secondAttribute="bottom" id="fZX-7r-Oy7"/>
+                            <constraint firstItem="sJy-t4-uBu" firstAttribute="top" secondItem="a4G-G7-fgH" secondAttribute="bottom" id="vXn-kR-kJ9"/>
+                            <constraint firstItem="sJy-t4-uBu" firstAttribute="leading" secondItem="bYZ-Bh-wwP" secondAttribute="leading" id="x5a-90-VwI"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="5mM-Bb-AMp">
                         <nil key="title"/>

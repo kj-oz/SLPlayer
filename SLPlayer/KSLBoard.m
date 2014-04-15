@@ -581,7 +581,7 @@
         }
         for (NSInteger u = 0; u < _width; u++) {
             if (rotate) {
-                y = y0 - u * pitch - ny;
+                y = y0 - (u + 1) * pitch + ny;
             } else {
                 x = x0 + u * pitch + nx;
             }

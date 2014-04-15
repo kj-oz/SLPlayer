@@ -156,12 +156,12 @@
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     if (self.editing) {
-        if (problem.status == KSLProblemStatusSolved ||
-                problem.status == KSLProblemStatusSolving) {
+        if (!(problem.status == KSLProblemStatusSolved ||
+                problem.status == KSLProblemStatusSolving)) {
             [self performSegueWithIdentifier:@"EditProblem" sender:self];
         }
     } else {
-        if (problem.status == KSLProblemStatusEditing) {
+        if (problem.status != KSLProblemStatusEditing) {
             [self performSegueWithIdentifier:@"PlayProblem" sender:self];
         }
     }
