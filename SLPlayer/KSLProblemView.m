@@ -293,8 +293,9 @@
                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor];
             
             CGContextSetFillColorWithColor(context,
-                                           [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:0.2].CGColor);
-            CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
+                                           [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:0.1].CGColor);
+            CGContextSetStrokeColorWithColor(context,
+                                           [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.2].CGColor);
             
             CGRect rect = [self zoomedAreaInView];
             CGContextFillRect(context, rect);

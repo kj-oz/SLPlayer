@@ -62,7 +62,11 @@
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem width="19" systemItem="fixedSpace" id="CNz-W5-s8v"/>
-                                            <barButtonItem systemItem="edit" id="LHo-sU-u2R"/>
+                                            <barButtonItem systemItem="edit" id="LHo-sU-u2R">
+                                                <connections>
+                                                    <action selector="editClicked:" destination="J4n-uI-lDX" id="lHP-mC-nGb"/>
+                                                </connections>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                 </subviews>
@@ -72,6 +76,7 @@
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="editButton" destination="LHo-sU-u2R" id="5Wc-7x-FhO"/>
                         <segue destination="Vkt-xv-pXA" kind="push" identifier="PlayProblem" id="0Mk-gz-vcX"/>
                         <segue destination="8aW-4u-QbU" kind="modal" identifier="EditProblem" id="J9z-5i-hbI"/>
                     </connections>
@@ -279,7 +284,9 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="dYR-dQ-7YT" secondAttribute="trailing" id="Fx2-QF-cDf"/>
                                     <constraint firstItem="KHN-a3-8D6" firstAttribute="top" secondItem="dYR-dQ-7YT" secondAttribute="bottom" id="HBq-YQ-PJn"/>
+                                    <constraint firstItem="dYR-dQ-7YT" firstAttribute="leading" secondItem="sJy-t4-uBu" secondAttribute="leading" id="PVU-FK-a1e"/>
                                     <constraint firstItem="KHN-a3-8D6" firstAttribute="leading" secondItem="sJy-t4-uBu" secondAttribute="leading" id="ZHh-5K-fQH"/>
                                     <constraint firstAttribute="trailing" secondItem="KHN-a3-8D6" secondAttribute="trailing" id="b8Y-5L-fuR"/>
                                     <constraint firstAttribute="bottom" secondItem="KHN-a3-8D6" secondAttribute="bottom" id="q2l-Is-kgA"/>
@@ -303,7 +310,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="ujM-P2-P5J">
                             <connections>
-                                <segue destination="06K-KE-dCs" kind="unwind" unwindAction="doneProblemEdit:" id="l50-RU-1IW"/>
+                                <action selector="doneClicked:" destination="eQF-aD-vjA" id="9D6-47-QiS"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -317,6 +324,7 @@
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
                         <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
                         <outlet property="zoomedView" destination="KHN-a3-8D6" id="sgT-qQ-Mhc"/>
+                        <segue destination="06K-KE-dCs" kind="unwind" identifier="DoneEditProblem" unwindAction="doneProblemEdit:" id="SNp-4f-Tyg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xOj-Ev-BlJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

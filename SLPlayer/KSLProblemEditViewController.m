@@ -22,12 +22,6 @@
 // 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
 
-// 問題名称入力欄
-@property (weak, nonatomic) IBOutlet UITextField *titleText;
-
-// 難易度入力欄
-@property (weak, nonatomic) IBOutlet UITextField *difficultyText;
-
 // 状態表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
@@ -207,6 +201,31 @@
     [self updateProblemInfo];
 }
 
+- (IBAction)doneClicked:(id)sender
+{
+    NSString *title = [self.titleText.text
+                       stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([title isEqualToString:@"未定"] || ![title length]) {
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"名称"
+                              message:@"正しい名称を入力して下さい。"
+                              delegate:nil cancelButtonTitle:nil
+                              otherButtonTitles:@"了解", nil];
+        [alert show];
+        return;
+    }
+    NSInteger difficulty = [self.difficultyText.text integerValue];
+    if (difficulty < 1 || difficulty > 9) {
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"難易度"
+                              message:@"1桁の整数を入力して下さい。"
+                              delegate:nil cancelButtonTitle:nil
+                              otherButtonTitles:@"了解", nil];
+        [alert show];
+        return;
+    }
+    [self performSegueWithIdentifier:@"DoneEditProblem" sender:self];
+}
 
 #pragma mark - UIImagePickerControllerDelegate
 
@@ -243,6 +262,11 @@
     [self updateProblemInfo];
     
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    
 }
 
 #pragma mark - ヘルパメソッド群

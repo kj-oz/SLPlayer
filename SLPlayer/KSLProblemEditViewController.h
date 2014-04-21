@@ -14,7 +14,14 @@
 @class KSLProblem;
 
 @interface KSLProblemEditViewController : UIViewController
-        <UINavigationControllerDelegate, UIImagePickerControllerDelegate, KSLProblemViewDelegate>
+        <UINavigationControllerDelegate, UIImagePickerControllerDelegate,
+            UITextFieldDelegate, KSLProblemViewDelegate>
+
+// 問題名称入力欄
+@property (weak, nonatomic) IBOutlet UITextField *titleText;
+
+// 難易度入力欄
+@property (weak, nonatomic) IBOutlet UITextField *difficultyText;
 
 // 対象の問題
 @property (nonatomic, strong) KSLProblem *problem;

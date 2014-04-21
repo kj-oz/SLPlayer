@@ -16,6 +16,8 @@
 
 @interface KSLProblemListViewController ()
 
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
+
 @end
 
 @implementation KSLProblemListViewController
@@ -76,6 +78,17 @@
     }
 }
 
+
+- (IBAction)editClicked:(id)sender {
+    if (self.tableView.editing) {
+        [self.tableView setEditing:NO];
+        self.editButton.title = @"Edit";
+    } else {
+        self.tableView.editing = true;
+        self.editButton.title = @"Done";
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -104,6 +117,11 @@
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"%ldX%ld　%@　%@", (long)problem.width,
                            (long)problem.height, [problem difficultyString], problem.title];
+    if (problem.status == KSLProblemStatusSolved) {
+        cell.textLabel.enabled = false;
+    } else {
+        cell.textLabel.enabled = true;
+    }
     
     if (problem.elapsedSecond > 0) {
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
@@ -196,12 +214,48 @@
     }
 }
 
+//- (BOOL)canPerformUnwindSegueAction:(SEL)action fromViewController:(UIViewController *)fromViewController withSender:(id)sender
+//{
+//    if (action == @selector(cancelProblemEdit:)) {
+//        return YES;
+//    }
+//    
+//    KLDBGPrintMethodName(">>");
+//    KLDBGPrint("%s", [[sender description] UTF8String]);
+//    KSLProblemEditViewController *pev = (KSLProblemEditViewController *)fromViewController;
+//    NSString *title = [pev.titleText.text
+//                      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+//    if ([title isEqualToString:@"未定"] || ![title length]) {
+//        UIAlertView *alert = [[UIAlertView alloc]
+//                                 initWithTitle:@"名称"
+//                                 message:@"正しい名称を入力して下さい。"
+//                                 delegate:nil cancelButtonTitle:nil
+//                                 otherButtonTitles:@"了解", nil];
+//        [alert show];
+//        return NO;
+//    }
+//    NSInteger difficulty = [pev.difficultyText.text integerValue];
+//    if (difficulty < 1 || difficulty > 9) {
+//        UIAlertView *alert = [[UIAlertView alloc]
+//                              initWithTitle:@"難易度"
+//                              message:@"1桁の整数を入力して下さい。"
+//                              delegate:nil cancelButtonTitle:nil
+//                              otherButtonTitles:@"了解", nil];
+//        [alert show];
+//        return NO;
+//    }
+//    return YES;
+//}
+
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     
     KSLProblemEditViewController *pev = (KSLProblemEditViewController *)segue.sourceViewController;
+    pev.problem.title = pev.titleText.text;
+    pev.problem.difficulty = [pev.difficultyText.text integerValue];
+    
     if (pev.addNew) {
         [pm.currentWorkbook addProblem:pev.problem withSave:YES];
         [self.tableView reloadData];
