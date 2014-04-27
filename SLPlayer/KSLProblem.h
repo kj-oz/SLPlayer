@@ -115,6 +115,13 @@ typedef enum : NSInteger {
 - (id)initWithFile:(NSString *)path;
 
 /**
+ * 与えられたJSONオブジェクト（辞書）から問題を生成する.
+ * @param json　jsonオブジェクト
+ * @return 問題オブジェクト
+ */
+- (id)initWithJson:(NSDictionary *)json;
+
+/**
  * 与えられた問題のコピーを生成する.
  * @param original 元の問題
  * @return 問題オブジェクト

@@ -96,6 +96,25 @@
     return self;
 }
 
+- (id)initWithJson:(NSDictionary *)json
+{
+    self = [super init];
+    if (self) {
+        CFUUIDRef uuid = CFUUIDCreate(NULL);
+        _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+        CFRelease(uuid);
+
+        self.title = json[@"title"];
+        self.status = [json[@"status"] integerValue];
+        self.difficulty = [json[@"difficulty"] integerValue];
+        _width = [json[@"width"] integerValue];
+        _height = [json[@"height"] integerValue];
+        _data = [json[@"data"] mutableCopy];
+        self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
+    }
+    return self;
+}
+
 - (id)initWithProblem:(KSLProblem *)original
 {
     self = [super init];

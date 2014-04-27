@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KSLWorkbookListViewController.h"
 
-@interface KSLProblemListViewController : UITableViewController
+@interface KSLProblemListViewController : UITableViewController <KSLWorkbookListViewControllerDelegate>
 
 @end

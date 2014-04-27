@@ -63,10 +63,16 @@ static KSLProblemManager *_sharaedInstance = nil;
     NSMutableArray *dirs = [NSMutableArray array];
     NSArray *files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
     BOOL isDir;
-    for (NSInteger i = 0, n = files.count; i < n; i++) {
-        [fm fileExistsAtPath:[_documentDir stringByAppendingPathComponent:files[i]] isDirectory:&isDir];
+    NSError *error;
+    for (NSString *file in files) {
+        NSString *path = [_documentDir stringByAppendingPathComponent:file];
+        [fm fileExistsAtPath:path isDirectory:&isDir];
         if (isDir) {
-            [dirs addObject:files[i]];
+            [dirs addObject:file];
+        } else if ([[file pathExtension] isEqualToString:@"workbook"]) {
+            [self importWorkbook:path];
+            [dirs addObject:[file stringByDeletingPathExtension]];
+            [fm removeItemAtPath:path error:&error];
         }
     }
     
@@ -77,14 +83,84 @@ static KSLProblemManager *_sharaedInstance = nil;
         }
     } else {
         // サンプル問題集の展開
-        NSString *path = [_documentDir stringByAppendingPathComponent:@"サンプル"];
-        NSError *error;
-        if (![fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error]) {
-            KLDBGPrint("%s", error.description.UTF8String);
-        };
-        KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:@"サンプル"];
-        [_workbooks addObject:book];
+        NSArray *libDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        NSString *libDir = libDirs[0];
+        NSArray *files = [fm contentsOfDirectoryAtPath:libDir error:NULL];
+        for (NSString *file in files) {
+            if ([[file pathExtension] isEqualToString:@"workbook"]) {
+                NSString *path = [libDir stringByAppendingPathComponent:file];
+                [self importWorkbook:path];
+                KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:file];
+                [_workbooks addObject:book];
+            }
+        }
     }
+}
+
+- (KSLWorkbook *)findWorkbook:(NSString *)title
+{
+    for (KSLWorkbook *wb in _workbooks) {
+        if ([wb.title isEqualToString:title]) {
+            return wb;
+        }
+    }
+    return nil;
+}
+
+- (NSInteger)indexOfWorkbook:(KSLWorkbook *)workbook
+{
+    NSInteger index = 0;
+    for (KSLWorkbook *wb in _workbooks) {
+        if (wb == workbook) {
+            return index;
+        }
+        index++;
+    }
+    return -1;
+}
+
+- (void)importWorkbook:(NSString *)jsonPath
+{
+    NSError *error = nil;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:
+                          [NSData dataWithContentsOfFile:jsonPath] options:0 error:&error];
+    if (error) {
+        [[NSException exceptionWithName:error.description reason:jsonPath userInfo:nil] raise];
+    }
+    NSString *title = json[@"title"];
+    
+    NSString *path = [_documentDir stringByAppendingPathComponent:title];
+    
+    NSInteger num = 1;
+    NSString *base = title;
+    NSFileManager *fm = [NSFileManager defaultManager];
+    while ([fm fileExistsAtPath:path]) {
+        num++;
+        title = [NSString stringWithFormat:@"%@-%ld", base, (long)num];
+        path = [_documentDir stringByAppendingPathComponent:title];
+    }
+    [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error];
+    
+    NSArray *problems = json[@"problems"];
+    for (NSDictionary *dic in problems) {
+        KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
+        [problem saveToFile:path];
+    }
+}
+
+- (void)addWorkbook:(KSLWorkbook *)workbook
+{
+    [_workbooks addObject:workbook];
+}
+
+- (void)removeWorkbookAtIndex:(NSInteger)index
+{
+    KSLWorkbook *wb = _workbooks[index];
+    NSError *error;
+    NSFileManager *fm = [NSFileManager defaultManager];
+    [fm removeItemAtPath:[_documentDir stringByAppendingPathComponent:wb.title] error:&error];
+    
+    [_workbooks removeObjectAtIndex:index];
 }
 
 - (void)moveProblem:(KSLProblem *)problem toWorkbook:(KSLWorkbook *)to

@@ -13,16 +13,25 @@
 #import "KSLProblem.h"
 #import "KLDBGUtil.h"
 #import "KSLAppDelegate.h"
+#import "KSLWorkbookListViewController.h"
 
 @interface KSLProblemListViewController ()
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *workbookButton;
 
 @end
 
 @implementation KSLProblemListViewController
 {
     KSLProblem *_editingProblem;
+    
+    KSLWorkbookListViewController *_workbookList;
+    
+    // 問題集リスト表示の元になったボタン
+    UIBarButtonItem* _workbookListReason;
+    
+    UIPopoverController *_poController;
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -87,6 +96,17 @@
         self.tableView.editing = true;
         self.editButton.title = @"Done";
     }
+}
+
+- (void)showWorkbookList:(UIBarButtonItem*)reason
+{
+    _workbookListReason = reason;
+    
+    // コントローラを作成する
+    [self performSegueWithIdentifier:@"ShowWorkbookList" sender:self];
+    
+    // ナビゲーションバーのenabledをNoにしないと、Popoverを表示したままナビゲーションバーの操作ができてしまう.
+    self.navigationController.navigationBar.userInteractionEnabled = NO;
 }
 
 #pragma mark - Table view data source
@@ -193,6 +213,15 @@
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     
+    BOOL popover = NO;
+    if ([segue isKindOfClass:[UIStoryboardPopoverSegue class]]) {
+        popover = YES;
+        if (_poController) {
+            [_poController dismissPopoverAnimated:NO];
+        }
+        _poController = ((UIStoryboardPopoverSegue*)segue).popoverController;
+    }
+
     if ([segue.identifier isEqualToString:@"PlayProblem"]) {
         KSLProblem *problem = pm.currentWorkbook.problems[[self.tableView indexPathForSelectedRow].row];
         pm.currentProblem = problem;
@@ -211,6 +240,11 @@
         pev.problem = [[KSLProblem alloc] initWithWidth:10 andHeight:20 data:nil];
         pev.addNew = YES;
         app.currentView = @"Edit";
+    } else if ([segue.identifier isEqualToString:@"ShowWorkbookList"]) {
+        _workbookListReason = sender;
+        UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
+        KSLWorkbookListViewController *wlv = (KSLWorkbookListViewController *)nc.visibleViewController;
+        wlv.delegate = self;
     }
 }
 
@@ -278,6 +312,61 @@
     
     pm.currentProblem = nil;
     app.currentView = @"List";
+}
+
+- (void)workbookListViewControllerWorkbookDidSelect:(KSLWorkbook *)workbook
+{
+    if (_workbookListReason == _workbookButton) {
+        [self changeWorkbook:workbook];
+    } else {
+        [self moveSelectedProblemsToWorkbook:workbook];
+    }
+    
+    // コントローラを隠す
+    [_poController dismissPopoverAnimated:YES];
+    _poController = nil;
+    
+    // 強制的にdismissした場合、PopoverのpopoverControllerDidDismissPopover:は呼び出されない
+    self.navigationController.navigationBar.userInteractionEnabled = YES;
+}
+
+- (void)workbookListViewControllerWorkbookDidRename:(KSLWorkbook *)workbook
+{
+    if ([KSLProblemManager sharedManager].currentWorkbook == workbook) {
+        self.title = workbook.title;
+    }
+}
+
+- (void)changeWorkbook:(KSLWorkbook *)workbook
+{
+    [KSLProblemManager sharedManager].currentWorkbook = workbook;
+    self.title = workbook.title;
+    [self.tableView reloadData];
+}
+
+- (void)moveSelectedProblemsToWorkbook:(KSLWorkbook *)workbook
+{
+    NSArray* problems = [self selectedProblems];
+    
+    // 実体を移動する
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    for (KSLProblem *problem in problems) {
+        [pm moveProblem:problem toWorkbook:workbook];
+    }
+    
+    [self.tableView reloadData];
+}
+
+- (NSArray*)selectedProblems
+{
+    KSLWorkbook *wb = [KSLProblemManager sharedManager].currentWorkbook;
+
+    NSArray* indexPaths = [self.tableView indexPathsForSelectedRows];
+    NSMutableArray* problems = [NSMutableArray array];
+    for (NSIndexPath* indexPath in indexPaths) {
+        [problems addObject:wb.problems[indexPath.row]];
+    }
+    return problems;
 }
 
 @end

@@ -1,10 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
+        <!--Workbook List View Controller-->
+        <scene sceneID="z9d-pw-lf6">
+            <objects>
+                <tableViewController modalPresentationStyle="formSheet" id="ods-jg-P7r" customClass="KSLWorkbookListViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="psc-iv-Tmm">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="L8J-g1-vz7">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="L8J-g1-vz7" id="GUu-rg-Q4l">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="ods-jg-P7r" id="0oK-qY-iXx"/>
+                            <outlet property="delegate" destination="ods-jg-P7r" id="reR-oS-RBn"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="i3E-7h-fGi">
+                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="rH1-G2-dhq">
+                            <connections>
+                                <action selector="endAction" destination="ods-jg-P7r" id="AWb-mW-Xmw"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="9Dq-BT-WkU">
+                            <connections>
+                                <action selector="addAction" destination="ods-jg-P7r" id="1YQ-qf-KI4"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <value key="contentSizeForViewInPopover" type="size" width="320" height="852"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="852"/>
+                    <connections>
+                        <outlet property="_addButton" destination="9Dq-BT-WkU" id="pSl-0p-1Kb"/>
+                        <outlet property="_endButton" destination="rH1-G2-dhq" id="wh7-YG-A2X"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TdS-D5-aol" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1063" y="-1462"/>
+        </scene>
         <!--Problem List View Controller-->
         <scene sceneID="8Uo-vh-UBY">
             <objects>
@@ -46,7 +93,13 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="8e6-KA-KWn">
-                        <barButtonItem key="leftBarButtonItem" title="問題集" id="o5m-0f-AM7"/>
+                        <barButtonItem key="leftBarButtonItem" title="問題集" id="o5m-0f-AM7">
+                            <connections>
+                                <segue destination="93g-qo-rzR" kind="popover" identifier="ShowWorkbookList" popoverAnchorBarButtonItem="o5m-0f-AM7" id="gyF-Va-bxM">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" width="96" id="Lss-oB-NUq">
                             <view key="customView" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" id="oWd-4L-fWA">
                                 <rect key="frame" x="656" y="5" width="96" height="33"/>
@@ -77,6 +130,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="editButton" destination="LHo-sU-u2R" id="5Wc-7x-FhO"/>
+                        <outlet property="workbookButton" destination="o5m-0f-AM7" id="nFW-a1-nll"/>
                         <segue destination="Vkt-xv-pXA" kind="push" identifier="PlayProblem" id="0Mk-gz-vcX"/>
                         <segue destination="8aW-4u-QbU" kind="modal" identifier="EditProblem" id="J9z-5i-hbI"/>
                     </connections>
@@ -188,7 +242,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fp1-xO-Pof" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1828" y="-635"/>
+            <point key="canvasLocation" x="2802" y="-635"/>
         </scene>
         <!--Problem Edit View Controller-->
         <scene sceneID="ueE-jC-Jjy">
@@ -369,6 +423,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="npa-Bg-RKd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1836" y="557"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="wVp-WH-HME">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="93g-qo-rzR" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="SSs-qp-Mto">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="ods-jg-P7r" kind="relationship" relationship="rootViewController" id="kUM-w4-nq0"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TMm-79-UPD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="573" y="-1462"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

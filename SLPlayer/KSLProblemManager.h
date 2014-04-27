@@ -41,4 +41,14 @@
  */
 - (void)load;
 
+- (KSLWorkbook *)findWorkbook:(NSString *)title;
+
+- (NSInteger)indexOfWorkbook:(KSLWorkbook *)workbook;
+
+- (void)addWorkbook:(KSLWorkbook *)workbook;
+
+- (void)removeWorkbookAtIndex:(NSInteger)index;
+
+- (void)moveProblem:(KSLProblem *)problem toWorkbook:(KSLWorkbook *)to;
+
 @end
