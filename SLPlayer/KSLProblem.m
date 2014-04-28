@@ -143,6 +143,9 @@
 - (void)rotate
 {
     NSMutableArray *data = [_data mutableCopy];
+    for (NSInteger i = 0, n = data.count; i < n; i++) {
+        data[i] = @(-1);
+    }
     for (NSInteger y = 0; y < _height; y++) {
         for (NSInteger x = 0; x < _width; x++) {
             NSInteger val = [self valueOfX:x andY:y];
@@ -150,6 +153,7 @@
             data[i] = @(val);
         }
     }
+    _data = data;
     
     NSInteger work = _width;
     _width = _height;

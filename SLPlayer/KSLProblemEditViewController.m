@@ -246,9 +246,6 @@
     }
 
     // 問題チェック
-    if (problem.width > problem.height) {
-        [problem rotate];
-    }
     [problem dump];
     KSLSolver *solver = [[KSLSolver alloc] initWithBoard:[[KSLBoard alloc] initWithProblem:problem]];
     NSError *error;
