@@ -228,11 +228,12 @@
             RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"削除" action:^{
                 [self removeSelectedWorkbook];
             }];
-            alert = [[UIAlertView alloc] initWithTitle:@"問題集の削除"
-                            message:@"含まれている全ての問題も同時に削除されます。\n%@を削除してもよろしいですか？"
+            NSString *msg = [NSString stringWithFormat:
+                             @"含まれている全ての問題も同時に削除されます。\n%@を削除してもよろしいですか？",
+                             workbook.title];
+            alert = [[UIAlertView alloc] initWithTitle:@"問題集の削除" message:msg
                             cancelButtonItem:cancelItem
                             otherButtonItems:deleteItem, nil];
-            alert.alertViewStyle = UIAlertViewStylePlainTextInput;
             [alert show];
         } else {
             [self removeSelectedWorkbook];

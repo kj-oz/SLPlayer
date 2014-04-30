@@ -13,6 +13,7 @@
 #import "KSLPlayer.h"
 #import "KSLProblemManager.h"
 #import "UIAlertView+Blocks.h"
+#import "UIActionSheet+Blocks.h"
 
 #pragma mark - エクステンション
 
@@ -130,29 +131,26 @@
  */
 - (void)stopPlay
 {
-    if (_player.problem.status == KSLProblemStatusSolved) {
-        return;
+    if (_player.problem.status != KSLProblemStatusSolved) {
+        [_timer invalidate];
+        
+        KSLProblem *problem = _player.problem;
+        NSDate *now = [NSDate date];
+        NSTimeInterval t = [now timeIntervalSinceDate:_start];
+        switch (problem.status) {
+            case KSLProblemStatusSolving:
+                problem.elapsedSecond = _elapsed + (NSInteger)t;
+                break;
+                
+            case KSLProblemStatusNotStarted:
+                problem.status = KSLProblemStatusSolving;
+                problem.elapsedSecond = (NSInteger)t;
+                break;
+                
+            default:
+                break;
+        }
     }
-
-    [_timer invalidate];
-    
-    KSLProblem *problem = _player.problem;
-    NSDate *now = [NSDate date];
-    NSTimeInterval t = [now timeIntervalSinceDate:_start];
-    switch (problem.status) {
-        case KSLProblemStatusSolving:
-            problem.elapsedSecond = _elapsed + (NSInteger)t;
-            break;
-            
-        case KSLProblemStatusNotStarted:
-            problem.status = KSLProblemStatusSolving;
-            problem.elapsedSecond = (NSInteger)t;
-            break;
-            
-        default:
-            break;
-    }
-    
     [_player save];
     [_player.problem save];
 }
@@ -204,7 +202,6 @@
     _stepping = NO;
     
     if ([_player isFinished]) {
-        // TODO 完成
         [_timer invalidate];
         
         KSLProblem *problem = _player.problem;
@@ -232,6 +229,24 @@
 }
 
 #pragma mark - 各種アクション
+
+- (IBAction)actionClicked:(id)sender {
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
+    RIButtonItem *initItem = [RIButtonItem itemWithLabel:@"初期化" action:^{
+        [self initClicked:sender];
+    }];
+    RIButtonItem *eraseItem = [RIButtonItem itemWithLabel:@"未固定部消去" action:^{
+        [self eraseClicked:sender];
+    }];
+    RIButtonItem *fixItem = [RIButtonItem itemWithLabel:@"固定" action:^{
+        [self fixClicked:sender];
+    }];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"操作"
+                                    cancelButtonItem:cancelItem
+                                    destructiveButtonItem:initItem
+                                    otherButtonItems:fixItem, eraseItem, nil];
+    [sheet showInView:self.view];
+}
 
 /**
  * 初期化ボタン押下時

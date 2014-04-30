@@ -69,7 +69,8 @@
         for (NSInteger i = 0; i < count; i++) {
             _data[i] = data ? @(data[i]) : @(-1);
         }
-        _elapsedSeconds = [NSMutableArray array];
+        _elapsedSecond = 0;
+        _resetCount = 0;
     }
     return self;
 }
@@ -92,6 +93,7 @@
         _height = [json[@"height"] integerValue];
         _data = [json[@"data"] mutableCopy];
         self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
+        self.resetCount = [json[@"resetCount"] integerValue];
     }
     return self;
 }
@@ -111,6 +113,7 @@
         _height = [json[@"height"] integerValue];
         _data = [json[@"data"] mutableCopy];
         self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
+        self.resetCount = [json[@"resetCount"] integerValue];
     }
     return self;
 }
@@ -129,6 +132,7 @@
         _height = original.height;
         _data = [original.data mutableCopy];
         self.elapsedSecond = original.elapsedSecond;
+        self.resetCount = original.resetCount;
     }
     return self;
 }
@@ -175,6 +179,7 @@
     json[@"height"] = @(_height);
     json[@"data"] = _data;
     json[@"elapsedSecond"] = @(_elapsedSecond);
+    json[@"resetCount"] = @(_resetCount);
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]
@@ -231,10 +236,15 @@
 
 - (NSString *)elapsedTimeString
 {
-    if (_elapsedSecond > 0) {        
-        return [NSString stringWithFormat:@"%ld:%02ld:%02ld",
-                (long)(_elapsedSecond / 3600), (long)(_elapsedSecond % 3600) / 60,
-                (long)(_elapsedSecond % 60)];
+    if (_elapsedSecond > 0) {
+        NSString *sec = [NSString stringWithFormat:@"%ld:%02ld:%02ld",
+                         (long)(_elapsedSecond / 3600), (long)(_elapsedSecond % 3600) / 60,
+                         (long)(_elapsedSecond % 60)];
+        if (_resetCount > 0) {
+            return [NSString stringWithFormat:@"%@ リセット %ld 回", sec, (long)_resetCount];
+        } else {
+            return sec;
+        }
     } else {
         return @"";
     }

@@ -98,6 +98,9 @@ typedef enum : NSInteger {
 // 解くにかかった秒数
 @property (nonatomic, assign) NSInteger elapsedSecond;
 
+// 解くまでにリセットした回数
+@property (nonatomic, assign) NSInteger resetCount;
+
 /**
  * 与えられたサイズとデータの問題を生成する.
  * @param width 幅

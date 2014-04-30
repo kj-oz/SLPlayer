@@ -215,10 +215,10 @@
         return;
     }
     NSInteger difficulty = [self.difficultyText.text integerValue];
-    if (difficulty < 1 || difficulty > 9) {
+    if (difficulty < 1 || difficulty > 10) {
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"難易度"
-                              message:@"1桁の整数を入力して下さい。"
+                              message:@"10までの整数を入力して下さい。"
                               delegate:nil cancelButtonTitle:nil
                               otherButtonTitles:@"了解", nil];
         [alert show];

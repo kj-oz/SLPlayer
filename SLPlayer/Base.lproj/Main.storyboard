@@ -168,18 +168,18 @@
                     <navigationItem key="navigationItem" id="fZq-5n-rSl">
                         <nil key="title"/>
                         <view key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="ueF-ez-sdo">
-                            <rect key="frame" x="192" y="6" width="384" height="33"/>
+                            <rect key="frame" x="144" y="6" width="480" height="33"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="タイトル" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SPn-0k-m9E">
-                                    <rect key="frame" x="10" y="6" width="214" height="21"/>
+                                    <rect key="frame" x="10" y="6" width="278" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0:00:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CNU-r8-Fhr">
-                                    <rect key="frame" x="236" y="9" width="57" height="16"/>
+                                    <rect key="frame" x="300" y="9" width="57" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                     <nil key="highlightedColor"/>
@@ -187,55 +187,16 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <barButtonItem key="rightBarButtonItem" style="plain" id="bO4-cu-mbV">
-                            <view key="customView" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="GjQ-Y1-6qQ">
-                                <rect key="frame" x="592" y="5" width="160" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QXw-mH-bfN">
-                                        <rect key="frame" x="124" y="3" width="46" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="固定">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="fixClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="Bxz-EU-cKz"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cz5-Os-dWl">
-                                        <rect key="frame" x="70" y="3" width="46" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="消去">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="eraseClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="W5a-hA-tbc"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vuq-lb-1Gp">
-                                        <rect key="frame" x="10" y="3" width="46" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="初期化">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="initClicked:" destination="Vkt-xv-pXA" eventType="touchUpInside" id="laB-Jy-j33"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <accessibility key="accessibilityConfiguration">
-                                    <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
-                                </accessibility>
-                            </view>
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="8rU-0l-J1T">
+                            <connections>
+                                <action selector="actionClicked:" destination="Vkt-xv-pXA" id="L6b-Z3-uEP"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
-                        <outlet property="clearButton" destination="bO4-cu-mbV" id="8uG-PQ-mMN"/>
                         <outlet property="elapsedLabel" destination="CNU-r8-Fhr" id="mlo-hz-Qy7"/>
-                        <outlet property="fixButton" destination="bO4-cu-mbV" id="c3v-D6-DCO"/>
                         <outlet property="titleLabel" destination="SPn-0k-m9E" id="kBu-Q2-Dai"/>
                         <outlet property="zoomedView" destination="Rdf-db-Ys1" id="zd5-oW-10X"/>
                     </connections>
