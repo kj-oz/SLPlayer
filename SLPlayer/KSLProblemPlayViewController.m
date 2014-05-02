@@ -20,7 +20,7 @@
 @interface KSLProblemPlayViewController ()
 
 // 拡大ビュー
-@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
+@property (weak, nonatomic) IBOutlet KSLProblemView *problemView;
 
 // クリアボタン
 @property (weak, nonatomic) IBOutlet UIButton *clearButton;
@@ -75,8 +75,8 @@
     _step = [NSMutableArray array];
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
-    _zoomedView.delegate = self;
-    _zoomedView.mode = _player.problem.status == KSLProblemStatusSolved ?
+    _problemView.delegate = self;
+    _problemView.mode = _player.problem.status == KSLProblemStatusSolved ?
                                 KSLProblemViewModeScroll : KSLProblemViewModeInputLine;
     
     // アプリケーションライフサイクルの通知受信
@@ -106,7 +106,7 @@
 
 - (void)setBoard:(KSLBoard *)board
 {
-    _zoomedView.board = board;
+    _problemView.board = board;
 }
 
 /**
@@ -201,7 +201,8 @@
     [_player addStep:_step];
     _stepping = NO;
     
-    if ([_player isFinished]) {
+    KSLLoopStatus loopStatus = [_player isLoopFinished];
+    if (loopStatus == KSLLoopFinished) {
         [_timer invalidate];
         
         KSLProblem *problem = _player.problem;
@@ -218,6 +219,11 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完成"
                                  message:msg delegate:nil cancelButtonTitle:nil
                                  otherButtonTitles:@"了解", nil];
+        [alert show];
+    } else if (loopStatus == KSLLoopCellError) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ループエラー"
+                                message:@"条件に合致しないセルがあります。" delegate:nil cancelButtonTitle:nil
+                                otherButtonTitles:@"了解", nil];
         [alert show];
     }
 }
@@ -322,7 +328,7 @@
  */
 - (void)refreshBoard
 {
-    [_zoomedView setNeedsDisplay];
+    [_problemView setNeedsDisplay];
 }
 
 @end

@@ -20,7 +20,7 @@
 @interface KSLProblemEditViewController ()
 
 // 拡大ビュー
-@property (weak, nonatomic) IBOutlet KSLProblemView *zoomedView;
+@property (weak, nonatomic) IBOutlet KSLProblemView *problemView;
 
 // 状態表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
@@ -63,8 +63,8 @@
     _player = [[KSLPlayer alloc] initWithProblem:_problem];
 
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
-    _zoomedView.delegate = self;
-    _zoomedView.mode = _problem.status == KSLProblemStatusEditing ?
+    _problemView.delegate = self;
+    _problemView.mode = _problem.status == KSLProblemStatusEditing ?
                 KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
     
     self.title = _addNew ? @"新規追加" : _problem.title;
@@ -88,7 +88,7 @@
 
 - (void)setBoard:(KSLBoard *)board
 {
-    _zoomedView.board = board;
+    _problemView.board = board;
 }
 
 - (void)actionPerformed:(KSLAction *)action
@@ -285,6 +285,8 @@
     if (_problem.status != KSLProblemStatusEditing) {
         self.checkButton.enabled = NO;
     }
+    _problemView.mode = _problem.status == KSLProblemStatusEditing ?
+                KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
     [self refreshBoard];
 }
 
@@ -293,7 +295,7 @@
  */
 - (void)refreshBoard
 {
-    [_zoomedView setNeedsDisplay];
+    [_problemView setNeedsDisplay];
 }
 
 /**

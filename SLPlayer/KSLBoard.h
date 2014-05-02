@@ -39,6 +39,11 @@ typedef enum : NSInteger {
     KSLGateDirRU                    // 左下から右上へのGate
 } KSLGateDir;
 
+typedef enum : NSInteger {
+    KSLLoopError,                   // 1本のループになっていない
+    KSLLoopCellError,               // 1本のループだがセルの数値と合致しない
+    KSLLoopFinished                 // 1本のループでなおかつ全てのセルの数値を満たしている
+} KSLLoopStatus;
 
 #pragma mark - KSLCell
 
@@ -374,6 +379,9 @@ typedef enum : NSInteger {
  * @return 正しい解答かどうか.
  */
 - (BOOL)isLoopFinishedOfEdge:(KSLEdge *)edge;
+
+
+- (KSLLoopStatus)loopStatusOfEdge:(KSLEdge *)edge;
 
 /**
  * 解答の連続線を得る.（正しい解答が得られていることが前提）

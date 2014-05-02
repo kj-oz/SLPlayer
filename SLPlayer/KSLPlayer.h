@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KSLBoard.h"
 
 @class KSLProblem;
-@class KSLBoard;
 
 /**
  * 問題を解いている手順を保持するクラス
@@ -60,6 +60,6 @@
 
 - (void)undo;
 
-- (BOOL)isFinished;
+- (KSLLoopStatus)isLoopFinished;
 
 @end

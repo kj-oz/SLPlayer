@@ -383,7 +383,22 @@
     if ([self findOpenCell] != nil) {
         return NO;
     }
-    
+    return [self isOnlyLoopOfEdge:edge];
+}
+
+- (KSLLoopStatus)loopStatusOfEdge:(KSLEdge *)edge
+{
+    if ([self isOnlyLoopOfEdge:edge]) {
+        if ([self findOpenCell] == nil) {
+            return KSLLoopFinished;
+        }
+        return KSLLoopCellError;
+    }
+    return KSLLoopError;
+}
+
+- (BOOL)isOnlyLoopOfEdge:(KSLEdge *)edge
+{
     KSLNode *root = [edge nodeOfLH:0];
     KSLNode *node = [edge nodeOfLH:1];
     NSInteger conCount = 1;

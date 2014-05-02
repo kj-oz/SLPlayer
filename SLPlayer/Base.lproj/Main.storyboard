@@ -14,7 +14,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="L8J-g1-vz7">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="WorkbookCell" id="L8J-g1-vz7">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="L8J-g1-vz7" id="GUu-rg-Q4l">
@@ -197,8 +197,8 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
                         <outlet property="elapsedLabel" destination="CNU-r8-Fhr" id="mlo-hz-Qy7"/>
+                        <outlet property="problemView" destination="Rdf-db-Ys1" id="2JK-SM-x2d"/>
                         <outlet property="titleLabel" destination="SPn-0k-m9E" id="kBu-Q2-Dai"/>
-                        <outlet property="zoomedView" destination="Rdf-db-Ys1" id="zd5-oW-10X"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fp1-xO-Pof" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -221,7 +221,7 @@
                                 <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYR-dQ-7YT">
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYR-dQ-7YT">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
@@ -291,7 +291,7 @@
                                             </barButtonItem>
                                         </items>
                                     </toolbar>
-                                    <view contentMode="redraw" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
+                                    <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="KHN-a3-8D6" customClass="KSLProblemView">
                                         <rect key="frame" x="0.0" y="44" width="768" height="916"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -299,10 +299,12 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstItem="dYR-dQ-7YT" firstAttribute="top" secondItem="sJy-t4-uBu" secondAttribute="top" id="DB4-xB-oFB"/>
                                     <constraint firstAttribute="trailing" secondItem="dYR-dQ-7YT" secondAttribute="trailing" id="Fx2-QF-cDf"/>
                                     <constraint firstItem="KHN-a3-8D6" firstAttribute="top" secondItem="dYR-dQ-7YT" secondAttribute="bottom" id="HBq-YQ-PJn"/>
                                     <constraint firstItem="dYR-dQ-7YT" firstAttribute="leading" secondItem="sJy-t4-uBu" secondAttribute="leading" id="PVU-FK-a1e"/>
                                     <constraint firstItem="KHN-a3-8D6" firstAttribute="leading" secondItem="sJy-t4-uBu" secondAttribute="leading" id="ZHh-5K-fQH"/>
+                                    <constraint firstAttribute="bottom" secondItem="KHN-a3-8D6" secondAttribute="bottom" id="aCv-mO-SQO"/>
                                     <constraint firstAttribute="trailing" secondItem="KHN-a3-8D6" secondAttribute="trailing" id="b8Y-5L-fuR"/>
                                     <constraint firstAttribute="bottom" secondItem="KHN-a3-8D6" secondAttribute="bottom" id="q2l-Is-kgA"/>
                                 </constraints>
@@ -336,9 +338,9 @@
                         <outlet property="createButton" destination="nj7-xS-Qf9" id="MK9-KX-19f"/>
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
                         <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
+                        <outlet property="problemView" destination="KHN-a3-8D6" id="Qpf-cZ-NJH"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
                         <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
-                        <outlet property="zoomedView" destination="KHN-a3-8D6" id="sgT-qQ-Mhc"/>
                         <segue destination="06K-KE-dCs" kind="unwind" identifier="DoneEditProblem" unwindAction="doneProblemEdit:" id="SNp-4f-Tyg"/>
                     </connections>
                 </viewController>
