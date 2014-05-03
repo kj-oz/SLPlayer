@@ -56,9 +56,8 @@
 {
     self = [super init];
     if (self) {
-        CFUUIDRef uuid = CFUUIDCreate(NULL);
-        _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        CFRelease(uuid);
+        KSLProblemManager *pm = [KSLProblemManager sharedManager];
+        _uid = [pm currentTimeString];
         self.title = @"未定";
         self.status = KSLProblemStatusNotStarted;
         self.difficulty = 0;
@@ -102,9 +101,8 @@
 {
     self = [super init];
     if (self) {
-        CFUUIDRef uuid = CFUUIDCreate(NULL);
-        _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        CFRelease(uuid);
+        KSLProblemManager *pm = [KSLProblemManager sharedManager];
+        _uid = [pm currentTimeString];
 
         self.title = json[@"title"];
         self.status = [json[@"status"] integerValue];
@@ -122,9 +120,8 @@
 {
     self = [super init];
     if (self) {
-        CFUUIDRef uuid = CFUUIDCreate(NULL);
-        _uid = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        CFRelease(uuid);
+        KSLProblemManager *pm = [KSLProblemManager sharedManager];
+        _uid = [pm currentTimeString];
         self.title = original.title;
         self.status = original.status;
         self.difficulty = original.difficulty;
@@ -240,8 +237,9 @@
         NSString *sec = [NSString stringWithFormat:@"%ld:%02ld:%02ld",
                          (long)(_elapsedSecond / 3600), (long)(_elapsedSecond % 3600) / 60,
                          (long)(_elapsedSecond % 60)];
-        if (_resetCount > 0) {
-            return [NSString stringWithFormat:@"%@ リセット %ld 回", sec, (long)_resetCount];
+        if (_resetCount > 0 || _fixCount > 0) {
+            return [NSString stringWithFormat:@"%@ 固定%ld 初期化%ld",
+                    sec, (long)_fixCount, (long)_resetCount];
         } else {
             return sec;
         }

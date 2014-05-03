@@ -101,6 +101,9 @@ typedef enum : NSInteger {
 // 解くまでにリセットした回数
 @property (nonatomic, assign) NSInteger resetCount;
 
+// 解くまでにリセットした回数
+@property (nonatomic, assign) NSInteger fixCount;
+
 /**
  * 与えられたサイズとデータの問題を生成する.
  * @param width 幅

@@ -9,6 +9,7 @@
 #import "KSLProblemManager.h"
 #import "KSLProblem.h"
 #import "KSLWorkbook.h"
+#import "KSLSolver.h"
 
 // シングルトンオブジェクト
 static KSLProblemManager *_sharaedInstance = nil;
@@ -18,6 +19,10 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     // 問題集の配列
     NSMutableArray *_workbooks;
+    
+    NSDateFormatter *_dateFormatter;
+    
+    NSString *_lastDateString;
 }
 
 #pragma mark - シングルトンオブジェクト
@@ -42,6 +47,12 @@ static KSLProblemManager *_sharaedInstance = nil;
         _documentDir = [[paths objectAtIndex:0] copy];
         KLDBGPrint("** Application start **\n");
         KLDBGPrint(" document directory:%s\n", _documentDir.UTF8String);
+        
+        // 日付フォーマットオブジェクトの生成
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        [_dateFormatter setDateFormat:@"yyyyMMddHHmmssSSS"];
+        
+        _lastDateString = @"00000000000000000";
     }
     
     return self;
@@ -144,6 +155,14 @@ static KSLProblemManager *_sharaedInstance = nil;
     NSArray *problems = json[@"problems"];
     for (NSDictionary *dic in problems) {
         KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
+#if TARGET_IPHONE_SIMULATOR
+        KSLSolver *solver = [[KSLSolver alloc] initWithBoard:
+                             [[KSLBoard alloc] initWithProblem:problem]];
+        NSError *error;
+        if (![solver solveWithError:&error]) {
+            problem.status = KSLProblemStatusEditing;
+        }
+#endif
         [problem saveToFile:path];
     }
 }
@@ -178,6 +197,18 @@ static KSLProblemManager *_sharaedInstance = nil;
     
     [to addProblem:problem withSave:NO];
     [_currentWorkbook removeProblem:problem withDelete:NO];
+}
+
+- (NSString *)currentTimeString
+{
+    // 日付型の文字列を生成
+    NSString *dateString = [_dateFormatter stringFromDate:[NSDate date]];
+    if ([dateString compare:_lastDateString] != NSOrderedDescending) {
+        long long lastDate = [_lastDateString longLongValue];
+        dateString = [NSString stringWithFormat:@"%ld", (long)lastDate];
+    }
+    _lastDateString = dateString;
+    return dateString;
 }
 
 @end

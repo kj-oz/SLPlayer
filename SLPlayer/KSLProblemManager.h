@@ -51,4 +51,6 @@
 
 - (void)moveProblem:(KSLProblem *)problem toWorkbook:(KSLWorkbook *)to;
 
+- (NSString *)currentTimeString;
+
 @end

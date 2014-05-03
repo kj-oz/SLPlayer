@@ -261,6 +261,7 @@
 {
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"いいえ" action:nil];
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
+        _player.problem.resetCount++;
         [_player clear];
         [self refreshBoard];
     }];
@@ -293,6 +294,7 @@
  */
 - (IBAction)fixClicked:(id)sender
 {
+    _player.problem.fixCount++;
     [_player fix];
     [self refreshBoard];
 }

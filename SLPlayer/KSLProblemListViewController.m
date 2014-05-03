@@ -14,10 +14,12 @@
 #import "KLDBGUtil.h"
 #import "KSLAppDelegate.h"
 #import "KSLWorkbookListViewController.h"
+#import "KSLProblemListCell.h"
 
 @interface KSLProblemListViewController ()
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
+
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *workbookButton;
 
 @end
@@ -28,8 +30,19 @@
     
     KSLWorkbookListViewController *_workbookList;
     
+    UIBarButtonItem *deleteButton;
+    
+    UIBarButtonItem *moveButton;
+
+    UIBarButtonItem *copyButton;
+
+    UIBarButtonItem *detailButton;
+    
+    UIBarButtonItem *addButton;
+    
     // 問題集リスト表示の元になったボタン
     UIBarButtonItem* _workbookListReason;
+    
     
     UIPopoverController *_poController;
 }
@@ -47,6 +60,11 @@
 {
     [super viewDidLoad];
     self.editing = NO;
+
+    addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                        target:self action:@selector(addClicked:)];
+    deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                        target:self action:@selector(deleteClicked:)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -88,7 +106,42 @@
 }
 
 
+#pragma mark - 各種アクション
+
+- (IBAction)addClicked:(id)sender {
+}
+
 - (IBAction)editClicked:(id)sender {
+    if (self.tableView.editing) {
+        [self.tableView setEditing:NO];
+        self.editButton.title = @"Edit";
+    } else {
+        self.tableView.editing = true;
+        self.editButton.title = @"Done";
+    }
+}
+
+- (IBAction)deleteClicked:(id)sender {
+    if (self.tableView.editing) {
+        [self.tableView setEditing:NO];
+        self.editButton.title = @"Edit";
+    } else {
+        self.tableView.editing = true;
+        self.editButton.title = @"Done";
+    }
+}
+
+- (IBAction)moveClicked:(id)sender {
+    if (self.tableView.editing) {
+        [self.tableView setEditing:NO];
+        self.editButton.title = @"Edit";
+    } else {
+        self.tableView.editing = true;
+        self.editButton.title = @"Done";
+    }
+}
+
+- (IBAction)copyClicked:(id)sender {
     if (self.tableView.editing) {
         [self.tableView setEditing:NO];
         self.editButton.title = @"Edit";
@@ -135,19 +188,30 @@
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%ldX%ld　%@　%@", (long)problem.width,
-                           (long)problem.height, [problem difficultyString], problem.title];
-    if (problem.status == KSLProblemStatusSolved) {
-        cell.textLabel.enabled = false;
+    KSLProblemListCell *problemCell = (KSLProblemListCell *)cell;
+    problemCell.titleLabel.text = problem.title;
+    problemCell.sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld",
+                                  (long)problem.width, (long)problem.height];
+    problemCell.difficultyLabel.text = [NSString stringWithFormat:@"%@", [problem difficultyString]];
+    if (problem.status != KSLProblemStatusNotStarted) {
+        problemCell.statusLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
     } else {
-        cell.textLabel.enabled = true;
+        problemCell.statusLabel.text = @"";
     }
-    
-    if (problem.elapsedSecond > 0) {
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
+
+    if (problem.status == KSLProblemStatusSolved || problem.status == KSLProblemStatusEditing) {
+        [self setCell:problemCell enabled:NO];
     } else {
-        cell.detailTextLabel.text = @"";
+        [self setCell:problemCell enabled:YES];
     }
+}
+
+- (void)setCell:(KSLProblemListCell *)cell enabled:(BOOL)enabled
+{
+    cell.titleLabel.enabled = enabled;
+    cell.sizeLabel.enabled = enabled;
+    cell.difficultyLabel.enabled = enabled;
+    cell.statusLabel.enabled = enabled;
 }
 
 /*

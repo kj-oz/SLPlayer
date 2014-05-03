@@ -130,7 +130,7 @@
     }
     UITextField* tf = ((KLUITextFieldCell*)cell).textField;
     tf.text = text;
-    tf.textAlignment = UITextAlignmentCenter;
+//    tf.textAlignment = UITextAlignmentCenter;
     tf.returnKeyType = UIReturnKeyDone;
     tf.delegate = self;
     tf.tag = indexPath.row;
