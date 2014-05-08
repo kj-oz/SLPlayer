@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -56,7 +56,7 @@
         <scene sceneID="8Uo-vh-UBY">
             <objects>
                 <tableViewController id="J4n-uI-lDX" customClass="KSLProblemListViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mVe-vZ-2Dm">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mVe-vZ-2Dm">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -110,46 +110,20 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="8e6-KA-KWn">
-                        <barButtonItem key="leftBarButtonItem" title="問題集" id="o5m-0f-AM7">
+                        <barButtonItem key="leftBarButtonItem" title="問題集" id="4gp-8t-HnZ">
                             <connections>
-                                <segue destination="93g-qo-rzR" kind="popover" identifier="ShowWorkbookList" popoverAnchorBarButtonItem="o5m-0f-AM7" id="gyF-Va-bxM">
+                                <segue destination="93g-qo-rzR" kind="popover" identifier="ShowWorkbookList" popoverAnchorBarButtonItem="4gp-8t-HnZ" id="Tbn-gE-skT">
                                     <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                 </segue>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" width="96" id="Lss-oB-NUq">
-                            <view key="customView" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" id="oWd-4L-fWA">
-                                <rect key="frame" x="656" y="5" width="96" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8BY-O8-UiE">
-                                        <rect key="frame" x="0.0" y="-5" width="96" height="44"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <items>
-                                            <barButtonItem systemItem="add" id="Pyl-mv-sya">
-                                                <connections>
-                                                    <segue destination="8aW-4u-QbU" kind="modal" identifier="AddProblem" id="47U-cd-9F2"/>
-                                                </connections>
-                                            </barButtonItem>
-                                            <barButtonItem width="19" systemItem="fixedSpace" id="CNz-W5-s8v"/>
-                                            <barButtonItem systemItem="edit" id="LHo-sU-u2R">
-                                                <connections>
-                                                    <action selector="editClicked:" destination="J4n-uI-lDX" id="lHP-mC-nGb"/>
-                                                </connections>
-                                            </barButtonItem>
-                                        </items>
-                                    </toolbar>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
-                        </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="editButton" destination="LHo-sU-u2R" id="5Wc-7x-FhO"/>
-                        <outlet property="workbookButton" destination="o5m-0f-AM7" id="nFW-a1-nll"/>
+                        <outlet property="workbookButton" destination="4gp-8t-HnZ" id="62h-wI-kXX"/>
                         <segue destination="Vkt-xv-pXA" kind="push" identifier="PlayProblem" id="0Mk-gz-vcX"/>
                         <segue destination="8aW-4u-QbU" kind="modal" identifier="EditProblem" id="J9z-5i-hbI"/>
+                        <segue destination="8aW-4u-QbU" kind="modal" identifier="AddProblem" id="USL-88-f34"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KRg-tV-MD5" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -430,6 +404,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="47U-cd-9F2"/>
+        <segue reference="USL-88-f34"/>
     </inferredMetricsTieBreakers>
 </document>

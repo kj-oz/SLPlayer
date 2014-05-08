@@ -42,4 +42,6 @@
  */
 - (void)removeProblem:(KSLProblem *)problem withDelete:(BOOL)delete;
 
+- (void)copyProblem:(KSLProblem *)problem;
+
 @end

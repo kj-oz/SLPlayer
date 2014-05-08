@@ -72,6 +72,12 @@
     [self updateProblemInfo];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    _player = nil;
+}
+
 //#pragma mark - ビューの回転
 //
 //- (NSUInteger)supportedInterfaceOrientations

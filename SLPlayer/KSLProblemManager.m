@@ -199,6 +199,26 @@ static KSLProblemManager *_sharaedInstance = nil;
     [_currentWorkbook removeProblem:problem withDelete:NO];
 }
 
+- (void)moveProblems:(NSArray *)problems toWorkbook:(KSLWorkbook *)to
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *fromDir = self.currentWorkbookDir;
+    NSString *toDir = [_documentDir stringByAppendingPathComponent:to.title];
+    
+    for (KSLProblem *problem in problems) {
+        NSString *fromFile = [fromDir stringByAppendingPathComponent:problem.uid];
+        NSString *toFile = [toDir stringByAppendingPathComponent:problem.uid];
+        NSError *error;
+        [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"problem"]
+                    toPath:[toFile stringByAppendingPathComponent:@"problem"] error:&error];
+        [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"play"]
+                    toPath:[toFile stringByAppendingPathComponent:@"play"] error:&error];
+        
+        [to addProblem:problem withSave:NO];
+        [_currentWorkbook removeProblem:problem withDelete:NO];
+    }
+}
+
 - (NSString *)currentTimeString
 {
     // 日付型の文字列を生成

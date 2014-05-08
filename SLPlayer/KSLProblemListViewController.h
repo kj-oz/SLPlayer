@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KSLWorkbookListViewController.h"
 
-@interface KSLProblemListViewController : UITableViewController <KSLWorkbookListViewControllerDelegate>
+@interface KSLProblemListViewController : UITableViewController
+    <KSLWorkbookListViewControllerDelegate, UIPopoverControllerDelegate>
 
 @end

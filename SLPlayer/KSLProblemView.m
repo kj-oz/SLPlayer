@@ -32,6 +32,9 @@
     // ドラッグ時の直前にたどったノード
     KSLNode *_prevNode;
     
+    // ドラッグ時の直前にたどった辺（微小のドラッグをタップとして扱うため）
+    KSLEdge *_prevEdge;
+    
     // ロングプレス時のスクロールの速度
     // TODO スクロールはアニメーションを使用するべき
     CGFloat _scrollStep;
@@ -353,6 +356,7 @@
                 if (node) {
                     _prevNode = node;
                 }
+                _prevEdge = [self findEdge:track];
             }
             CGPoint track = [_panGr locationInView:self];
             [_tracks addObject:[NSValue valueWithCGPoint:track]];
@@ -369,13 +373,20 @@
                                     target:edge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn];
                         edge.status = KSLEdgeStatusOn;
                         [_delegate actionPerformed:action];
+                        _prevEdge = nil;
                     }
                 }
                 _prevNode = node;
             }
+            KSLEdge *edge = [self findEdge:track];
+            if (edge && edge != _prevEdge) {
+                _prevEdge = nil;
+            }
             
             [self setNeedsDisplay];
-            
+            if (state == UIGestureRecognizerStateEnded && _prevEdge && edge && !edge.fixed) {
+                [self tapEdge:edge];
+            }
             if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled) {
                 [_delegate stepEnded];
                 [self performSelector:@selector(clearTrackes) withObject:nil afterDelay:1];
@@ -449,13 +460,7 @@
                 if (!edge || edge.fixed) {
                     break;
                 }
-                KSLEdgeStatus oldStatus = edge.status;
-                KSLEdgeStatus newStatus = oldStatus == KSLEdgeStatusUnset ?
-                KSLEdgeStatusOff : KSLEdgeStatusUnset;
-                KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
-                                                             target:edge fromValue:oldStatus toValue:newStatus];
-                edge.status = newStatus;
-                [_delegate actionPerformed:action];
+                [self tapEdge:edge];
                 break;
             }
             default:
@@ -467,6 +472,17 @@
         _zoomed = YES;
     }
     [self setNeedsDisplay];
+}
+
+- (void)tapEdge:(KSLEdge *)edge
+{
+    KSLEdgeStatus oldStatus = edge.status;
+    KSLEdgeStatus newStatus = oldStatus == KSLEdgeStatusUnset ?
+    KSLEdgeStatusOff : KSLEdgeStatusUnset;
+    KSLAction *action = [[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
+                                                 target:edge fromValue:oldStatus toValue:newStatus];
+    edge.status = newStatus;
+    [_delegate actionPerformed:action];
 }
 
 /**

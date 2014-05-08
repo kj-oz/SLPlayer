@@ -107,4 +107,44 @@
     }
 }
 
+- (void)copyProblem:(KSLProblem *)problem
+{
+    KSLProblem *newProblem = [[KSLProblem alloc] initWithProblem:problem];
+    NSString *seed;
+    NSInteger number;
+    NSRange range = [problem.title rangeOfString:@"\\(\\d+\\)" options:NSRegularExpressionSearch];
+    if (range.location != NSNotFound) {
+        seed = [problem.title substringToIndex:range.location];
+        number = [[problem.title substringWithRange:
+                   NSMakeRange(range.location + 1, range.length - 2)] integerValue];
+    } else {
+        seed = problem.title;
+        number = 2;
+    }
+    NSString *newTitle;
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    while (1) {
+        newTitle = [NSString stringWithFormat:@"%@(%ld)", seed, (long)number];
+        if (![self hasSameTitleProblem:newTitle]) {
+            break;
+        }
+        number++;
+    }
+    
+    newProblem.title = newTitle;
+    [_problems addObject:newProblem];
+    
+    [problem saveToFile:[pm.documentDir stringByAppendingPathComponent:_title]];
+}
+
+- (BOOL)hasSameTitleProblem:(NSString *)title
+{
+    for (KSLProblem *problem in _problems) {
+        if ([problem.title isEqualToString:title]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

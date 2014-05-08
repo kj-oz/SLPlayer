@@ -102,6 +102,7 @@
     [super viewWillDisappear:animated];
     
     [self stopPlay];
+    _player = nil;
 }
 
 - (void)setBoard:(KSLBoard *)board
@@ -241,12 +242,16 @@
     RIButtonItem *initItem = [RIButtonItem itemWithLabel:@"初期化" action:^{
         [self initClicked:sender];
     }];
+    if (_player.problem.status == KSLProblemStatusSolved) {
+        initItem = nil;
+    }
     RIButtonItem *eraseItem = [RIButtonItem itemWithLabel:@"未固定部消去" action:^{
         [self eraseClicked:sender];
     }];
     RIButtonItem *fixItem = [RIButtonItem itemWithLabel:@"固定" action:^{
         [self fixClicked:sender];
     }];
+
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"操作"
                                     cancelButtonItem:cancelItem
                                     destructiveButtonItem:initItem

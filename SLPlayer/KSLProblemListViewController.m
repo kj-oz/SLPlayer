@@ -15,10 +15,9 @@
 #import "KSLAppDelegate.h"
 #import "KSLWorkbookListViewController.h"
 #import "KSLProblemListCell.h"
+#import "UIAlertView+Blocks.h"
 
 @interface KSLProblemListViewController ()
-
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *editButton;
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *workbookButton;
 
@@ -32,17 +31,11 @@
     
     UIBarButtonItem *deleteButton;
     
-    UIBarButtonItem *moveButton;
-
     UIBarButtonItem *copyButton;
 
-    UIBarButtonItem *detailButton;
+    UIBarButtonItem *modifyButton;
     
     UIBarButtonItem *addButton;
-    
-    // 問題集リスト表示の元になったボタン
-    UIBarButtonItem* _workbookListReason;
-    
     
     UIPopoverController *_poController;
 }
@@ -59,12 +52,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.editing = NO;
 
+    deleteButton = [[UIBarButtonItem alloc] initWithTitle:@"削除" style:UIBarButtonItemStylePlain
+                                        target:self action:@selector(deleteClicked:)];
+    copyButton = [[UIBarButtonItem alloc] initWithTitle:@"複製" style:UIBarButtonItemStylePlain
+                                        target:self action:@selector(copyClicked:)];
+    modifyButton = [[UIBarButtonItem alloc] initWithTitle:@"修正" style:UIBarButtonItemStylePlain
+                                        target:self action:@selector(modifyClicked:)];
     addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                         target:self action:@selector(addClicked:)];
-    deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                        target:self action:@selector(deleteClicked:)];
+    
+    self.editing = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -77,6 +75,8 @@
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    self.title = pm.currentWorkbook.title;
+
     NSUInteger problemIndex;
     if (app.restoring) {
         if (app.lastProblem) {
@@ -106,60 +106,95 @@
 }
 
 
+#pragma mark - 編集モード
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
+    
+    // テーブルビューの編集モードを設定する
+    // ボタンのキャプションを日本語にするためには、①PROJECTのLocalizationsにJapaneseを追加、
+    // ②info.plistのLocalization native development regionをJapanに設定
+    // シミュレータでも日本語にするには、環境設定でInternationalizationを設定
+    [self.tableView setEditing:editing animated:animated];
+    
+    // ナビゲーションボタンを更新する
+    [self updateNavigationItemAnimated:animated];
+}
+
+#pragma mark - 画面の更新
+
+- (void)updateNavigationItemAnimated:(BOOL)animated
+{
+    // setLeftBarButtonItems と setLeftBarButtonItem を状況によって使い分けると、setLeftBarButtonItem
+    // 実行時にエラーになるので１つしかない場合も、setLeftBarButtonItems を使用する
+    if (self.editing) {
+        _workbookButton.title = @"移動";
+        [self.navigationItem setLeftBarButtonItems:
+                @[modifyButton, copyButton, _workbookButton, deleteButton] animated:animated];
+        [self.navigationItem setRightBarButtonItems:
+                @[[self editButtonItem]] animated:animated];
+        modifyButton.enabled = NO;
+        copyButton.enabled = NO;
+        _workbookButton.enabled = NO;
+        deleteButton.enabled = NO;
+    } else {
+        _workbookButton.title = @"問題集";
+        [self.navigationItem setLeftBarButtonItems:
+                @[_workbookButton] animated:animated];
+        [self.navigationItem setRightBarButtonItems:
+                @[[self editButtonItem], addButton] animated:animated];
+    }
+}
+
 #pragma mark - 各種アクション
 
 - (IBAction)addClicked:(id)sender {
+    [self performSegueWithIdentifier:@"AddProblem" sender:sender];
 }
 
-- (IBAction)editClicked:(id)sender {
-    if (self.tableView.editing) {
-        [self.tableView setEditing:NO];
-        self.editButton.title = @"Edit";
-    } else {
-        self.tableView.editing = true;
-        self.editButton.title = @"Done";
-    }
+- (IBAction)modifyClicked:(id)sender {
+    [self performSegueWithIdentifier:@"EditProblem" sender:sender];
 }
 
 - (IBAction)deleteClicked:(id)sender {
-    if (self.tableView.editing) {
-        [self.tableView setEditing:NO];
-        self.editButton.title = @"Edit";
-    } else {
-        self.tableView.editing = true;
-        self.editButton.title = @"Done";
-    }
-}
-
-- (IBAction)moveClicked:(id)sender {
-    if (self.tableView.editing) {
-        [self.tableView setEditing:NO];
-        self.editButton.title = @"Edit";
-    } else {
-        self.tableView.editing = true;
-        self.editButton.title = @"Done";
-    }
+    UIAlertView *alert = nil;
+    NSArray *problems = [self selectedProblems];
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
+    RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"削除" action:^{
+        KSLWorkbook *wb = [KSLProblemManager sharedManager].currentWorkbook;
+        for (KSLProblem *problem in problems) {
+            [wb removeProblem:problem withDelete:YES];
+        }
+        [self.tableView reloadData];
+    }];
+    NSString *msg = [NSString stringWithFormat:
+                     @"選択されている%ld個の問題が削除されます。\n削除してもよろしいですか？",
+                     (unsigned long)problems.count];
+    alert = [[UIAlertView alloc] initWithTitle:@"問題の削除" message:msg
+                              cancelButtonItem:cancelItem
+                              otherButtonItems:deleteItem, nil];
+    [alert show];
 }
 
 - (IBAction)copyClicked:(id)sender {
-    if (self.tableView.editing) {
-        [self.tableView setEditing:NO];
-        self.editButton.title = @"Edit";
-    } else {
-        self.tableView.editing = true;
-        self.editButton.title = @"Done";
+    NSArray *problems = [self selectedProblems];
+    KSLWorkbook *wb = [KSLProblemManager sharedManager].currentWorkbook;
+    for (KSLProblem *problem in problems) {
+        [wb copyProblem:problem];
     }
+    [self.tableView reloadData];
 }
 
-- (void)showWorkbookList:(UIBarButtonItem*)reason
+- (NSArray *)selectedProblems
 {
-    _workbookListReason = reason;
-    
-    // コントローラを作成する
-    [self performSegueWithIdentifier:@"ShowWorkbookList" sender:self];
-    
-    // ナビゲーションバーのenabledをNoにしないと、Popoverを表示したままナビゲーションバーの操作ができてしまう.
-    self.navigationController.navigationBar.userInteractionEnabled = NO;
+    NSMutableArray *problems = [NSMutableArray array];
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    NSArray *currProblems = pm.currentWorkbook.problems;
+    for (NSIndexPath *path in [self.tableView indexPathsForSelectedRows]) {
+        [problems addObject:currProblems[path.row]];
+    }
+    return problems;
 }
 
 #pragma mark - Table view data source
@@ -199,69 +234,39 @@
         problemCell.statusLabel.text = @"";
     }
 
-    if (problem.status == KSLProblemStatusSolved || problem.status == KSLProblemStatusEditing) {
-        [self setCell:problemCell enabled:NO];
+    if (problem.status == KSLProblemStatusSolved) {
+        [self setCell:problemCell enabled:YES color:[UIColor blackColor]];
+    } else if (!self.editing && problem.status == KSLProblemStatusEditing) {
+        [self setCell:problemCell enabled:NO color:nil];
     } else {
-        [self setCell:problemCell enabled:YES];
+        [self setCell:problemCell enabled:YES color:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0]];
     }
 }
 
-- (void)setCell:(KSLProblemListCell *)cell enabled:(BOOL)enabled
+- (void)setCell:(KSLProblemListCell *)cell enabled:(BOOL)enabled color:(UIColor *)color
 {
     cell.titleLabel.enabled = enabled;
     cell.sizeLabel.enabled = enabled;
     cell.difficultyLabel.enabled = enabled;
     cell.statusLabel.enabled = enabled;
+    
+    if (enabled) {
+        cell.titleLabel.textColor = color;
+        cell.sizeLabel.textColor = color;
+        cell.difficultyLabel.textColor = color;
+        cell.statusLabel.textColor = color;
+    }
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     if (self.editing) {
-        if (!(problem.status == KSLProblemStatusSolved ||
-                problem.status == KSLProblemStatusSolving)) {
-            [self performSegueWithIdentifier:@"EditProblem" sender:self];
-        }
+        modifyButton.enabled = [self.tableView indexPathsForSelectedRows].count == 1;
+        copyButton.enabled = YES;
+        _workbookButton.enabled = YES;
+        deleteButton.enabled = YES;
     } else {
         if (problem.status != KSLProblemStatusEditing) {
             [self performSegueWithIdentifier:@"PlayProblem" sender:self];
@@ -277,13 +282,15 @@
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     
-    BOOL popover = NO;
     if ([segue isKindOfClass:[UIStoryboardPopoverSegue class]]) {
-        popover = YES;
         if (_poController) {
             [_poController dismissPopoverAnimated:NO];
         }
         _poController = ((UIStoryboardPopoverSegue*)segue).popoverController;
+        _poController.delegate = self;
+        
+        // ナビゲーションバーのenabledをNoにしないと、Popoverを表示したままナビゲーションバーの操作ができてしまう.
+        self.navigationController.navigationBar.userInteractionEnabled = NO;
     }
 
     if ([segue.identifier isEqualToString:@"PlayProblem"]) {
@@ -305,45 +312,11 @@
         pev.addNew = YES;
         app.currentView = @"Edit";
     } else if ([segue.identifier isEqualToString:@"ShowWorkbookList"]) {
-        _workbookListReason = sender;
         UINavigationController *nc = (UINavigationController *)segue.destinationViewController;
         KSLWorkbookListViewController *wlv = (KSLWorkbookListViewController *)nc.visibleViewController;
         wlv.delegate = self;
     }
 }
-
-//- (BOOL)canPerformUnwindSegueAction:(SEL)action fromViewController:(UIViewController *)fromViewController withSender:(id)sender
-//{
-//    if (action == @selector(cancelProblemEdit:)) {
-//        return YES;
-//    }
-//    
-//    KLDBGPrintMethodName(">>");
-//    KLDBGPrint("%s", [[sender description] UTF8String]);
-//    KSLProblemEditViewController *pev = (KSLProblemEditViewController *)fromViewController;
-//    NSString *title = [pev.titleText.text
-//                      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-//    if ([title isEqualToString:@"未定"] || ![title length]) {
-//        UIAlertView *alert = [[UIAlertView alloc]
-//                                 initWithTitle:@"名称"
-//                                 message:@"正しい名称を入力して下さい。"
-//                                 delegate:nil cancelButtonTitle:nil
-//                                 otherButtonTitles:@"了解", nil];
-//        [alert show];
-//        return NO;
-//    }
-//    NSInteger difficulty = [pev.difficultyText.text integerValue];
-//    if (difficulty < 1 || difficulty > 9) {
-//        UIAlertView *alert = [[UIAlertView alloc]
-//                              initWithTitle:@"難易度"
-//                              message:@"1桁の整数を入力して下さい。"
-//                              delegate:nil cancelButtonTitle:nil
-//                              otherButtonTitles:@"了解", nil];
-//        [alert show];
-//        return NO;
-//    }
-//    return YES;
-//}
 
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
@@ -380,7 +353,7 @@
 
 - (void)workbookListViewControllerWorkbookDidSelect:(KSLWorkbook *)workbook
 {
-    if (_workbookListReason == _workbookButton) {
+    if (!self.editing) {
         [self changeWorkbook:workbook];
     } else {
         [self moveSelectedProblemsToWorkbook:workbook];
@@ -390,6 +363,12 @@
     [_poController dismissPopoverAnimated:YES];
     _poController = nil;
     
+    // 強制的にdismissした場合、PopoverのpopoverControllerDidDismissPopover:は呼び出されない
+    self.navigationController.navigationBar.userInteractionEnabled = YES;
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
     // 強制的にdismissした場合、PopoverのpopoverControllerDidDismissPopover:は呼び出されない
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
@@ -419,18 +398,6 @@
     }
     
     [self.tableView reloadData];
-}
-
-- (NSArray*)selectedProblems
-{
-    KSLWorkbook *wb = [KSLProblemManager sharedManager].currentWorkbook;
-
-    NSArray* indexPaths = [self.tableView indexPathsForSelectedRows];
-    NSMutableArray* problems = [NSMutableArray array];
-    for (NSIndexPath* indexPath in indexPaths) {
-        [problems addObject:wb.problems[indexPath.row]];
-    }
-    return problems;
 }
 
 @end
