@@ -20,8 +20,10 @@ static KSLProblemManager *_sharaedInstance = nil;
     // 問題集の配列
     NSMutableArray *_workbooks;
     
+    // 日付書式
     NSDateFormatter *_dateFormatter;
     
+    // 直前に返した日時文字列
     NSString *_lastDateString;
 }
 
@@ -130,43 +132,6 @@ static KSLProblemManager *_sharaedInstance = nil;
     return -1;
 }
 
-- (void)importWorkbook:(NSString *)jsonPath
-{
-    NSError *error = nil;
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:
-                          [NSData dataWithContentsOfFile:jsonPath] options:0 error:&error];
-    if (error) {
-        [[NSException exceptionWithName:error.description reason:jsonPath userInfo:nil] raise];
-    }
-    NSString *title = json[@"title"];
-    
-    NSString *path = [_documentDir stringByAppendingPathComponent:title];
-    
-    NSInteger num = 1;
-    NSString *base = title;
-    NSFileManager *fm = [NSFileManager defaultManager];
-    while ([fm fileExistsAtPath:path]) {
-        num++;
-        title = [NSString stringWithFormat:@"%@-%ld", base, (long)num];
-        path = [_documentDir stringByAppendingPathComponent:title];
-    }
-    [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error];
-    
-    NSArray *problems = json[@"problems"];
-    for (NSDictionary *dic in problems) {
-        KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
-#if TARGET_IPHONE_SIMULATOR
-        KSLSolver *solver = [[KSLSolver alloc] initWithBoard:
-                             [[KSLBoard alloc] initWithProblem:problem]];
-        NSError *error;
-        if (![solver solveWithError:&error]) {
-            problem.status = KSLProblemStatusEditing;
-        }
-#endif
-        [problem saveToFile:path];
-    }
-}
-
 - (void)addWorkbook:(KSLWorkbook *)workbook
 {
     [_workbooks addObject:workbook];
@@ -180,23 +145,6 @@ static KSLProblemManager *_sharaedInstance = nil;
     [fm removeItemAtPath:[_documentDir stringByAppendingPathComponent:wb.title] error:&error];
     
     [_workbooks removeObjectAtIndex:index];
-}
-
-- (void)moveProblem:(KSLProblem *)problem toWorkbook:(KSLWorkbook *)to
-{
-    NSFileManager *fm = [NSFileManager defaultManager];
-    NSString *fromDir = self.currentWorkbookDir;
-    NSString *fromFile = [fromDir stringByAppendingPathComponent:problem.uid];
-    NSString *toDir = [_documentDir stringByAppendingPathComponent:to.title];
-    NSString *toFile = [toDir stringByAppendingPathComponent:problem.uid];
-    NSError *error;
-    [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"problem"]
-                toPath:[toFile stringByAppendingPathComponent:@"problem"] error:&error];
-    [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"play"]
-                toPath:[toFile stringByAppendingPathComponent:@"play"] error:&error];
-    
-    [to addProblem:problem withSave:NO];
-    [_currentWorkbook removeProblem:problem withDelete:NO];
 }
 
 - (void)moveProblems:(NSArray *)problems toWorkbook:(KSLWorkbook *)to
@@ -229,6 +177,51 @@ static KSLProblemManager *_sharaedInstance = nil;
     }
     _lastDateString = dateString;
     return dateString;
+}
+
+
+#pragma mark - プライベートメソッド
+
+/**
+ * 与えられたパスのjsonファイルから問題集を読み込む.
+ * @param jsonPath jsonファイルのパス
+ */
+- (void)importWorkbook:(NSString *)jsonPath
+{
+    NSError *error = nil;
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:
+                          [NSData dataWithContentsOfFile:jsonPath] options:0 error:&error];
+    if (error) {
+        [[NSException exceptionWithName:error.description reason:jsonPath userInfo:nil] raise];
+    }
+    NSString *title = json[@"title"];
+    
+    NSString *path = [_documentDir stringByAppendingPathComponent:title];
+    
+    NSInteger num = 1;
+    NSString *base = title;
+    NSFileManager *fm = [NSFileManager defaultManager];
+    while ([fm fileExistsAtPath:path]) {
+        num++;
+        title = [NSString stringWithFormat:@"%@-%ld", base, (long)num];
+        path = [_documentDir stringByAppendingPathComponent:title];
+    }
+    [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error];
+    
+    NSArray *problems = json[@"problems"];
+    for (NSDictionary *dic in problems) {
+        KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
+#if TARGET_IPHONE_SIMULATOR
+        // エミュレータで実行中の場合のみ問題の正しさを検証する
+        KSLSolver *solver = [[KSLSolver alloc] initWithBoard:
+                             [[KSLBoard alloc] initWithProblem:problem]];
+        NSError *error;
+        if (![solver solveWithError:&error]) {
+            problem.status = KSLProblemStatusEditing;
+        }
+#endif
+        [problem saveToFile:path];
+    }
 }
 
 @end

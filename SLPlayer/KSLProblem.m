@@ -70,6 +70,7 @@
         }
         _elapsedSecond = 0;
         _resetCount = 0;
+        _fixCount = 0;
     }
     return self;
 }
@@ -93,6 +94,7 @@
         _data = [json[@"data"] mutableCopy];
         self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
         self.resetCount = [json[@"resetCount"] integerValue];
+        self.fixCount = [json[@"fixCount"] integerValue];
     }
     return self;
 }
@@ -112,6 +114,7 @@
         _data = [json[@"data"] mutableCopy];
         self.elapsedSecond = [json[@"elapsedSecond"] integerValue];
         self.resetCount = [json[@"resetCount"] integerValue];
+        self.fixCount = [json[@"fixCount"] integerValue];
     }
     return self;
 }
@@ -130,10 +133,15 @@
         _data = [original.data mutableCopy];
         self.elapsedSecond = original.elapsedSecond;
         self.resetCount = original.resetCount;
+        self.fixCount = original.fixCount;
     }
     return self;
 }
 
+/**
+ * 与えられた問題の内容で自身の内容を修正する.
+ * @param original コピー元の問題
+ */
 - (void)updateWithProblem:(KSLProblem *)original
 {
     self.title = original.title;
@@ -141,6 +149,9 @@
     _data = [original.data mutableCopy];
 }
 
+/**
+ * 問題を９０°左に回転させて縦横を入れ替える.
+ */
 - (void)rotate
 {
     NSMutableArray *data = [_data mutableCopy];
@@ -177,6 +188,7 @@
     json[@"data"] = _data;
     json[@"elapsedSecond"] = @(_elapsedSecond);
     json[@"resetCount"] = @(_resetCount);
+    json[@"fixCount"] = @(_fixCount);
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]
@@ -185,7 +197,6 @@
         [[NSException exceptionWithName:error.description reason:path userInfo:nil] raise];
     }
 }
-
 
 - (void)save
 {
@@ -231,6 +242,17 @@
     }
 }
 
+- (NSString *)difficultyString
+{
+    return [NSString stringWithFormat:@"★%ld", (long)_difficulty];
+}
+
+#pragma mark - プライベートメソッド
+
+/**
+ * 解くのに掛かった時間の文字列（H:mm:ss 固定:f 初期化:i）を得る.
+ * @return 解くのに掛かった時間の文字列
+ */
 - (NSString *)elapsedTimeString
 {
     if (_elapsedSecond > 0) {
@@ -246,11 +268,6 @@
     } else {
         return @"";
     }
-}
-
-- (NSString *)difficultyString
-{
-    return [NSString stringWithFormat:@"★%ld", (long)_difficulty];
 }
 
 @end

@@ -39,6 +39,9 @@ typedef enum : NSInteger {
     KSLGateDirRU                    // 左下から右上へのGate
 } KSLGateDir;
 
+/**
+ * ループ（一繋がりの辺）の状態
+ */
 typedef enum : NSInteger {
     KSLLoopError,                   // 1本のループになっていない
     KSLLoopCellError,               // 1本のループだがセルの数値と合致しない
@@ -380,7 +383,11 @@ typedef enum : NSInteger {
  */
 - (BOOL)isLoopFinishedOfEdge:(KSLEdge *)edge;
 
-
+/**
+ * 与えられたedgeを含む連続線の状態を得る
+ * @param edge Edge
+ * @return 連続線の状態
+ */
 - (KSLLoopStatus)loopStatusOfEdge:(KSLEdge *)edge;
 
 /**
@@ -398,8 +405,14 @@ typedef enum : NSInteger {
  */
 - (void)fixStatus;
 
+/**
+ * Edgeを全てクリアする.（未設定の状態にする）
+ */
 - (void)clear;
 
+/**
+ * 固定されていないEdgeを全て未設定の状態にする
+ */
 - (void)erase;
 
 /**

@@ -46,41 +46,7 @@
     return self;
 }
 
-//- (id)initWithFile:(NSString *)path
-//{
-//    self = [super init];
-//    if (self) {
-//        NSError *error = nil;
-//        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:
-//                              [NSData dataWithContentsOfFile:path] options:0 error:&error];
-//        if (error) {
-//            [[NSException exceptionWithName:error.description reason:path userInfo:nil] raise];
-//        }
-//        NSString *title = json[@"title"];
-//        
-//        KSLProblemManager *pm = [KSLProblemManager sharedManager];
-//        NSString *path = [pm.documentDir stringByAppendingPathComponent:title];
-//        
-//        NSInteger num = 1;
-//        NSString *base = title;
-//        NSFileManager *fm = [NSFileManager defaultManager];
-//        while ([fm fileExistsAtPath:path]) {
-//            num++;
-//            title = [NSString stringWithFormat:@"%@-%ld", base, (long)num];
-//            path = [pm.documentDir stringByAppendingPathComponent:title];
-//        }
-//        
-//        self.title = title;
-//        _problems = [NSMutableArray array];
-//
-//        NSArray *problems = json[@"problems"];
-//        for (NSDictionary *dic in problems) {
-//            KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
-//            [_problems addObject:problem];
-//        }
-//    }
-//    return self;
-//}
+#pragma mark - 操作
 
 - (void)addProblem:(KSLProblem *)problem withSave:(BOOL)save
 {
@@ -137,6 +103,13 @@
     [problem saveToFile:[pm.documentDir stringByAppendingPathComponent:_title]];
 }
 
+#pragma mark - プライベート・メソッド群
+
+/**
+ *
+ * @param title
+ * @return
+ */
 - (BOOL)hasSameTitleProblem:(NSString *)title
 {
     for (KSLProblem *problem in _problems) {

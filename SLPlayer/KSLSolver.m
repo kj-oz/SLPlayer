@@ -71,7 +71,7 @@
     NSMutableArray *_changedEdges;
     
     // Edgeの状態が変更されたことにより影響を受けるCellの配列
-    NSMutableOrderedSet *_affectedCells;
+    NSMutableOrderedSet *affectedCells;
 }
 
 #pragma mark - 初期化
@@ -92,14 +92,14 @@
     _routes = [NSMutableArray array];
     _steps = [NSMutableArray array];
     _changedEdges = [NSMutableArray array];
-    _affectedCells = [NSMutableOrderedSet orderedSet];
+    affectedCells = [NSMutableOrderedSet orderedSet];
     
     
     @try {
-        [self _initCorner];
-        [self _initZero];
-        [self _initThree];
-        [self _checkSurroundingElements];
+        [self initCorner];
+        [self initZero];
+        [self initThree];
+        [self checkSurroundingElements];
     }
     @catch (NSException *ex) {
         if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
@@ -111,40 +111,40 @@
         return NO;
     }
     
-// 小ループのチェックを通常のチェックに組み入れたところ、TryOneStepを実行する方が
-// 単に分岐して探索するより遅くなったためコメントアウト
-//    [_board dumpWithEdeg:nil];
-//    @try {
-//        while (YES) {
-//            @autoreleasepool {
-//                if (![self _tryOneStep]) {
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//    @catch (NSException *ex) {
-//        if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
-//            [_routes addObject:_board.route];
-//            return YES;
-//        }
-//        return NO;
-//    }
+    // 小ループのチェックを通常のチェックに組み入れたところ、TryOneStepを実行する方が
+    // 単に分岐して探索するより遅くなったためコメントアウト
+    //    [_board dumpWithEdeg:nil];
+    //    @try {
+    //        while (YES) {
+    //            @autoreleasepool {
+    //                if (![self _tryOneStep]) {
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    @catch (NSException *ex) {
+    //        if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
+    //            [_routes addObject:_board.route];
+    //            return YES;
+    //        }
+    //        return NO;
+    //    }
     
     [_board dump];
     NSArray *branches = nil;
     KSLNode *root = [_board findOpenNode];
     if (root) {
-        branches = [self _createBranchesFromNode:root];
+        branches = [self createBranchesFromNode:root];
     } else {
         KSLCell *cell = [_board findCellForBranch];
         if (cell) {
-            branches = [self _createBranchesFromCell:cell];
+            branches = [self createBranchesFromCell:cell];
         }
     }
     
     if (branches) {
-        [self _tryBranches:[branches mutableCopy]];
+        [self tryBranches:[branches mutableCopy]];
     }
     if (_routes.count == 1) {
         return YES;
@@ -170,12 +170,12 @@
 /**
  * 角の数字により確定する辺を設定する.
  */
-- (void)_initCorner
+- (void)initCorner
 {
-    [self _initCornerWithHDir:0 andVDir:0];
-    [self _initCornerWithHDir:0 andVDir:1];
-    [self _initCornerWithHDir:1 andVDir:0];
-    [self _initCornerWithHDir:1 andVDir:1];
+    [self initCornerWithHDir:0 andVDir:0];
+    [self initCornerWithHDir:0 andVDir:1];
+    [self initCornerWithHDir:1 andVDir:0];
+    [self initCornerWithHDir:1 andVDir:1];
 }
 
 /**
@@ -183,7 +183,7 @@
  * @param hdir 水平方向位置（0:左側、1:右側）
  * @param vdir 鉛直方向位置（0:上側、1:下側）
  */
-- (void)_initCornerWithHDir:(NSInteger)hdir andVDir:(NSInteger)vdir
+- (void)initCornerWithHDir:(NSInteger)hdir andVDir:(NSInteger)vdir
 {
     NSInteger x = hdir ? _board.width - 1 : 0;
     NSInteger y = vdir ? _board.height - 1 : 0;
@@ -192,22 +192,22 @@
     
     switch ([_board cellAtX:x andY:y].number) {
         case 1:
-            [self _changeEdge:[_board vEdgeAtX:x+hdir andY:y] status:KSLEdgeStatusOff];
-            [self _changeEdge:[_board hEdgeAtX:x andY:y+vdir] status:KSLEdgeStatusOff];
+            [self changeEdge:[_board vEdgeAtX:x+hdir andY:y] status:KSLEdgeStatusOff];
+            [self changeEdge:[_board hEdgeAtX:x andY:y+vdir] status:KSLEdgeStatusOff];
             break;
         case 2:
-            [self _changeEdge:[_board vEdgeAtX:x+hdir andY:y+dy] status:KSLEdgeStatusOn];
-            [self _changeEdge:[_board hEdgeAtX:x+dx andY:y+vdir] status:KSLEdgeStatusOn];
+            [self changeEdge:[_board vEdgeAtX:x+hdir andY:y+dy] status:KSLEdgeStatusOn];
+            [self changeEdge:[_board hEdgeAtX:x+dx andY:y+vdir] status:KSLEdgeStatusOn];
             if ([_board cellAtX:x+dx andY:y].number == 3) {
-                [self _changeEdge:[_board vEdgeAtX:x+dx+dx andY:y] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board vEdgeAtX:x+dx+dx andY:y] status:KSLEdgeStatusOn];
             }
             if ([_board cellAtX:x andY:y+dy].number == 3) {
-                [self _changeEdge:[_board hEdgeAtX:x andY:y+dy+dy] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board hEdgeAtX:x andY:y+dy+dy] status:KSLEdgeStatusOn];
             }
             break;
         case 3:
-            [self _changeEdge:[_board vEdgeAtX:x+hdir andY:y] status:KSLEdgeStatusOn];
-            [self _changeEdge:[_board hEdgeAtX:x andY:y+vdir] status:KSLEdgeStatusOn];
+            [self changeEdge:[_board vEdgeAtX:x+hdir andY:y] status:KSLEdgeStatusOn];
+            [self changeEdge:[_board hEdgeAtX:x andY:y+vdir] status:KSLEdgeStatusOn];
             break;
     }
 }
@@ -215,16 +215,16 @@
 /**
  * 0により確定する辺を設定する.
  */
-- (void)_initZero
+- (void)initZero
 {
     for (NSInteger y = 0; y < _board.height; y++) {
         for (NSInteger x = 0; x < _board.width; x++) {
             KSLCell *cell = [_board cellAtX:x andY:y];
             if (cell.number == 0) {
-                [self _changeEdge:cell.topEdge status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.topEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
             }
         }
     }
@@ -233,7 +233,7 @@
 /**
  * 3と周辺の数字により確定する辺を設定する.
  */
-- (void)_initThree
+- (void)initThree
 {
     for (NSInteger y = 0; y < _board.height; y++) {
         for (NSInteger x = 0; x < _board.width; x++) {
@@ -242,65 +242,65 @@
                 if (x < _board.width - 1) {
                     KSLCell *aCell = [cell.rightEdge cellOfDir:1];
                     if (aCell.number == 3) {
-                        [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:cell.rightEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.rightEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
                         if (y > 0) {
-                            [self _changeEdge:[cell.rightEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                            [self changeEdge:[cell.rightEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
                             if ([cell.topEdge cellOfDir:0].number == 2) {
-                                [self _changeEdge:[cell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[cell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
                             }
                             if ([aCell.topEdge cellOfDir:0].number == 2) {
-                                [self _changeEdge:[aCell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[aCell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
                             }
                         }
                         if (y < _board.height - 1) {
-                            [self _changeEdge:[cell.rightEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                            [self changeEdge:[cell.rightEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
                             if ([cell.bottomEdge cellOfDir:1].number == 2) {
-                                [self _changeEdge:[cell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[cell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
                             }
                             if ([aCell.bottomEdge cellOfDir:1].number == 2) {
-                                [self _changeEdge:[aCell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[aCell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
                             }
                         }
                     }
                     aCell = [_board get3Across2FromCell:cell withDx:1 dy:-1];
                     if (aCell) {
-                        [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.topEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.topEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
                     }
                     aCell = [_board get3Across2FromCell:cell withDx:1 dy:1];
                     if (aCell) {
-                        [self _changeEdge:cell.topEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.bottomEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.topEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.bottomEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.rightEdge status:KSLEdgeStatusOn];
                     }
                 }
                 if (y > 0) {
                     KSLCell *aCell = [cell.topEdge cellOfDir:0];
                     if (aCell.number == 3) {
-                        [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:cell.topEdge status:KSLEdgeStatusOn];
-                        [self _changeEdge:aCell.topEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:cell.topEdge status:KSLEdgeStatusOn];
+                        [self changeEdge:aCell.topEdge status:KSLEdgeStatusOn];
                         if (x > 0) {
-                            [self _changeEdge:[cell.topEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                            [self changeEdge:[cell.topEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
                             if ([cell.leftEdge cellOfDir:0].number == 2) {
-                                [self _changeEdge:[cell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[cell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
                             }
                             if ([aCell.leftEdge cellOfDir:0].number == 2) {
-                                [self _changeEdge:[aCell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[aCell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
                             }
                         }
                         if (x < _board.width - 1) {
-                            [self _changeEdge:[cell.topEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                            [self changeEdge:[cell.topEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
                             if ([cell.rightEdge cellOfDir:1].number == 2) {
-                                [self _changeEdge:[cell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[cell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
                             }
                             if ([aCell.rightEdge cellOfDir:1].number == 2) {
-                                [self _changeEdge:[aCell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
+                                [self changeEdge:[aCell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
                             }
                         }
                     }
@@ -313,19 +313,19 @@
 /**
  * 外周の数字で確定する辺を設定する.
  */
-- (void)_initBorder
+- (void)initBorder
 {
-    [self _initVBorderWithHDir:0];
-    [self _initVBorderWithHDir:1];
-    [self _initHBorderWithVDir:0];
-    [self _initHBorderWithVDir:1];
+    [self initVBorderWithHDir:0];
+    [self initVBorderWithHDir:1];
+    [self initHBorderWithVDir:0];
+    [self initHBorderWithVDir:1];
 }
 
 /**
  * 左右の外周の数字で確定する辺を設定する.
  * @param hdir 水平方向位置（0:左側、1:右側）
  */
-- (void)_initVBorderWithHDir:(NSInteger)hdir
+- (void)initVBorderWithHDir:(NSInteger)hdir
 {
     NSInteger x = hdir ? _board.width - 1 : 0;
     
@@ -334,17 +334,17 @@
         if (cell.number == 1) {
             KSLCell *aCell = [_board cellAtX:x andY:y-1];
             if (aCell.number == 1) {
-                [self _changeEdge:cell.topEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.topEdge status:KSLEdgeStatusOff];
             } else if (aCell.number == 3) {
-                [self _changeEdge:[_board vEdgeAtX:x+hdir andY:y-1] status:KSLEdgeStatusOn];
-                [self _changeEdge:[_board vEdgeAtX:x+1-hdir andY:y] status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
+                [self changeEdge:[_board vEdgeAtX:x+hdir andY:y-1] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board vEdgeAtX:x+1-hdir andY:y] status:KSLEdgeStatusOff];
+                [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
             }
             aCell = [_board cellAtX:x andY:y+1];
             if (aCell.number == 3) {
-                [self _changeEdge:[_board vEdgeAtX:x+hdir andY:y+1] status:KSLEdgeStatusOn];
-                [self _changeEdge:[_board vEdgeAtX:x+1-hdir andY:y] status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.topEdge status:KSLEdgeStatusOff];
+                [self changeEdge:[_board vEdgeAtX:x+hdir andY:y+1] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board vEdgeAtX:x+1-hdir andY:y] status:KSLEdgeStatusOff];
+                [self changeEdge:cell.topEdge status:KSLEdgeStatusOff];
             }
         }
     }
@@ -354,7 +354,7 @@
  * 上下の外周の数字で確定する辺を設定する.
  * @param vdir 鉛直方向位置（0:上側、1:下側）
  */
-- (void)_initHBorderWithVDir:(NSInteger)vdir
+- (void)initHBorderWithVDir:(NSInteger)vdir
 {
     NSInteger y = vdir ? _board.height - 1 : 0;
     
@@ -363,17 +363,17 @@
         if (cell.number == 1) {
             KSLCell *aCell = [_board cellAtX:x-1 andY:y];
             if (aCell.number == 1) {
-                [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
+                [self changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
             } else if (aCell.number == 3) {
-                [self _changeEdge:[_board hEdgeAtX:x-1 andY:y+vdir] status:KSLEdgeStatusOn];
-                [self _changeEdge:[_board hEdgeAtX:x andY:y+1-vdir] status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
+                [self changeEdge:[_board hEdgeAtX:x-1 andY:y+vdir] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board hEdgeAtX:x andY:y+1-vdir] status:KSLEdgeStatusOff];
+                [self changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
             }
             aCell = [_board cellAtX:x+1 andY:y];
             if (aCell.number == 3) {
-                [self _changeEdge:[_board hEdgeAtX:x+1 andY:y+vdir] status:KSLEdgeStatusOn];
-                [self _changeEdge:[_board hEdgeAtX:x andY:y+1-vdir] status:KSLEdgeStatusOff];
-                [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
+                [self changeEdge:[_board hEdgeAtX:x+1 andY:y+vdir] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board hEdgeAtX:x andY:y+1-vdir] status:KSLEdgeStatusOff];
+                [self changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
             }
         }
     }
@@ -385,27 +385,27 @@
  * 試しに1ステップだけ既存の連続線の末端の未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
  * ステップ：1つの辺をOnまたはOffに設定し、それにより影響を受ける各種の状態変更を連鎖的に行う一連の処理.
  */
-- (BOOL)_tryOneStep
+- (BOOL)tryOneStep
 {
-    [self _startNewStep];
+    [self startNewStep];
     for (NSInteger y = 0; y <= _board.height; y++) {
         for (NSInteger x = 0; x <= _board.width; x++) {
             KSLNode *node = [_board nodeAtX:x andY:y];
             if (node.onCount == 1) {
-                NSArray *branches = [self _createBranchesFromNode:node];
+                NSArray *branches = [self createBranchesFromNode:node];
                 for (NSInteger b = 0; b < branches.count; b++) {
                     KSLBranch *branch = branches[b];
-                    if ([self _tryWithEdge:branch.edge withStatus:KSLEdgeStatusOn]) {
+                    if ([self tryWithEdge:branch.edge withStatus:KSLEdgeStatusOn]) {
                         return YES;
                     }
-                    if ([self _tryWithEdge:branch.edge withStatus:KSLEdgeStatusOff]) {
+                    if ([self tryWithEdge:branch.edge withStatus:KSLEdgeStatusOff]) {
                         return YES;
                     }
                 }
             }
         }
     }
-    [self _removeCurrentStep];
+    [self removeCurrentStep];
     return NO;
 }
 
@@ -415,30 +415,30 @@
  * @param status 状態（KSLEdgeStatusOnまたはKSLEdgeStatusOff）
  * @return 指定のEdgeの状態が確定したかどうか.
  */
-- (BOOL)_tryWithEdge:(KSLEdge *)edge withStatus:(KSLEdgeStatus)status
+- (BOOL)tryWithEdge:(KSLEdge *)edge withStatus:(KSLEdgeStatus)status
 {
     @try {
         [_changedEdges removeAllObjects];
-        [_affectedCells removeAllObjects];
-        [self _changeEdge:edge status:status];
-        [self _checkSurroundingElements];
+        [affectedCells removeAllObjects];
+        [self changeEdge:edge status:status];
+        [self checkSurroundingElements];
     }
     @catch (NSException *ex) {
         if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
             // skip.
         } else if ([ex.name isEqualToString:KSLLOOP_FAILED_EXCEPTION]) {
             KSLEdgeStatus anotherStatus = status == KSLEdgeStatusOn ? KSLEdgeStatusOff : KSLEdgeStatusOn;
-            [self _removeCurrentStep];
+            [self removeCurrentStep];
             [_changedEdges removeAllObjects];
-            [_affectedCells removeAllObjects];
-            [self _changeEdge:edge status:anotherStatus];
-            [self _checkSurroundingElements];
+            [affectedCells removeAllObjects];
+            [self changeEdge:edge status:anotherStatus];
+            [self checkSurroundingElements];
             return YES;
         } else {
             [ex raise];
         }
     }
-    [self _clearCurrentStep];
+    [self clearCurrentStep];
     return NO;
 }
 
@@ -447,7 +447,7 @@
  * @param root 分岐の起点
  * @return 分岐の枝の配列
  */
-- (NSArray *)_createBranchesFromNode:(KSLNode *)root
+- (NSArray *)createBranchesFromNode:(KSLNode *)root
 {
     NSMutableArray *branches = [NSMutableArray array];
     if (root.upEdge.status == KSLEdgeStatusUnset) {
@@ -470,7 +470,7 @@
  * @param cell 対象のCell（後1辺だけOnの辺が不足しているCell）
  * @return 分岐の枝の配列
  */
-- (NSArray *)_createBranchesFromCell:(KSLCell *)cell
+- (NSArray *)createBranchesFromCell:(KSLCell *)cell
 {
     NSMutableArray *branches = [NSMutableArray array];
     if (cell.topEdge.status == KSLEdgeStatusUnset) {
@@ -498,7 +498,7 @@
  * 効率化のため実際には再起呼び出しは行わずループで処理する.
  * @param branches 分岐の枝の配列
  */
-- (void)_tryBranches:(NSMutableArray *)branches
+- (void)tryBranches:(NSMutableArray *)branches
 {
     NSMutableArray *branchStack = [NSMutableArray arrayWithObject:branches];
     NSInteger level = 1;
@@ -506,10 +506,10 @@
         @autoreleasepool {
             if (_steps.count == level - 1) {
                 // 新しいステップの開始
-                [self _startNewStep];
+                [self startNewStep];
             } else {
                 // 深い部分の探索から戻ってきた状態
-                [self _clearCurrentStep];
+                [self clearCurrentStep];
             }
             branches = [branchStack lastObject];
             BOOL addDepth = NO;
@@ -520,9 +520,9 @@
                     printf("LEVEL%2ld BRANCH:%s.%s ", (long)level,
                            branch.root.description.UTF8String, branch.edge.description.UTF8String);
                     [_changedEdges removeAllObjects];
-                    [_affectedCells removeAllObjects];
-                    [self _changeEdge:branch.edge status:KSLEdgeStatusOn];
-                    [self _checkSurroundingElements];
+                    [affectedCells removeAllObjects];
+                    [self changeEdge:branch.edge status:KSLEdgeStatusOn];
+                    [self checkSurroundingElements];
                 }
                 @catch (NSException *ex) {
                     KSLEdge *edge = ex.userInfo[@"edge"];
@@ -536,19 +536,19 @@
                     }
                     //[_board dumpWithEdeg:edge];
                     //[self dumpStepsFromIndex:1];
-                    [self _clearCurrentStep];
+                    [self clearCurrentStep];
                     continue;
                 }
                 printf("\n");
                 KSLNode *newRoot = [_board getLoopEndWithNode:branch.root andEdge:branch.edge];
-                NSArray *newBranches = [self _createBranchesFromNode:newRoot];
+                NSArray *newBranches = [self createBranchesFromNode:newRoot];
                 [branchStack addObject:newBranches];
                 level++;
                 addDepth = YES;
                 break;
             }
             if (!addDepth) {
-                [self _removeCurrentStep];
+                [self removeCurrentStep];
                 [branchStack removeLastObject];
                 level--;
             }
@@ -559,7 +559,7 @@
 /**
  * 新しいステップを開始する準備を行う.
  */
-- (void)_startNewStep
+- (void)startNewStep
 {
     _currentStep = [NSMutableArray array];
     [_steps addObject:_currentStep];
@@ -568,7 +568,7 @@
 /**
  * 現在処理中のステップで行った処理を全て元に戻す.
  */
-- (void)_clearCurrentStep
+- (void)clearCurrentStep
 {
     _clearling = YES;
     
@@ -609,9 +609,9 @@
 /**
  * 現在のステップを削除し、一つ前のステップをカレントにする.
  */
-- (void)_removeCurrentStep
+- (void)removeCurrentStep
 {
-    [self _clearCurrentStep];
+    [self clearCurrentStep];
     [_steps removeLastObject];
     
     _currentStep = _steps.lastObject;
@@ -632,7 +632,7 @@
  *         LoopFailureException 不整合が発生した場合、不完全なループが発生した場合
  *         以下、このメソッドを呼ぶ全てのメソッドで同じExceptionがthrowされる可能性がある.
  */
-- (void)_changeEdge:(KSLEdge *)edge status:(KSLEdgeStatus)status
+- (void)changeEdge:(KSLEdge *)edge status:(KSLEdgeStatus)status
 {
     if (edge.status == status) return;
     
@@ -686,7 +686,7 @@
         KSLNode *tail = [edge nodeOfLH:1].oppositeNode ? [edge nodeOfLH:1].oppositeNode : [edge nodeOfLH:1];
         
         if (head == [edge nodeOfLH:1]) {
-            [self _checkNewLoopWithEdge:edge];
+            [self checkNewLoopWithEdge:edge];
         } else {
             if (_currentStep) {
                 [_currentStep addObject:[[KSLAction alloc]
@@ -710,7 +710,7 @@
                         [_currentStep addObject:[[KSLAction alloc] initWithType:KSLActionTypeEdgeStatus
                                                     target:jointEdge fromValue:KSLEdgeStatusUnset toValue:KSLEdgeStatusOn]];
                     }
-                    [self _checkNewLoopWithEdge:jointEdge];
+                    [self checkNewLoopWithEdge:jointEdge];
                 }
                 @catch (NSException *ex) {
                     if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
@@ -720,7 +720,7 @@
                         if (_currentStep) {
                             [_currentStep removeLastObject];
                         }
-                        [self _changeEdge:jointEdge status:KSLEdgeStatusOff];
+                        [self changeEdge:jointEdge status:KSLEdgeStatusOff];
                     }
                 }
             }
@@ -734,17 +734,17 @@
  * @throws LoopCompletedException 完成した場合
  *         LoopFailureException 不完全な部分がある場合
  */
-- (void)_checkNewLoopWithEdge:(KSLEdge *)edge
+- (void)checkNewLoopWithEdge:(KSLEdge *)edge
 {
     if ([_board isLoopFinishedOfEdge:edge]) {
-// debug用
-//        UIImage *image = [_board createImageWithWidth:400 andHeight:748];
-//        NSData *data = UIImagePNGRepresentation(image);
-//        if ([data writeToFile:@"/Users/zak/route.png" atomically:YES]) {
-//            NSLog(@"ok");
-//        } else {
-//            NSLog(@"ng");
-//        }
+    // debug用
+    //        UIImage *image = [_board createImageWithWidth:400 andHeight:748];
+    //        NSData *data = UIImagePNGRepresentation(image);
+    //        if ([data writeToFile:@"/Users/zak/route.png" atomically:YES]) {
+    //            NSLog(@"ok");
+    //        } else {
+    //            NSLog(@"ng");
+    //        }
         [[NSException exceptionWithName:KSLLOOP_COMPLETED_EXCEPTION
                                  reason:nil userInfo:nil] raise];
     } else {
@@ -759,44 +759,44 @@
  * 全Edgeの周辺チェック終了後、登録されたCellのコーナーチェックを行い、その結果いずれかのEdgeの状態が変更されると、
  * Edge周辺のチェックから繰り返す.
  */
-- (void)_checkSurroundingElements
+- (void)checkSurroundingElements
 {
-    while (_changedEdges.count || _affectedCells.count) {
+    while (_changedEdges.count || affectedCells.count) {
         while (_changedEdges.count) {
             KSLEdge *edge = _changedEdges[0];
             [_changedEdges removeObjectAtIndex:0];
             
             switch (edge.status) {
                 case KSLEdgeStatusOn:
-                    [self _checkNodeWithOnEdge:edge ofLH:0];
-                    [self _checkNodeWithOnEdge:edge ofLH:1];
+                    [self checkNodeWithOnEdge:edge ofLH:0];
+                    [self checkNodeWithOnEdge:edge ofLH:1];
                     
-                    [self _checkCellWithOnEdge:edge ofDir:0];
-                    [self _checkCellWithOnEdge:edge ofDir:1];
+                    [self checkCellWithOnEdge:edge ofDir:0];
+                    [self checkCellWithOnEdge:edge ofDir:1];
                     break;
                 case KSLEdgeStatusOff:
-                    [self _checkNodeWithOffEdge:edge ofLH:0];
-                    [self _checkNodeWithOffEdge:edge ofLH:1];
+                    [self checkNodeWithOffEdge:edge ofLH:0];
+                    [self checkNodeWithOffEdge:edge ofLH:1];
                     
-                    [self _checkCellWithOffEdge:edge ofDir:0];
-                    [self _checkCellWithOffEdge:edge ofDir:1];
+                    [self checkCellWithOffEdge:edge ofDir:0];
+                    [self checkCellWithOffEdge:edge ofDir:1];
                     break;
                 default:
                     break;
             }
             
-            [_affectedCells addObject:[edge cellOfDir:0]];
-            [_affectedCells addObject:[edge cellOfDir:1]];
-            [_affectedCells addObject:[[edge straightEdgeOfLH:0] cellOfDir:0]];
-            [_affectedCells addObject:[[edge straightEdgeOfLH:0] cellOfDir:1]];
-            [_affectedCells addObject:[[edge straightEdgeOfLH:1] cellOfDir:0]];
-            [_affectedCells addObject:[[edge straightEdgeOfLH:1] cellOfDir:1]];
+            [affectedCells addObject:[edge cellOfDir:0]];
+            [affectedCells addObject:[edge cellOfDir:1]];
+            [affectedCells addObject:[[edge straightEdgeOfLH:0] cellOfDir:0]];
+            [affectedCells addObject:[[edge straightEdgeOfLH:0] cellOfDir:1]];
+            [affectedCells addObject:[[edge straightEdgeOfLH:1] cellOfDir:0]];
+            [affectedCells addObject:[[edge straightEdgeOfLH:1] cellOfDir:1]];
         }
         
-        if (_affectedCells.count) {
-            KSLCell *cell = _affectedCells[0];
-            [_affectedCells removeObjectAtIndex:0];
-            [self _checkAffectedCell:cell];
+        if (affectedCells.count) {
+            KSLCell *cell = affectedCells[0];
+            [affectedCells removeObjectAtIndex:0];
+            [self checkAffectedCell:cell];
         }
     }
 }
@@ -806,39 +806,39 @@
  * @param edge 状態がOnに変化したEdge
  * @param lh 前後(0:indexが小さな側、1:indexが大きな側）
  */
-- (void)_checkNodeWithOnEdge:(KSLEdge *)edge ofLH:(NSInteger)lh
+- (void)checkNodeWithOnEdge:(KSLEdge *)edge ofLH:(NSInteger)lh
 {
     KSLNode *node = [edge nodeOfLH:lh];
     
     // ノードのOnの辺数が2になったら残りはOff
     if (node.onCount == 2) {
         if (node.upEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.upEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.upEdge status:KSLEdgeStatusOff];
         }
         if (node.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.leftEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.leftEdge status:KSLEdgeStatusOff];
         }
         if (node.downEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.downEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.downEdge status:KSLEdgeStatusOff];
         }
         if (node.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.rightEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.rightEdge status:KSLEdgeStatusOff];
         }
     }
     
     // ノードのOffの辺数が2(Onは1)になったら残りはOn
     else if (node.offCount == 2) {
         if (node.upEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.upEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.upEdge status:KSLEdgeStatusOn];
         }
         if (node.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.leftEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.leftEdge status:KSLEdgeStatusOn];
         }
         if (node.downEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.downEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.downEdge status:KSLEdgeStatusOn];
         }
         if (node.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.rightEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.rightEdge status:KSLEdgeStatusOn];
         }
     }
 }
@@ -848,23 +848,23 @@
  * @param edge 状態がOnに変化したEdge
  * @param dir 左右(0:indexが小さな側、1:indexが大きな側）
  */
-- (void)_checkCellWithOnEdge:(KSLEdge *)edge ofDir:(NSInteger)dir
+- (void)checkCellWithOnEdge:(KSLEdge *)edge ofDir:(NSInteger)dir
 {
     KSLCell *cell = [edge cellOfDir:dir];
     
     // セルのOnの辺数がナンバーと一致したら残りはOff
     if (cell.onCount == cell.number) {
         if (cell.topEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.topEdge status:KSLEdgeStatusOff];
+            [self changeEdge:cell.topEdge status:KSLEdgeStatusOff];
         }
         if (cell.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
+            [self changeEdge:cell.leftEdge status:KSLEdgeStatusOff];
         }
         if (cell.bottomEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
+            [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOff];
         }
         if (cell.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
+            [self changeEdge:cell.rightEdge status:KSLEdgeStatusOff];
         }
     }
 }
@@ -874,39 +874,39 @@
  * @param edge 状態がOffに変化したEdge
  * @param lh 前後(0:indexが小さな側、1:indexが大きな側）
  */
-- (void)_checkNodeWithOffEdge:(KSLEdge *)edge ofLH:(NSInteger)lh
+- (void)checkNodeWithOffEdge:(KSLEdge *)edge ofLH:(NSInteger)lh
 {
     KSLNode *node = [edge nodeOfLH:lh];
     
     // ノードのOffの辺数が3になったら残りもOff
     if (node.offCount == 3) {
         if (node.upEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.upEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.upEdge status:KSLEdgeStatusOff];
         }
         if (node.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.leftEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.leftEdge status:KSLEdgeStatusOff];
         }
         if (node.downEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.downEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.downEdge status:KSLEdgeStatusOff];
         }
         if (node.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.rightEdge status:KSLEdgeStatusOff];
+            [self changeEdge:node.rightEdge status:KSLEdgeStatusOff];
         }
     }
     
     // ノードのOnの辺数が1でOffの辺数が2になったら残りはOn
     else if (node.offCount == 2 && node.onCount == 1) {
         if (node.upEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.upEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.upEdge status:KSLEdgeStatusOn];
         }
         if (node.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.leftEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.leftEdge status:KSLEdgeStatusOn];
         }
         if (node.downEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.downEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.downEdge status:KSLEdgeStatusOn];
         }
         if (node.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:node.rightEdge status:KSLEdgeStatusOn];
+            [self changeEdge:node.rightEdge status:KSLEdgeStatusOn];
         }
     }
     
@@ -919,7 +919,7 @@
     KSLEdge *offvEdge;
     if (cell0.number == 1 && cell1.number == 1) {
         // 両方が1なら間のEdgeはOff
-        [self _changeEdge:straight status:KSLEdgeStatusOff];
+        [self changeEdge:straight status:KSLEdgeStatusOff];
     } else if (cell0.number == 1 && cell1.number == 3) {
         // 1と3の組み合せなら3の底辺がOn、1の対辺がOff
         if (edge.horizontal) {
@@ -931,9 +931,9 @@
             offEdge = lh ? cell0.bottomEdge : cell0.topEdge;
             offvEdge = cell0.leftEdge;
         }
-        [self _changeEdge:onEdge status:KSLEdgeStatusOn];
-        [self _changeEdge:offEdge status:KSLEdgeStatusOff];
-        [self _changeEdge:offvEdge status:KSLEdgeStatusOff];
+        [self changeEdge:onEdge status:KSLEdgeStatusOn];
+        [self changeEdge:offEdge status:KSLEdgeStatusOff];
+        [self changeEdge:offvEdge status:KSLEdgeStatusOff];
     } else if (cell0.number == 3 && cell1.number == 1) {
         if (edge.horizontal) {
             onEdge = lh ? cell0.leftEdge : cell0.rightEdge;
@@ -944,9 +944,9 @@
             offEdge = lh ? cell1.bottomEdge : cell1.topEdge;
             offvEdge = cell1.rightEdge;
         }
-        [self _changeEdge:onEdge status:KSLEdgeStatusOn];
-        [self _changeEdge:offEdge status:KSLEdgeStatusOff];
-        [self _changeEdge:offvEdge status:KSLEdgeStatusOff];
+        [self changeEdge:onEdge status:KSLEdgeStatusOn];
+        [self changeEdge:offEdge status:KSLEdgeStatusOff];
+        [self changeEdge:offvEdge status:KSLEdgeStatusOff];
     }
 }
 
@@ -955,23 +955,23 @@
  * @param edge 状態がOffに変化したEdge
  * @param dir 左右(0:indexが小さな側、1:indexが大きな側）
  */
-- (void)_checkCellWithOffEdge:(KSLEdge *)edge ofDir:(NSInteger)dir
+- (void)checkCellWithOffEdge:(KSLEdge *)edge ofDir:(NSInteger)dir
 {
     KSLCell *cell = [edge cellOfDir:dir];
     
     // セルのOffの辺数が(4-ナンバー)と一致したら残りはOn
     if (cell.number > 0 && cell.offCount == 4 - cell.number) {
         if (cell.topEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.topEdge status:KSLEdgeStatusOn];
+            [self changeEdge:cell.topEdge status:KSLEdgeStatusOn];
         }
         if (cell.leftEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
+            [self changeEdge:cell.leftEdge status:KSLEdgeStatusOn];
         }
         if (cell.bottomEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
+            [self changeEdge:cell.bottomEdge status:KSLEdgeStatusOn];
         }
         if (cell.rightEdge.status == KSLEdgeStatusUnset) {
-            [self _changeEdge:cell.rightEdge status:KSLEdgeStatusOn];
+            [self changeEdge:cell.rightEdge status:KSLEdgeStatusOn];
         }
     }
     
@@ -980,7 +980,7 @@
         KSLEdge *oedge = [cell oppsiteEdgeOfEdge:edge];
         KSLCell *aCell = [oedge cellOfDir:dir];
         if (aCell.number == 3) {
-            [self _changeEdge:[aCell oppsiteEdgeOfEdge:oedge] status:KSLEdgeStatusOn];
+            [self changeEdge:[aCell oppsiteEdgeOfEdge:oedge] status:KSLEdgeStatusOn];
         }
     }
 }
@@ -989,13 +989,13 @@
  * 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う.
  * @param cell 対象のCell
  */
-- (void)_checkAffectedCell:(KSLCell *)cell
+- (void)checkAffectedCell:(KSLCell *)cell
 {
     switch (cell.number) {
         case 1:
             for (NSInteger h = 0; h < 2; h++) {
                 for (NSInteger v = 0; v < 2; v++) {
-                    [self _checkAffectedCell1:cell cornerH:h andV:v];
+                    [self checkAffectedCell1:cell cornerH:h andV:v];
                 }
             }
             break;
@@ -1003,7 +1003,7 @@
         case 2:
             for (NSInteger h = 0; h < 2; h++) {
                 for (NSInteger v = 0; v < 2; v++) {
-                    [self _checkAffectedCell2:cell cornerH:h andV:v];
+                    [self checkAffectedCell2:cell cornerH:h andV:v];
                 }
             }
             break;
@@ -1011,7 +1011,7 @@
         case 3:
             for (NSInteger h = 0; h < 2; h++) {
                 for (NSInteger v = 0; v < 2; v++) {
-                    [self _checkAffectedCell3:cell cornerH:h andV:v];
+                    [self checkAffectedCell3:cell cornerH:h andV:v];
                 }
             }
             break;
@@ -1024,7 +1024,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell1:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
+- (void)checkAffectedCell1:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1035,10 +1035,10 @@
     KSLGateStatus gateStatus = [node gateStatusOfDir:dir];
     
     if (gateStatus == KSLGateStatusUnset) {
-        gateStatus = [self _gateStatus1WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        gateStatus = [self gateStatus1WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         if (gateStatus != KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
-                [_affectedCells addObject:[hoEdge cellOfDir:v]];
+            if ([self setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
+                [affectedCells addObject:[hoEdge cellOfDir:v]];
             }
         } else {
             return;
@@ -1053,28 +1053,28 @@
     
     if (gateStatus == KSLGateStatusOpen) {
         // Openなら、対象コーナーの内側外側とも1本はOn、1本はOff
-        [self _fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        [self fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
             // 逆側のコーナーはClose
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
         // 逆側のコーナーの内側はOff
-        [self _setCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge toStatus:KSLEdgeStatusOff];
+        [self setCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge toStatus:KSLEdgeStatusOff];
         // 外側は2本が同じ状態
-        [self _fillCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge];
+        [self fillCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge];
     } else {
-        [self _setCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge toStatus:KSLEdgeStatusOff];
-        [self _fillCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge];
+        [self setCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge toStatus:KSLEdgeStatusOff];
+        [self fillCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
-        [self _fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
+        [self fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
     }
 }
 
@@ -1084,7 +1084,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell2:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
+- (void)checkAffectedCell2:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1099,7 +1099,7 @@
     KSLEdge *ohoEdge = [ohiEdge straightEdgeOfLH:1-h];
     
     if (gateStatus == KSLGateStatusUnset) {
-        gateStatus = [self _gateStatus2WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        gateStatus = [self gateStatus2WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         if (gateStatus == KSLGateStatusUnset) {
             if (oviEdge.status == KSLEdgeStatusOff || ohiEdge.status == KSLEdgeStatusOff ||
                     ovoEdge.status == KSLEdgeStatusOn || ohoEdge.status == KSLEdgeStatusOn) {
@@ -1118,8 +1118,8 @@
             }
         }
         if (gateStatus != KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
-                [_affectedCells addObject:[hoEdge cellOfDir:v]];
+            if ([self setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
+                [affectedCells addObject:[hoEdge cellOfDir:v]];
             }
         } else {
             return;
@@ -1130,15 +1130,15 @@
     
     if (gateStatus == KSLGateStatusOpen) {
         // Openなら、対象コーナーの内側外側とも1本はOn、1本はOff
-        [self _fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        [self fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
         // 逆側のコーナーも内側外側とも1本はOn、1本はOff
-        [self _fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
+        [self fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
     } else {
         // Closeなら隣の2つのコーナーがOpen、対角のコーナーはClose
         KSLNode *dnode = [hiEdge nodeOfLH:1-h];
@@ -1146,46 +1146,46 @@
         KSLEdge *dhoEdge = [hiEdge straightEdgeOfLH:1-h];
         KSLEdge *dvoEdge = [oviEdge straightEdgeOfLH:v];
         if ([dnode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:dnode andDir:ddir toStatus:KSLGateStatusOpen]) {
-                [_affectedCells addObject:[dhoEdge cellOfDir:v]];
+            if ([self setGateStatusOfNode:dnode andDir:ddir toStatus:KSLGateStatusOpen]) {
+                [affectedCells addObject:[dhoEdge cellOfDir:v]];
             }
         }
-        [self _fillOpenGateEdgesWithHiEdge:hiEdge viEdge:oviEdge hoEdge:dhoEdge voEdge:dvoEdge];
+        [self fillOpenGateEdgesWithHiEdge:hiEdge viEdge:oviEdge hoEdge:dhoEdge voEdge:dvoEdge];
         
         dnode = [viEdge nodeOfLH:1-v];
         dhoEdge = [ohiEdge straightEdgeOfLH:h];
         dvoEdge = [viEdge straightEdgeOfLH:1-v];
         if ([dnode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:dnode andDir:ddir toStatus:KSLGateStatusOpen]) {
-                [_affectedCells addObject:[dhoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:dnode andDir:ddir toStatus:KSLGateStatusOpen]) {
+                [affectedCells addObject:[dhoEdge cellOfDir:1-v]];
             }
         }
-        [self _fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:viEdge hoEdge:dhoEdge voEdge:dvoEdge];
+        [self fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:viEdge hoEdge:dhoEdge voEdge:dvoEdge];
         
-        [self _fillCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge];
-        [self _fillCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge];
+        [self fillCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge];
+        [self fillCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
-        [self _fillCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge];
-        [self _fillCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge];
+        [self fillCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge];
+        [self fillCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge];
         
         if (hoEdge.status == KSLEdgeStatusOff) {
             // Closeなコーナーの逆側のCellが3ならそのCellの軸対象のコーナーの内側の2辺がOn
             KSLCell *aCell = [oviEdge cellOfDir:1-h];
             if (aCell.number == 3) {
                 KSLEdge *aEdge = h ? aCell.leftEdge : aCell.rightEdge;
-                [self _changeEdge:aEdge status:KSLEdgeStatusOn];
-                [self _changeEdge:[hiEdge straightEdgeOfLH:1-h] status:KSLEdgeStatusOn];
+                [self changeEdge:aEdge status:KSLEdgeStatusOn];
+                [self changeEdge:[hiEdge straightEdgeOfLH:1-h] status:KSLEdgeStatusOn];
             }
             aCell = [ohiEdge cellOfDir:1-v];
             if (aCell.number == 3) {
                 KSLEdge *aEdge = v ? aCell.topEdge : aCell.bottomEdge;
-                [self _changeEdge:aEdge status:KSLEdgeStatusOn];
-                [self _changeEdge:[viEdge straightEdgeOfLH:1-v] status:KSLEdgeStatusOn];
+                [self changeEdge:aEdge status:KSLEdgeStatusOn];
+                [self changeEdge:[viEdge straightEdgeOfLH:1-v] status:KSLEdgeStatusOn];
             }
         }
     }
@@ -1197,7 +1197,7 @@
  * @param h 水平方向の位置（0:左側、1:右側)
  * @param v 鉛直方向の位置（0:上側、1:下側）
  */
-- (void)_checkAffectedCell3:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
+- (void)checkAffectedCell3:(KSLCell *)cell cornerH:(NSInteger)h andV:(NSInteger)v
 {
     KSLEdge *viEdge = h ? cell.rightEdge : cell.leftEdge;
     KSLEdge *hiEdge = v ? cell.bottomEdge : cell.topEdge;
@@ -1208,10 +1208,10 @@
     KSLGateStatus gateStatus = [node gateStatusOfDir:dir];
     
     if (gateStatus == KSLGateStatusUnset) {
-        gateStatus = [self _gateStatus3WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        gateStatus = [self gateStatus3WithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         if (gateStatus != KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
-                [_affectedCells addObject:[hoEdge cellOfDir:v]];
+            if ([self setGateStatusOfNode:node andDir:dir toStatus:gateStatus]) {
+                [affectedCells addObject:[hoEdge cellOfDir:v]];
             }
         } else {
             return;
@@ -1226,27 +1226,27 @@
     
     if (gateStatus == KSLGateStatusOpen) {
         // Openなら、対象コーナーの内側外側とも1本はOn、1本はOff
-        [self _fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
+        [self fillOpenGateEdgesWithHiEdge:hiEdge viEdge:viEdge hoEdge:hoEdge voEdge:voEdge];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusClose]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
         // 逆側コーナーの内側2辺はOn
-        [self _setCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge toStatus:KSLEdgeStatusOn];
+        [self setCloseGateEdgesWithHEdge:ohiEdge vEdge:oviEdge toStatus:KSLEdgeStatusOn];
         // 外側2辺はOff
-        [self _setCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge toStatus:KSLEdgeStatusOff];
+        [self setCloseGateEdgesWithHEdge:ohoEdge vEdge:ovoEdge toStatus:KSLEdgeStatusOff];
     } else {
-        [self _setCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge toStatus:KSLEdgeStatusOn];
-        [self _setCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge toStatus:KSLEdgeStatusOff];
+        [self setCloseGateEdgesWithHEdge:hiEdge vEdge:viEdge toStatus:KSLEdgeStatusOn];
+        [self setCloseGateEdgesWithHEdge:hoEdge vEdge:voEdge toStatus:KSLEdgeStatusOff];
         
         if ([onode gateStatusOfDir:dir] == KSLGateStatusUnset) {
-            if ([self _setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
-                [_affectedCells addObject:[ohoEdge cellOfDir:1-v]];
+            if ([self setGateStatusOfNode:onode andDir:dir toStatus:KSLGateStatusOpen]) {
+                [affectedCells addObject:[ohoEdge cellOfDir:1-v]];
             }
         }
-        [self _fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
+        [self fillOpenGateEdgesWithHiEdge:ohiEdge viEdge:oviEdge hoEdge:ohoEdge voEdge:ovoEdge];
     }
 }
 
@@ -1257,7 +1257,7 @@
  * @param status 状態
  * @return 実際に変更されたか（既に変更されていた場合はNO）
  */
-- (BOOL)_setGateStatusOfNode:(KSLNode *)node andDir:(KSLGateDir)dir toStatus:(KSLGateStatus)status
+- (BOOL)setGateStatusOfNode:(KSLNode *)node andDir:(KSLGateDir)dir toStatus:(KSLGateStatus)status
 {
     KSLGateStatus oldStatus = [node gateStatusOfDir:dir];
     if (oldStatus == KSLGateStatusUnset) {
@@ -1280,7 +1280,7 @@
  * @param voEdge 鉛直方向の外側のEdge
  * @return Gateの状態
  */
-- (KSLGateStatus)_gateStatus1WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
+- (KSLGateStatus)gateStatus1WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
                                    hoEdge:(KSLEdge *)hoEdge voEdge:(KSLEdge *)voEdge
 {
     if (hiEdge.status == KSLEdgeStatusOn || viEdge.status == KSLEdgeStatusOn) {
@@ -1313,7 +1313,7 @@
  * @param voEdge 鉛直方向の外側のEdge
  * @return Gateの状態
  */
-- (KSLGateStatus)_gateStatus2WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
+- (KSLGateStatus)gateStatus2WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
                                    hoEdge:(KSLEdge *)hoEdge voEdge:(KSLEdge *)voEdge
 {
     if (hiEdge.status == KSLEdgeStatusOn) {
@@ -1353,7 +1353,7 @@
  * @param voEdge 鉛直方向の外側のEdge
  * @return Gateの状態
  */
-- (KSLGateStatus)_gateStatus3WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
+- (KSLGateStatus)gateStatus3WithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
                                    hoEdge:(KSLEdge *)hoEdge voEdge:(KSLEdge *)voEdge
 {
     if (hiEdge.status == KSLEdgeStatusOff || viEdge.status == KSLEdgeStatusOff) {
@@ -1377,27 +1377,27 @@
  * @param hoEdge 水平方向の外側のEdge
  * @param voEdge 鉛直方向の外側のEdge
  */
-- (void)_fillOpenGateEdgesWithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
+- (void)fillOpenGateEdgesWithHiEdge:(KSLEdge *)hiEdge viEdge:(KSLEdge *)viEdge
                              hoEdge:(KSLEdge *)hoEdge voEdge:(KSLEdge *)voEdge
 {
     if (hiEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:viEdge status:KSLEdgeStatusOff];
+        [self changeEdge:viEdge status:KSLEdgeStatusOff];
     } else if (hiEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:viEdge status:KSLEdgeStatusOn];
+        [self changeEdge:viEdge status:KSLEdgeStatusOn];
     } else if (viEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:hiEdge status:KSLEdgeStatusOff];
+        [self changeEdge:hiEdge status:KSLEdgeStatusOff];
     } else if (viEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:hiEdge status:KSLEdgeStatusOn];
+        [self changeEdge:hiEdge status:KSLEdgeStatusOn];
     }
     
     if (hoEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:voEdge status:KSLEdgeStatusOff];
+        [self changeEdge:voEdge status:KSLEdgeStatusOff];
     } else if (hoEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:voEdge status:KSLEdgeStatusOn];
+        [self changeEdge:voEdge status:KSLEdgeStatusOn];
     } else if (voEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:hoEdge status:KSLEdgeStatusOff];
+        [self changeEdge:hoEdge status:KSLEdgeStatusOff];
     } else if (voEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:hoEdge status:KSLEdgeStatusOn];
+        [self changeEdge:hoEdge status:KSLEdgeStatusOn];
     }
 }
 
@@ -1406,16 +1406,16 @@
  * @param hEdge 水平方向のEdge
  * @param vEdge 鉛直方向のEdge
  */
-- (void)_fillCloseGateEdgesWithHEdge:(KSLEdge *)hEdge vEdge:(KSLEdge *)vEdge
+- (void)fillCloseGateEdgesWithHEdge:(KSLEdge *)hEdge vEdge:(KSLEdge *)vEdge
 {
     if (hEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:vEdge status:KSLEdgeStatusOn];
+        [self changeEdge:vEdge status:KSLEdgeStatusOn];
     } else if (hEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:vEdge status:KSLEdgeStatusOff];
+        [self changeEdge:vEdge status:KSLEdgeStatusOff];
     } else if (vEdge.status == KSLEdgeStatusOn) {
-        [self _changeEdge:hEdge status:KSLEdgeStatusOn];
+        [self changeEdge:hEdge status:KSLEdgeStatusOn];
     } else if (vEdge.status == KSLEdgeStatusOff) {
-        [self _changeEdge:hEdge status:KSLEdgeStatusOff];
+        [self changeEdge:hEdge status:KSLEdgeStatusOff];
     }
 }
 
@@ -1425,18 +1425,18 @@
  * @param vEdge 鉛直方向のEdge
  * @param status 設定する状態
  */
-- (void)_setCloseGateEdgesWithHEdge:(KSLEdge *)hEdge vEdge:(KSLEdge *)vEdge
+- (void)setCloseGateEdgesWithHEdge:(KSLEdge *)hEdge vEdge:(KSLEdge *)vEdge
                           toStatus:(KSLEdgeStatus)status
 {
-    [self _changeEdge:hEdge status:status];
-    [self _changeEdge:vEdge status:status];
+    [self changeEdge:hEdge status:status];
+    [self changeEdge:vEdge status:status];
 }
 
 /**
  * 指定のインデックス以降のステップのEdgeの状態を変更した処理のリストを出力する.
  * @param index ステップのインデックス
  */
-- (void)_dumpStepsFromIndex:(NSInteger)index
+- (void)dumpStepsFromIndex:(NSInteger)index
 {
     NSInteger i = 0;
     for (NSArray *step in _steps) {

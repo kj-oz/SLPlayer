@@ -397,24 +397,6 @@
     return KSLLoopError;
 }
 
-- (BOOL)isOnlyLoopOfEdge:(KSLEdge *)edge
-{
-    KSLNode *root = [edge nodeOfLH:0];
-    KSLNode *node = [edge nodeOfLH:1];
-    NSInteger conCount = 1;
-    while (node != root) {
-        edge = [node onEdgeConnectToEdge:edge];
-        if (!edge) {
-            return NO;
-        }
-        conCount++;
-        
-        node = [edge anotherNodeOfNode:node];
-    }
-    
-    return conCount == [self countOnEdge];
-}
-
 - (NSArray *)route
 {
     KSLEdge *edge = [self findOnEdge];
@@ -677,9 +659,30 @@
     
 }
 
-
-
 #pragma mark - プライベートメソッド
+
+/**
+ * 与えられたEdgeの含まれているループが盤面の唯一のループかどうかを確認する
+ * @param edge Edge
+ * @return 盤面の唯一のループかどうか
+ */
+- (BOOL)isOnlyLoopOfEdge:(KSLEdge *)edge
+{
+    KSLNode *root = [edge nodeOfLH:0];
+    KSLNode *node = [edge nodeOfLH:1];
+    NSInteger conCount = 1;
+    while (node != root) {
+        edge = [node onEdgeConnectToEdge:edge];
+        if (!edge) {
+            return NO;
+        }
+        conCount++;
+        
+        node = [edge anotherNodeOfNode:node];
+    }
+    
+    return conCount == [self countOnEdge];
+}
 
 /**
  * 盤面を構成する各要素を構築する.

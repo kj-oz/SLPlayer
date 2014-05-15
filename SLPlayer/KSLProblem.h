@@ -176,11 +176,9 @@ typedef enum : NSInteger {
 - (NSString *)statusString;
 
 /**
- * 解くのに掛かった時間の文字列（XX分、YY分、・・・の形式）を得る.
- * @return 解くのに掛かった時間の文字列
+ * 難易度の文字列（★n）を得る.
+ * @return 難易度の文字列
  */
-- (NSString *)elapsedTimeString;
-
 - (NSString *)difficultyString;
 
 @end

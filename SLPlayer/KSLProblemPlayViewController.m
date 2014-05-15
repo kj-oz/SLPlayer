@@ -37,6 +37,8 @@
 // 経過時間表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
 
+@property (weak, nonatomic) IBOutlet UIView *TitleView;
+
 @end
 
 
@@ -85,6 +87,8 @@
     [nc addObserver:self selector:@selector(applicationWillEnterForeground) name:@"applicationWillEnterForeground" object:nil];
     
     [self setBoard:_player.board];
+    [self.TitleView addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                                          initWithTarget:self action:@selector(titleTapped:)]];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -236,6 +240,11 @@
 }
 
 #pragma mark - 各種アクション
+
+- (IBAction)titleTapped:(id)sender
+{
+    [self initClicked:sender];
+}
 
 - (IBAction)actionClicked:(id)sender {
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];

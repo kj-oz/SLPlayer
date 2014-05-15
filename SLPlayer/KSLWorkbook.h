@@ -42,6 +42,10 @@
  */
 - (void)removeProblem:(KSLProblem *)problem withDelete:(BOOL)delete;
 
+/**
+ * 与えられた問題を複製する.
+ * @param problem 元の問題
+ */
 - (void)copyProblem:(KSLProblem *)problem;
 
 @end

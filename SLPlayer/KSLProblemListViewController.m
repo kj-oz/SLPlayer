@@ -393,9 +393,7 @@
     
     // 実体を移動する
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
-    for (KSLProblem *problem in problems) {
-        [pm moveProblem:problem toWorkbook:workbook];
-    }
+    [pm moveProblems:problems toWorkbook:workbook];
     
     [self.tableView reloadData];
 }

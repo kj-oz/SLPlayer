@@ -56,7 +56,7 @@
     return self;
 }
 
-#pragma mark - 出力
+#pragma mark - 保存
 
 - (void)save
 {
@@ -72,6 +72,8 @@
         [[NSException exceptionWithName:error.description reason:_path userInfo:nil] raise];
     }
 }
+
+#pragma mark - 盤面の操作
 
 - (void)addStep:(NSArray *)step
 {
@@ -123,6 +125,8 @@
     }
 }
 
+#pragma mark - 盤面のチェック
+
 - (KSLLoopStatus)isLoopFinished
 {
     KSLAction *action = [[_steps lastObject] lastObject];
@@ -157,6 +161,10 @@
     }
 }
 
+/**
+ * 操作をに対するjson文字列を得る.
+ * @return 操作をに対するjson文字列
+ */
 - (NSArray *)stringArrayFromSteps
 {
     NSMutableArray *jsonArray = [NSMutableArray arrayWithCapacity:[_steps count]];
@@ -189,8 +197,8 @@
 }
 
 /**
- * 
- * @param action アクションを実行する
+ * アクションを実行する.
+ * @param action アクション
  */
 - (void)doAction:(KSLAction *)action
 {
@@ -206,6 +214,10 @@
     }
 }
 
+/**
+ * アクションを取り消す.
+ * @param action アクション
+ */
 - (void)undoAction:(KSLAction *)action
 {
     KSLEdge *edge = nil;

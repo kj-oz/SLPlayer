@@ -45,21 +45,42 @@
 - (void)save;
 
 /**
- *
- * @param step
+ * Undo対象の一連の操作を1つ追加する.
+ * @param step 一連の操作
  */
 - (void)addStep:(NSArray *)step;
 
+/**
+ * Edgeを全てクリアする.（未設定の状態にする）
+ */
 - (void)clear;
 
+/**
+ * 固定されていないEdgeを全て未設定の状態にする.
+ */
 - (void)erase;
 
+/**
+ * 未設定以外のEdgeを固定する.
+ */
 - (void)fix;
 
+/**
+ * 既存の最後の操作の値を与えれた値に変更する.
+ * (盤面編集時のセルの数値の変更等、同じ対象に対して続けて操作をした場合）
+ * @param newValue 新たな値
+ */
 - (void)changeAction:(NSInteger)newValue;
 
+/**
+ * 直前の一連の操作をアンドゥする.
+ */
 - (void)undo;
 
+/**
+ * ループが完成したか銅貨を調べる
+ * @return ループの状態
+ */
 - (KSLLoopStatus)isLoopFinished;
 
 @end
