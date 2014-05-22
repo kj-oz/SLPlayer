@@ -106,9 +106,9 @@
 #pragma mark - プライベート・メソッド群
 
 /**
- *
- * @param title
- * @return
+ * 同じ名称の問題が存在しているか調べる
+ * @param title 名称
+ * @return 同じ名称の問題が存在しているかどうか
  */
 - (BOOL)hasSameTitleProblem:(NSString *)title
 {

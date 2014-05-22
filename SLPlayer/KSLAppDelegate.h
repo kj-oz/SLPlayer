@@ -10,6 +10,9 @@
 
 @class KSLProblem;
 
+/**
+ * アプリケーション・デリゲート
+ */
 @interface KSLAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
@@ -26,6 +29,9 @@
 // 現在表示中のビュー（"List", "Play", "Edit")
 @property (nonatomic, copy) NSString *currentView;
 
+/**
+ * アプリの状態を保存する.
+ */
 - (void)saveData;
 
 @end

@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "KSLWorkbookListViewController.h"
 
+/**
+ * 問題一覧画面のコントローラ
+ */
 @interface KSLProblemListViewController : UITableViewController
     <KSLWorkbookListViewControllerDelegate, UIPopoverControllerDelegate>
 

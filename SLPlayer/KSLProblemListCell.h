@@ -8,14 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ * 問題をテーブルビューに表示するためのセル
+ */
 @interface KSLProblemListCell : UITableViewCell
 
+// 名称のラベル
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
+// サイズのラベル
 @property (nonatomic) IBOutlet UILabel *sizeLabel;
 
+// 難易度のラベル
 @property (nonatomic) IBOutlet UILabel *difficultyLabel;
 
+// 状態のラベル
 @property (nonatomic) IBOutlet UILabel *statusLabel;
 
 @end

@@ -11,38 +11,6 @@
 #import "KSLWorkbook.h"
 #import "KSLProblem.h"
 
-//@implementation UIViewController (OrientationFix)
-//
-//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-//    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
-//}
-//
-//- (BOOL)shouldAutorotate {
-//    return YES;
-//}
-//
-//- (NSUInteger)supportedInterfaceOrientations {
-//    return UIInterfaceOrientationMaskLandscape;
-//}
-//
-//@end
-//
-//@implementation UIImagePickerController (OrientationFix)
-//
-//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-//    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
-//}
-//
-//- (BOOL)shouldAutorotate {
-//    return YES;
-//}
-//
-//- (NSUInteger)supportedInterfaceOrientations {
-//    return UIInterfaceOrientationMaskLandscape;
-//}
-//
-//@end
-
 @implementation KSLAppDelegate
 
 - (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
@@ -115,6 +83,8 @@
 {
     [self saveData];
 }
+
+#pragma mark - 保存
 
 - (void)saveData
 {

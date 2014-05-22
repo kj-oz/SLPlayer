@@ -127,106 +127,6 @@
                    CGRectMake(_zoomableArea.origin.x, _zoomableArea.origin.y, zoomedW, zoomedH)];
 }
 
-/**
- * 全体表示時の位置や点の間隔を予め計算しておく
- */
-- (void)calculateOverallParameter
-{
-    CGFloat w;
-    CGFloat h;
-    if (_rotated) {
-        w = self.frame.size.height;
-        h = self.frame.size.width;
-    } else {
-        w = self.frame.size.width;
-        h = self.frame.size.height;
-    }
-    
-    CGFloat pitchH = w / (_board.width + 2 * KSLPROBLEM_MARGIN);
-    CGFloat pitchV = h / (_board.height + 2 * KSLPROBLEM_MARGIN);
-    if (pitchH > KSLPROBLEM_TOUCHABLE_PITCH && pitchV > KSLPROBLEM_TOUCHABLE_PITCH) {
-        // 実際には常にズーム中として扱うため使用されない
-        _apitch = KSLPROBLEM_TOUCHABLE_PITCH;
-        if (_rotated) {
-            _ax0 = (h - _apitch * _board.height) / 2;
-            _ay0 = w - (w - _apitch * _board.width) / 2;
-        } else {
-            _ax0 = (w - _apitch * _board.width) / 2;
-            _ay0 = (h - _apitch * _board.height) / 2;
-        }
-    } else if (pitchH < pitchV) {
-        _apitch = pitchH;
-        if (_rotated) {
-            _ax0 = (h - _apitch * _board.height) / 2;
-            _ay0 = w - _apitch * KSLPROBLEM_MARGIN;
-        } else {
-            _ax0 = _apitch * KSLPROBLEM_MARGIN;
-            _ay0 = (h - _apitch * _board.height) / 2;
-        }
-    } else {
-        _apitch = pitchV;
-        if (_rotated) {
-            _ax0 = _apitch * KSLPROBLEM_MARGIN;
-            _ay0 = w - (w - _apitch * _board.width) / 2;
-        } else {
-            _ax0 = (w - _apitch * _board.width) / 2;
-            _ay0 = _apitch * KSLPROBLEM_MARGIN;
-        }
-    }
-}
-
-/**
- * ズーム時の位置や点の間隔を予め計算しておく
- */
-- (void)calculateZoomedParameter
-{
-    CGFloat w;
-    CGFloat h;
-    if (_rotated) {
-        w = self.frame.size.height / _zpitch;
-        h = self.frame.size.width / _zpitch;
-    } else {
-        w = self.frame.size.width / _zpitch;
-        h = self.frame.size.height / _zpitch;
-    }
-    
-    CGFloat zxmin;
-    CGFloat zxmax;
-    CGFloat zymin;
-    CGFloat zymax;
-    
-    if (_board.width + 2 * KSLPROBLEM_MARGIN < w) {
-        zxmin = zxmax = (w - _board.width) / 2;
-    } else {
-        zxmin = w - (_board.width + KSLPROBLEM_MARGIN);
-        zxmax = KSLPROBLEM_MARGIN;
-    }
-    
-    if (_board.height + 2 * KSLPROBLEM_MARGIN < h) {
-        zymin = zymax = (h - _board.height) / 2;
-    } else {
-        zymin = h - (_board.height + KSLPROBLEM_MARGIN);
-        zymax = KSLPROBLEM_MARGIN;
-    }
-    
-    _zoomableArea = CGRectMake(-zxmax, -zymax, zxmax + w - zxmin, zymax + h - zymin);
-}
-
-/**
- * 拡大表示領域を設定する
- */
-- (void)setZoomedAreaWithRect:(CGRect)rect
-{
-    _zoomedArea = KLCGClumpRect(rect, _zoomableArea);
-    if (_rotated) {
-        _zx0 = -_zoomedArea.origin.y * _zpitch;
-        _zy0 = self.frame.size.height + _zoomedArea.origin.x * _zpitch;
-    } else {
-        _zx0 = -_zoomedArea.origin.x * _zpitch;
-        _zy0 = -_zoomedArea.origin.y * _zpitch;
-    }
-}
-
 #pragma mark - 描画
 
 - (void)drawRect:(CGRect)rect
@@ -307,31 +207,7 @@
     }
 }
 
-/**
- * 拡大領域の表示座標系上での位置を得る
- * @return 拡大領域の表示座標系上での位置
- */
-- (CGRect)zoomedAreaInView
-{
-    CGFloat x;
-    CGFloat y;
-    CGFloat w;
-    CGFloat h;
-    if (_rotated) {
-        x = _ax0 + _zoomedArea.origin.y * _apitch;
-        y = _ay0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
-        w = _zoomedArea.size.height * _apitch;
-        h = _zoomedArea.size.width * _apitch;
-    } else {
-        x = _ax0 + _zoomedArea.origin.x * _apitch;
-        y = _ay0 + _zoomedArea.origin.y * _apitch;
-        w = _zoomedArea.size.width * _apitch;
-        h = _zoomedArea.size.height * _apitch;
-    }
-    return CGRectMake(x, y, w, h);
-}
-
-#pragma mark - ジェスチャー
+#pragma mark - プライベートメソッド（ジェスチャー）
 
 /**
  * パン：拡大時-線、全体表示時-ズーム位置移動
@@ -474,6 +350,10 @@
     [self setNeedsDisplay];
 }
 
+/**
+ * 辺上をタップした際の処理（微小パンの場合にもこの処理が呼ばれる）
+ * @param edge 辺
+ */
 - (void)tapEdge:(KSLEdge *)edge
 {
     KSLEdgeStatus oldStatus = edge.status;
@@ -537,10 +417,140 @@
     }
 }
 
+/**
+ * Timerから呼び出される自動スクロール処理
+ */
 - (void)autoScroll
 {
     [self panZoomedArea:CGPointMake(_dx * _scrollStep, _dy * _scrollStep)];
     [self setNeedsDisplay];
+}
+
+#pragma mark - プライベートメソッド（表示領域）
+
+/**
+ * 全体表示時の位置や点の間隔を予め計算しておく
+ */
+- (void)calculateOverallParameter
+{
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        w = self.frame.size.height;
+        h = self.frame.size.width;
+    } else {
+        w = self.frame.size.width;
+        h = self.frame.size.height;
+    }
+    
+    CGFloat pitchH = w / (_board.width + 2 * KSLPROBLEM_MARGIN);
+    CGFloat pitchV = h / (_board.height + 2 * KSLPROBLEM_MARGIN);
+    if (pitchH > KSLPROBLEM_TOUCHABLE_PITCH && pitchV > KSLPROBLEM_TOUCHABLE_PITCH) {
+        // 実際には常にズーム中として扱うため使用されない
+        _apitch = KSLPROBLEM_TOUCHABLE_PITCH;
+        if (_rotated) {
+            _ax0 = (h - _apitch * _board.height) / 2;
+            _ay0 = w - (w - _apitch * _board.width) / 2;
+        } else {
+            _ax0 = (w - _apitch * _board.width) / 2;
+            _ay0 = (h - _apitch * _board.height) / 2;
+        }
+    } else if (pitchH < pitchV) {
+        _apitch = pitchH;
+        if (_rotated) {
+            _ax0 = (h - _apitch * _board.height) / 2;
+            _ay0 = w - _apitch * KSLPROBLEM_MARGIN;
+        } else {
+            _ax0 = _apitch * KSLPROBLEM_MARGIN;
+            _ay0 = (h - _apitch * _board.height) / 2;
+        }
+    } else {
+        _apitch = pitchV;
+        if (_rotated) {
+            _ax0 = _apitch * KSLPROBLEM_MARGIN;
+            _ay0 = w - (w - _apitch * _board.width) / 2;
+        } else {
+            _ax0 = (w - _apitch * _board.width) / 2;
+            _ay0 = _apitch * KSLPROBLEM_MARGIN;
+        }
+    }
+}
+
+/**
+ * ズーム時の位置や点の間隔を予め計算しておく
+ */
+- (void)calculateZoomedParameter
+{
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        w = self.frame.size.height / _zpitch;
+        h = self.frame.size.width / _zpitch;
+    } else {
+        w = self.frame.size.width / _zpitch;
+        h = self.frame.size.height / _zpitch;
+    }
+    
+    CGFloat zxmin;
+    CGFloat zxmax;
+    CGFloat zymin;
+    CGFloat zymax;
+    
+    if (_board.width + 2 * KSLPROBLEM_MARGIN < w) {
+        zxmin = zxmax = (w - _board.width) / 2;
+    } else {
+        zxmin = w - (_board.width + KSLPROBLEM_MARGIN);
+        zxmax = KSLPROBLEM_MARGIN;
+    }
+    
+    if (_board.height + 2 * KSLPROBLEM_MARGIN < h) {
+        zymin = zymax = (h - _board.height) / 2;
+    } else {
+        zymin = h - (_board.height + KSLPROBLEM_MARGIN);
+        zymax = KSLPROBLEM_MARGIN;
+    }
+    
+    _zoomableArea = CGRectMake(-zxmax, -zymax, zxmax + w - zxmin, zymax + h - zymin);
+}
+
+/**
+ * 拡大表示領域を設定する
+ * @param rect 領域を指定する長方形（問題座標系）
+ */
+- (void)setZoomedAreaWithRect:(CGRect)rect
+{
+    _zoomedArea = KLCGClumpRect(rect, _zoomableArea);
+    if (_rotated) {
+        _zx0 = -_zoomedArea.origin.y * _zpitch;
+        _zy0 = self.frame.size.height + _zoomedArea.origin.x * _zpitch;
+    } else {
+        _zx0 = -_zoomedArea.origin.x * _zpitch;
+        _zy0 = -_zoomedArea.origin.y * _zpitch;
+    }
+}
+
+/**
+ * 拡大領域の表示座標系上での位置を得る
+ * @return 拡大領域の表示座標系上での位置
+ */
+- (CGRect)zoomedAreaInView
+{
+    CGFloat x;
+    CGFloat y;
+    CGFloat w;
+    CGFloat h;
+    if (_rotated) {
+        x = _ax0 + _zoomedArea.origin.y * _apitch;
+        y = _ay0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
+        w = _zoomedArea.size.height * _apitch;
+        h = _zoomedArea.size.width * _apitch;
+    } else {
+        x = _ax0 + _zoomedArea.origin.x * _apitch;
+        y = _ay0 + _zoomedArea.origin.y * _apitch;
+        w = _zoomedArea.size.width * _apitch;
+        h = _zoomedArea.size.height * _apitch;
+    }
+    return CGRectMake(x, y, w, h);
 }
 
 /**
@@ -551,24 +561,20 @@
 {
     if (_rotated) {
         [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
-                                             translation.y / _zpitch, -translation.x / _zpitch)];
+                                                 translation.y / _zpitch, -translation.x / _zpitch)];
     } else {
         [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
-                                             -translation.x / _zpitch, -translation.y / _zpitch)];
+                                                 -translation.x / _zpitch, -translation.y / _zpitch)];
     }
 }
 
+#pragma mark - プライベートメソッド（検索）
+
 /**
- * 画面に表示中の軌跡をクリアする
+ * 指定の座標の近傍のノードを得る
+ * @param point 座標
+ * @return 指定の座標の近傍のノード
  */
-- (void)clearTrackes
-{
-    [_tracks removeAllObjects];
-    [self setNeedsDisplay];
-}
-
-#pragma mark - ヘルパメソッド
-
 - (KSLNode *)findNode:(CGPoint)point
 {
     CGFloat xp;
@@ -593,6 +599,11 @@
     return nil;
 }
 
+/**
+ * 指定の座標の含まれるセルを得る
+ * @param point 座標
+ * @return 指定の座標の含まれるセル
+ */
 - (KSLCell *)findCell:(CGPoint)point
 {
     CGFloat xp;
@@ -617,6 +628,11 @@
     return nil;
 }
 
+/**
+ * 指定の座標が中点の近傍の辺を得る
+ * @param point 座標
+ * @return 指定の座標が中点の近傍の辺
+ */
 - (KSLEdge *)findEdge:(CGPoint)point
 {
     CGFloat xp;
@@ -656,10 +672,25 @@
     return nil;
 }
 
+#pragma mark - プライベートメソッド（その他）
+
+/**
+ * 問題の正規の向きに対して画面が回転しているかどうかを調べる
+ * @return 問題の正規の向きに対して画面が回転しているかどうか
+ */
 - (BOOL)checkRotation
 {
     return (_board.width > _board.height && self.frame.size.width <= self.frame.size.height) ||
             (_board.width <= _board.height && self.frame.size.width > self.frame.size.height);
+}
+
+/**
+ * 画面に表示中の軌跡をクリアする
+ */
+- (void)clearTrackes
+{
+    [_tracks removeAllObjects];
+    [self setNeedsDisplay];
 }
 
 @end
