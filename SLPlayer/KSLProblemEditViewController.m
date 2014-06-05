@@ -78,19 +78,7 @@
     _player = nil;
 }
 
-//#pragma mark - ビューの回転
-//
-//- (NSUInteger)supportedInterfaceOrientations
-//{
-//    return UIInterfaceOrientationLandscapeRight | UIInterfaceOrientationLandscapeLeft;
-//}
-//
-//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-//{
-//    return UIInterfaceOrientationLandscapeRight;
-//}
-
-#pragma mark - KSLProblemViewDelegateの実装
+#pragma mark - プライベートメソッド
 
 - (void)setBoard:(KSLBoard *)board
 {
@@ -122,22 +110,6 @@
 - (IBAction)pictureClicked:(id)sender
 {
     [self showImagePickerForSourceType:UIImagePickerControllerSourceTypePhotoLibrary sender:sender];
-}
-
-/**
- * イメージピッカーを表示する.
- * @param sourceType イメージピッカーのタイプ（撮影、ライブラリ）
- * @param sender イベント発生元
- */
-- (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType sender:(id)sender
-{
-    if ([UIImagePickerController isSourceTypeAvailable:sourceType]) {
-        UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-        imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-        imagePickerController.sourceType = sourceType;
-        imagePickerController.delegate = self;
-        [self presentViewController:imagePickerController animated:YES completion:nil];
-    }
 }
 
 /**
@@ -207,6 +179,9 @@
     [self updateProblemInfo];
 }
 
+/**
+ * 完了ボタン押下時
+ */
 - (IBAction)doneClicked:(id)sender
 {
     NSString *title = [self.titleText.text
@@ -267,12 +242,23 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-    
-}
-
 #pragma mark - ヘルパメソッド群
+
+/**
+ * イメージピッカーを表示する.
+ * @param sourceType イメージピッカーのタイプ（撮影、ライブラリ）
+ * @param sender イベント発生元
+ */
+- (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType sender:(id)sender
+{
+    if ([UIImagePickerController isSourceTypeAvailable:sourceType]) {
+        UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+        imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+        imagePickerController.sourceType = sourceType;
+        imagePickerController.delegate = self;
+        [self presentViewController:imagePickerController animated:YES completion:nil];
+    }
+}
 
 /**
  * 問題情報の表示内容の更新

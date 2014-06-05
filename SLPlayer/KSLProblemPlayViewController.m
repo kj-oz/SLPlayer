@@ -22,22 +22,14 @@
 // 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLProblemView *problemView;
 
-// クリアボタン
-@property (weak, nonatomic) IBOutlet UIButton *clearButton;
-
-// 固定ボタン
-@property (weak, nonatomic) IBOutlet UIButton *fixButton;
-
 // タイトル
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
-
-// 難易度表示ラベル
-@property (weak, nonatomic) IBOutlet UILabel *difficultyLabel;
 
 // 経過時間表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *elapsedLabel;
 
-@property (weak, nonatomic) IBOutlet UIView *TitleView;
+// 問題名称表示部のビュー（タップイベントを拾うためにアウトレット化）
+@property (weak, nonatomic) IBOutlet UIView *titleView;
 
 @end
 
@@ -87,7 +79,7 @@
     [nc addObserver:self selector:@selector(applicationWillEnterForeground) name:@"applicationWillEnterForeground" object:nil];
     
     [self setBoard:_player.board];
-    [self.TitleView addGestureRecognizer:[[UITapGestureRecognizer alloc]
+    [self.titleView addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(titleTapped:)]];
 }
 
@@ -109,6 +101,12 @@
     _player = nil;
 }
 
+#pragma mark - プライベートメソッッド
+
+/**
+ * 表示する盤面をセットする.
+ * @param board 盤面
+ */
 - (void)setBoard:(KSLBoard *)board
 {
     _problemView.board = board;
@@ -241,11 +239,17 @@
 
 #pragma mark - 各種アクション
 
+/**
+ * 問題名部分のタップ
+ */
 - (IBAction)titleTapped:(id)sender
 {
     [self initClicked:sender];
 }
 
+/**
+ * アクションボタン押下
+ */
 - (IBAction)actionClicked:(id)sender {
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
     RIButtonItem *initItem = [RIButtonItem itemWithLabel:@"初期化" action:^{
@@ -269,7 +273,7 @@
 }
 
 /**
- * 初期化ボタン押下時
+ * アクションシートの初期化ボタン押下
  */
 - (IBAction)initClicked:(id)sender
 {
@@ -287,7 +291,7 @@
 }
 
 /**
- * 消去ボタン押下時
+ * アクションシートの消去ボタン押下
  */
 - (IBAction)eraseClicked:(id)sender
 {
@@ -304,7 +308,7 @@
 }
 
 /**
- * 固定ボタン押下時
+ * アクションシートの固定ボタン押下
  */
 - (IBAction)fixClicked:(id)sender
 {

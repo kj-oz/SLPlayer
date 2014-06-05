@@ -12,9 +12,14 @@
 #import "KSLWorkbook.h"
 #import "UIAlertView+Blocks.h"
 
+#pragma mark - エクステンション
+
 @interface KSLWorkbookListViewController ()
 
 @end
+
+
+#pragma mark - 実装
 
 @implementation KSLWorkbookListViewController
 {
@@ -27,7 +32,10 @@
     // 削除対象の行
     NSInteger _deletingRow;
     
+    // 追加ボタン
     IBOutlet UIBarButtonItem* _addButton;
+    
+    // 編集終了ボタン
     IBOutlet UIBarButtonItem* _endButton;
 }
 
@@ -100,8 +108,12 @@
     [self updateNavigationItemAnimated:animated];
 }
 
-#pragma mark - 画面の更新
+#pragma mark - プライベートメソッド（画面の更新）
 
+/**
+ * ナビゲーションバー上のボタンを状況に応じて更新する.
+ * @param animated アニメーションの有無
+ */
 - (void)updateNavigationItemAnimated:(BOOL)animated
 {
     if (_adding || _renaming) {
@@ -117,6 +129,11 @@
     }
 }
 
+/**
+ * セルの表示を更新する.
+ * @param cell 対象のセル
+ * @param indexPath セルのインデックス
+ */
 - (void)updateCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
 {
     NSString* text;
@@ -334,6 +351,13 @@
     return YES;
 }
 
+#pragma mark - ヘルパメソッド
+
+/**
+ * 指定のテキストフィールドが含まれるセルを見つけて返す.
+ * @param textField テキストフィールド
+ * @return テキストフィールドが含まれるセル
+ */
 - (KLUITextFieldCell*)findCellForTextField:(UITextField*)textField
 {
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:
@@ -341,6 +365,10 @@
     return (KLUITextFieldCell*)cell;
 }
 
+/**
+ * 編集中のテキストフィールドを含むセルを得る.
+ * @return テキストフィールドが含まれるセル
+ */
 - (KLUITextFieldCell*)findRenamingCell
 {
     NSInteger nRows = [self.tableView numberOfRowsInSection:0];
@@ -355,6 +383,9 @@
     return nil;
 }
 
+/**
+ * 選択されている問題集を削除する.
+ */
 - (void)removeSelectedWorkbook
 {
     // ドキュメントを削除する

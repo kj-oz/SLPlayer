@@ -30,8 +30,12 @@
 @end
 
 
+/**
+ * 問題集一覧画面のコントローラ
+ */
 @interface KSLWorkbookListViewController : UITableViewController <UITextFieldDelegate>
 
+// デリゲート
 @property (nonatomic, weak) id<KSLWorkbookListViewControllerDelegate> delegate;
 
 @end

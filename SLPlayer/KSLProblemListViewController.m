@@ -17,26 +17,39 @@
 #import "KSLProblemListCell.h"
 #import "UIAlertView+Blocks.h"
 
+#pragma mark - エクステンション
+
 @interface KSLProblemListViewController ()
 
+// 問題集ボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *workbookButton;
 
 @end
 
+
+#pragma mark - 実装
+
 @implementation KSLProblemListViewController
 {
+    // 現在編集中の問題
     KSLProblem *_editingProblem;
     
+    // 問題集一覧画面のコントローラ
     KSLWorkbookListViewController *_workbookList;
     
+    // 削除ボタン
     UIBarButtonItem *deleteButton;
     
+    // 複写ボタン
     UIBarButtonItem *copyButton;
 
+    // 修正ボタン
     UIBarButtonItem *modifyButton;
     
+    // 追加ボタン
     UIBarButtonItem *addButton;
     
+    // カレントのポップアップ画面に対するコントローラ
     UIPopoverController *_poController;
 }
 
@@ -122,42 +135,29 @@
     [self updateNavigationItemAnimated:animated];
 }
 
-#pragma mark - 画面の更新
+#pragma mark - プライベートメッソド（各種アクション）
 
-- (void)updateNavigationItemAnimated:(BOOL)animated
+/**
+ * 追加（＋）ボタン押下
+ */
+- (IBAction)addClicked:(id)sender
 {
-    // setLeftBarButtonItems と setLeftBarButtonItem を状況によって使い分けると、setLeftBarButtonItem
-    // 実行時にエラーになるので１つしかない場合も、setLeftBarButtonItems を使用する
-    if (self.editing) {
-        _workbookButton.title = @"移動";
-        [self.navigationItem setLeftBarButtonItems:
-                @[modifyButton, copyButton, _workbookButton, deleteButton] animated:animated];
-        [self.navigationItem setRightBarButtonItems:
-                @[[self editButtonItem]] animated:animated];
-        modifyButton.enabled = NO;
-        copyButton.enabled = NO;
-        _workbookButton.enabled = NO;
-        deleteButton.enabled = NO;
-    } else {
-        _workbookButton.title = @"問題集";
-        [self.navigationItem setLeftBarButtonItems:
-                @[_workbookButton] animated:animated];
-        [self.navigationItem setRightBarButtonItems:
-                @[[self editButtonItem], addButton] animated:animated];
-    }
-}
-
-#pragma mark - 各種アクション
-
-- (IBAction)addClicked:(id)sender {
     [self performSegueWithIdentifier:@"AddProblem" sender:sender];
 }
 
-- (IBAction)modifyClicked:(id)sender {
+/**
+ * 修正ボタン押下
+ */
+- (IBAction)modifyClicked:(id)sender
+{
     [self performSegueWithIdentifier:@"EditProblem" sender:sender];
 }
 
-- (IBAction)deleteClicked:(id)sender {
+/**
+ * 削除ボタン押下
+ */
+- (IBAction)deleteClicked:(id)sender
+{
     UIAlertView *alert = nil;
     NSArray *problems = [self selectedProblems];
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
@@ -177,6 +177,9 @@
     [alert show];
 }
 
+/**
+ * 複写ボタン押下
+ */
 - (IBAction)copyClicked:(id)sender {
     NSArray *problems = [self selectedProblems];
     KSLWorkbook *wb = [KSLProblemManager sharedManager].currentWorkbook;
@@ -186,18 +189,7 @@
     [self.tableView reloadData];
 }
 
-- (NSArray *)selectedProblems
-{
-    NSMutableArray *problems = [NSMutableArray array];
-    KSLProblemManager *pm = [KSLProblemManager sharedManager];
-    NSArray *currProblems = pm.currentWorkbook.problems;
-    for (NSIndexPath *path in [self.tableView indexPathsForSelectedRows]) {
-        [problems addObject:currProblems[path.row]];
-    }
-    return problems;
-}
-
-#pragma mark - Table view data source
+#pragma mark - Tableビューのデータソース・デリゲート
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -219,45 +211,6 @@
     return cell;
 }
 
-- (void)updateCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
-    KSLProblemManager *pm = [KSLProblemManager sharedManager];
-    KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
-    KSLProblemListCell *problemCell = (KSLProblemListCell *)cell;
-    problemCell.titleLabel.text = problem.title;
-    problemCell.sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld",
-                                  (long)problem.width, (long)problem.height];
-    problemCell.difficultyLabel.text = [NSString stringWithFormat:@"%@", [problem difficultyString]];
-    if (problem.status != KSLProblemStatusNotStarted) {
-        problemCell.statusLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
-    } else {
-        problemCell.statusLabel.text = @"";
-    }
-
-    if (problem.status == KSLProblemStatusSolved) {
-        [self setCell:problemCell enabled:YES color:[UIColor blackColor]];
-    } else if (!self.editing && problem.status == KSLProblemStatusEditing) {
-        [self setCell:problemCell enabled:NO color:nil];
-    } else {
-        [self setCell:problemCell enabled:YES color:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0]];
-    }
-}
-
-- (void)setCell:(KSLProblemListCell *)cell enabled:(BOOL)enabled color:(UIColor *)color
-{
-    cell.titleLabel.enabled = enabled;
-    cell.sizeLabel.enabled = enabled;
-    cell.difficultyLabel.enabled = enabled;
-    cell.statusLabel.enabled = enabled;
-    
-    if (enabled) {
-        cell.titleLabel.textColor = color;
-        cell.sizeLabel.textColor = color;
-        cell.difficultyLabel.textColor = color;
-        cell.statusLabel.textColor = color;
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
@@ -274,7 +227,7 @@
     }
 }
 
-#pragma mark - Navigation
+#pragma mark - セグエ関係
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -318,6 +271,9 @@
     }
 }
 
+/**
+ * 問題追加・編集画面からのDoneによる復帰
+ */
 - (IBAction)doneProblemEdit:(UIStoryboardSegue *)segue
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
@@ -342,6 +298,9 @@
     app.currentView = @"List";
 }
 
+/**
+ * 問題追加・編集画面からのCancelによる復帰
+ */
 - (IBAction)cancelProblemEdit:(UIStoryboardSegue *)segue
 {
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
@@ -350,6 +309,8 @@
     pm.currentProblem = nil;
     app.currentView = @"List";
 }
+
+#pragma mark - KSLWorkbookListViewControllerDelegate
 
 - (void)workbookListViewControllerWorkbookDidSelect:(KSLWorkbook *)workbook
 {
@@ -367,12 +328,6 @@
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
 
-- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
-{
-    // 強制的にdismissした場合、PopoverのpopoverControllerDidDismissPopover:は呼び出されない
-    self.navigationController.navigationBar.userInteractionEnabled = YES;
-}
-
 - (void)workbookListViewControllerWorkbookDidRename:(KSLWorkbook *)workbook
 {
     if ([KSLProblemManager sharedManager].currentWorkbook == workbook) {
@@ -380,6 +335,20 @@
     }
 }
 
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    // 強制的にdismissした場合、PopoverのpopoverControllerDidDismissPopover:は呼び出されない
+    self.navigationController.navigationBar.userInteractionEnabled = YES;
+}
+
+#pragma mark - プライベートメソッド（問題の扱い）
+
+/**
+ * 問題集の定義を変更する
+ * @param workbook 対象の問題集
+ */
 - (void)changeWorkbook:(KSLWorkbook *)workbook
 {
     [KSLProblemManager sharedManager].currentWorkbook = workbook;
@@ -387,6 +356,10 @@
     [self.tableView reloadData];
 }
 
+/**
+ * 選択されている問題を与えれた問題集へ移す
+ * @param workbook 対象の問題集
+ */
 - (void)moveSelectedProblemsToWorkbook:(KSLWorkbook *)workbook
 {
     NSArray* problems = [self selectedProblems];
@@ -396,6 +369,102 @@
     [pm moveProblems:problems toWorkbook:workbook];
     
     [self.tableView reloadData];
+}
+
+#pragma mark - プライベートメソッド（画面の更新）
+
+/**
+ * ナビゲーションバー上のボタンを状況に応じて更新する.
+ * @param animated アニメーションの有無
+ */
+- (void)updateNavigationItemAnimated:(BOOL)animated
+{
+    // setLeftBarButtonItems と setLeftBarButtonItem を状況によって使い分けると、setLeftBarButtonItem
+    // 実行時にエラーになるので１つしかない場合も、setLeftBarButtonItems を使用する
+    if (self.editing) {
+        _workbookButton.title = @"移動";
+        [self.navigationItem setLeftBarButtonItems:
+         @[modifyButton, copyButton, _workbookButton, deleteButton] animated:animated];
+        [self.navigationItem setRightBarButtonItems:
+         @[[self editButtonItem]] animated:animated];
+        modifyButton.enabled = NO;
+        copyButton.enabled = NO;
+        _workbookButton.enabled = NO;
+        deleteButton.enabled = NO;
+    } else {
+        _workbookButton.title = @"問題集";
+        [self.navigationItem setLeftBarButtonItems:
+         @[_workbookButton] animated:animated];
+        [self.navigationItem setRightBarButtonItems:
+         @[[self editButtonItem], addButton] animated:animated];
+    }
+}
+
+/**
+ * セルの表示を更新する.
+ * @param cell 対象のセル
+ * @param indexPath セルのインデックス
+ */
+- (void)updateCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
+    KSLProblemListCell *problemCell = (KSLProblemListCell *)cell;
+    problemCell.titleLabel.text = problem.title;
+    problemCell.sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld",
+                                  (long)problem.width, (long)problem.height];
+    problemCell.difficultyLabel.text = [NSString stringWithFormat:@"%@", [problem difficultyString]];
+    if (problem.status != KSLProblemStatusNotStarted) {
+        problemCell.statusLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
+    } else {
+        problemCell.statusLabel.text = @"";
+    }
+    
+    if (problem.status == KSLProblemStatusSolved) {
+        [self setCell:problemCell enabled:YES color:[UIColor blackColor]];
+    } else if (!self.editing && problem.status == KSLProblemStatusEditing) {
+        [self setCell:problemCell enabled:NO color:nil];
+    } else {
+        [self setCell:problemCell enabled:YES color:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0]];
+    }
+}
+
+/**
+ * 問題セルのenable/disableとenableの場合の色を設定する.
+ * @param cell 対象の問題用セル
+ * @param enabled enable/disable
+ * @param color enabeの場合の文字色
+ */
+- (void)setCell:(KSLProblemListCell *)cell enabled:(BOOL)enabled color:(UIColor *)color
+{
+    cell.titleLabel.enabled = enabled;
+    cell.sizeLabel.enabled = enabled;
+    cell.difficultyLabel.enabled = enabled;
+    cell.statusLabel.enabled = enabled;
+    
+    if (enabled) {
+        cell.titleLabel.textColor = color;
+        cell.sizeLabel.textColor = color;
+        cell.difficultyLabel.textColor = color;
+        cell.statusLabel.textColor = color;
+    }
+}
+
+#pragma mark - プライベートメソッド（その他）
+
+/**
+ * その時点で画面で選択されている問題の配列を得る
+ * @return その時点で画面で選択されている問題の配列
+ */
+- (NSArray *)selectedProblems
+{
+    NSMutableArray *problems = [NSMutableArray array];
+    KSLProblemManager *pm = [KSLProblemManager sharedManager];
+    NSArray *currProblems = pm.currentWorkbook.problems;
+    for (NSIndexPath *path in [self.tableView indexPathsForSelectedRows]) {
+        [problems addObject:currProblems[path.row]];
+    }
+    return problems;
 }
 
 @end

@@ -13,6 +13,9 @@
 @class KSLProblemView;
 @class KSLProblem;
 
+/**
+ * 問題を追加・編集する画面のビューコントローラ
+ */
 @interface KSLProblemEditViewController : UIViewController
         <UINavigationControllerDelegate, UIImagePickerControllerDelegate,
             UITextFieldDelegate, KSLProblemViewDelegate>
