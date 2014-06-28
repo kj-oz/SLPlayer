@@ -83,8 +83,8 @@ static KSLProblemManager *_sharaedInstance = nil;
         if (isDir) {
             [dirs addObject:file];
         } else if ([[file pathExtension] isEqualToString:@"workbook"]) {
-            [self importWorkbook:path];
-            [dirs addObject:[file stringByDeletingPathExtension]];
+            NSString *title = [self importWorkbook:path];
+            [dirs addObject:title];
             [fm removeItemAtPath:path error:&error];
         }
     }
@@ -102,8 +102,8 @@ static KSLProblemManager *_sharaedInstance = nil;
         for (NSString *file in files) {
             if ([[file pathExtension] isEqualToString:@"workbook"]) {
                 NSString *path = [libDir stringByAppendingPathComponent:file];
-                [self importWorkbook:path];
-                KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:file];
+                NSString *title = [self importWorkbook:path];
+                KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:title];
                 [_workbooks addObject:book];
             }
         }
@@ -167,6 +167,19 @@ static KSLProblemManager *_sharaedInstance = nil;
     }
 }
 
+- (void)renameWorkbook:(KSLWorkbook *)workbook toNewName:(NSString *)name
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSError *error;
+    NSString *fromDir = [_documentDir stringByAppendingPathComponent:workbook.title];
+    NSString *toDir = [_documentDir stringByAppendingPathComponent:name];
+    [fm moveItemAtPath:fromDir toPath:toDir error:&error];
+    
+    if (!error) {
+        workbook.title = name;
+    }
+}
+
 - (NSString *)currentTimeString
 {
     // 日付型の文字列を生成
@@ -185,8 +198,9 @@ static KSLProblemManager *_sharaedInstance = nil;
 /**
  * 与えられたパスのjsonファイルから問題集を読み込む.
  * @param jsonPath jsonファイルのパス
+ * @return 実際に採用された問題集の名称
  */
-- (void)importWorkbook:(NSString *)jsonPath
+- (NSString *)importWorkbook:(NSString *)jsonPath
 {
     NSError *error = nil;
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:
@@ -222,6 +236,7 @@ static KSLProblemManager *_sharaedInstance = nil;
 #endif
         [problem saveToFile:path];
     }
+    return title;
 }
 
 @end

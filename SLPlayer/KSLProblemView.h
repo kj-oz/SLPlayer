@@ -32,7 +32,7 @@ typedef enum {
 @property (nonatomic, weak) id<KSLProblemViewDelegate> delegate;
 
 // 描画対象の盤面データ
-@property (nonatomic, weak) KSLBoard *board;
+@property (nonatomic) KSLBoard *board;
 
 // ビューのモード
 @property (nonatomic, assign) KSLProblemViewMode mode;

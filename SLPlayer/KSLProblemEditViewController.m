@@ -117,7 +117,7 @@
  */
 - (IBAction)createClicked:(id)sender
 {
-    UIAlertView *alert = nil;
+    __block UIAlertView *alert = nil;
     __block NSString *badInput = nil;
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"キャンセル" action:nil];
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"生成" action:^{

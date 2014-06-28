@@ -75,6 +75,13 @@
 - (void)moveProblems:(NSArray *)problems toWorkbook:(KSLWorkbook *)to;
 
 /**
+ * 指定の問題集の名称を変更する.
+ * @param workbook 問題集
+ * @param name 新たな名称
+ */
+- (void)renameWorkbook:(KSLWorkbook *)workbook toNewName:(NSString *)name;
+
+/**
  * 現在時刻の文字列を得る（YYYYMMDDhhmmssSSS）
  * @return 現在時刻の文字列
  */

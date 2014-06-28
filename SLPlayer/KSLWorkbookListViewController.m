@@ -147,7 +147,7 @@
     }
     UITextField* tf = ((KLUITextFieldCell*)cell).textField;
     tf.text = text;
-//    tf.textAlignment = UITextAlignmentCenter;
+    //tf.textAlignment = UITextAlignmentCenter;
     tf.returnKeyType = UIReturnKeyDone;
     tf.delegate = self;
     tf.tag = indexPath.row;
@@ -333,7 +333,7 @@
                     return;
                 }
                 // 本棚の名称を変更する
-                workbook.title = text;
+                [pm renameWorkbook:workbook toNewName:text];
                 [_delegate workbookListViewControllerWorkbookDidRename:workbook];
             }
         } else {
