@@ -73,39 +73,38 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     NSFileManager *fm = [NSFileManager defaultManager];
     
-    NSMutableArray *dirs = [NSMutableArray array];
+    // アプリにバンドルされたサンプル問題集の展開
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSArray *paths = [bundle pathsForResourcesOfType:@"workbook" inDirectory:nil];
+    for (NSString *path in paths) {
+        NSString *title = [[path lastPathComponent] stringByDeletingPathExtension];
+        NSString *docPath = [_documentDir stringByAppendingPathComponent:title];
+        if (![fm fileExistsAtPath:docPath isDirectory:NULL]) {
+            [self importWorkbook:path];
+        }
+    }
+
+    // Docディレクトリーに置かれた問題集ファイルの展開
     NSArray *files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
-    BOOL isDir;
     NSError *error;
+    for (NSString *file in files) {
+        NSString *path = [_documentDir stringByAppendingPathComponent:file];
+        [fm fileExistsAtPath:path isDirectory:NULL];
+        if ([[file pathExtension] isEqualToString:@"workbook"]) {
+            [self importWorkbook:path];
+            [fm removeItemAtPath:path error:&error];
+        }
+    }
+
+    // ディレクトリーの問題集化
+    files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
+    BOOL isDir;
     for (NSString *file in files) {
         NSString *path = [_documentDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:&isDir];
         if (isDir) {
-            [dirs addObject:file];
-        } else if ([[file pathExtension] isEqualToString:@"workbook"]) {
-            NSString *title = [self importWorkbook:path];
-            [dirs addObject:title];
-            [fm removeItemAtPath:path error:&error];
-        }
-    }
-    
-    if ([dirs count]) {
-        for (NSString *dir in dirs) {
-            KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:dir];
+            KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:file];
             [_workbooks addObject:book];
-        }
-    } else {
-        // サンプル問題集の展開
-        NSArray *libDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-        NSString *libDir = libDirs[0];
-        NSArray *files = [fm contentsOfDirectoryAtPath:libDir error:NULL];
-        for (NSString *file in files) {
-            if ([[file pathExtension] isEqualToString:@"workbook"]) {
-                NSString *path = [libDir stringByAppendingPathComponent:file];
-                NSString *title = [self importWorkbook:path];
-                KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:title];
-                [_workbooks addObject:book];
-            }
         }
     }
 }
