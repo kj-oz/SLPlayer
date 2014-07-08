@@ -242,7 +242,7 @@
 /**
  * 問題名部分のタップ
  */
-- (IBAction)titleTapped:(id)sender
+- (IBAction)helpClicked:(id)sender
 {
     [self initClicked:sender];
 }

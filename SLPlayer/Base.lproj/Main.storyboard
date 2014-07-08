@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="CWj-pm-M5v">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -178,10 +178,31 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="8rU-0l-J1T">
-                            <connections>
-                                <action selector="actionClicked:" destination="Vkt-xv-pXA" id="L6b-Z3-uEP"/>
-                            </connections>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="Rnu-9P-JOY">
+                            <view key="customView" clipsSubviews="YES" contentMode="scaleToFill" id="tku-y5-qva">
+                                <rect key="frame" x="667" y="5" width="85" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k6p-Ss-Pti">
+                                        <rect key="frame" x="0.0" y="-6" width="85" height="44"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <items>
+                                            <barButtonItem systemItem="action" id="aJG-ZV-jhb">
+                                                <connections>
+                                                    <action selector="actionClicked:" destination="Vkt-xv-pXA" id="kiF-Aa-YaT"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="17" style="plain" systemItem="fixedSpace" id="GsP-Wh-TTA"/>
+                                            <barButtonItem title="？" id="1ye-A2-hAa">
+                                                <connections>
+                                                    <action selector="helpClicked:" destination="Vkt-xv-pXA" id="rLh-iS-5wq"/>
+                                                </connections>
+                                            </barButtonItem>
+                                        </items>
+                                    </toolbar>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
                         </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
@@ -230,7 +251,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="状態：未了" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jt7-7I-AXZ">
-                                                            <rect key="frame" x="424" y="7" width="176" height="21"/>
+                                                            <rect key="frame" x="415" y="7" width="176" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="highlightedColor"/>
@@ -276,9 +297,15 @@
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="t2k-LI-qe4"/>
-                                            <barButtonItem systemItem="stop" id="QG3-eT-ugI">
+                                            <barButtonItem image="check.png" id="QG3-eT-ugI">
                                                 <connections>
                                                     <action selector="checkClicked:" destination="eQF-aD-vjA" id="7oB-2J-BW7"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="WTS-yk-JCI"/>
+                                            <barButtonItem title="？" id="xB0-BV-1my">
+                                                <connections>
+                                                    <action selector="helpClicked:" destination="eQF-aD-vjA" id="VNu-f0-OXe"/>
                                                 </connections>
                                             </barButtonItem>
                                         </items>
@@ -329,6 +356,7 @@
                         <outlet property="checkButton" destination="QG3-eT-ugI" id="Dp3-eU-idZ"/>
                         <outlet property="createButton" destination="nj7-xS-Qf9" id="MK9-KX-19f"/>
                         <outlet property="difficultyText" destination="mvZ-8b-37h" id="lRd-eQ-cld"/>
+                        <outlet property="helpButton" destination="xB0-BV-1my" id="RrQ-ap-fCf"/>
                         <outlet property="pictureButton" destination="4Cq-Sk-ekr" id="N4B-gE-I1f"/>
                         <outlet property="problemView" destination="KHN-a3-8D6" id="Qpf-cZ-NJH"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
@@ -399,6 +427,9 @@
             <point key="canvasLocation" x="573" y="-1462"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="check.png" width="20" height="20"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackOpaque"/>
         <simulatedOrientationMetrics key="orientation"/>

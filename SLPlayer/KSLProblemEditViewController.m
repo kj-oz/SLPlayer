@@ -37,6 +37,9 @@
 // 問題が正しいかどうかのチェックのボタン
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *checkButton;
 
+// ヘルプボタン
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *helpButton;
+
 @end
 
 
@@ -177,6 +180,13 @@
     [self showProblemCheckMessage:error];
     
     [self updateProblemInfo];
+}
+
+/**
+ * ヘルプボタン押下時
+ */
+- (IBAction)helpClicked:(id)sender {
+    
 }
 
 /**
