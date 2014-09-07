@@ -1,0 +1,36 @@
+
+/* Class = "IBUIBarButtonItem"; title = "？"; ObjectID = "1ye-A2-hAa"; */
+"1ye-A2-hAa.title" = "？";
+
+/* Class = "IBUIBarButtonItem"; title = "問題集"; ObjectID = "4gp-8t-HnZ"; */
+"4gp-8t-HnZ.title" = "問題集";
+
+/* Class = "IBUILabel"; text = "0:00:00"; ObjectID = "CNU-r8-Fhr"; */
+"CNU-r8-Fhr.text" = "0:00:00";
+
+/* Class = "IBUILabel"; text = "状態：未了"; ObjectID = "Jt7-7I-AXZ"; */
+"Jt7-7I-AXZ.text" = "状態：未了";
+
+/* Class = "IBUILabel"; text = "タイトル"; ObjectID = "SPn-0k-m9E"; */
+"SPn-0k-m9E.text" = "タイトル";
+
+/* Class = "IBUILabel"; text = "名称："; ObjectID = "cL2-Bn-KEE"; */
+"cL2-Bn-KEE.text" = "名称：";
+
+/* Class = "IBUILabel"; text = "サイズ"; ObjectID = "dyp-Fk-B9v"; */
+"dyp-Fk-B9v.text" = "サイズ";
+
+/* Class = "IBUILabel"; text = "状態"; ObjectID = "fOT-J7-glA"; */
+"fOT-J7-glA.text" = "状態";
+
+/* Class = "IBUILabel"; text = "名称"; ObjectID = "iTY-m3-sVN"; */
+"iTY-m3-sVN.text" = "名称";
+
+/* Class = "IBUILabel"; text = "難度"; ObjectID = "jt1-cH-DmQ"; */
+"jt1-cH-DmQ.text" = "難度";
+
+/* Class = "IBUILabel"; text = "難易度："; ObjectID = "uwi-gZ-zpa"; */
+"uwi-gZ-zpa.text" = "難易度：";
+
+/* Class = "IBUIBarButtonItem"; title = "？"; ObjectID = "xB0-BV-1my"; */
+"xB0-BV-1my.title" = "？";
