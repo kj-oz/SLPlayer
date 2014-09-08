@@ -170,6 +170,12 @@ typedef enum : NSInteger {
 - (void)dump;
 
 /**
+ * 盤面サイズの文字列を得る.
+ * @return 盤面サイズの文字列
+ */
+- (NSString *)sizeString;
+
+/**
  * 状態の文字列を得る.
  * @return 状態の文字列
  */

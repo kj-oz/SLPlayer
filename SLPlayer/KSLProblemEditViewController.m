@@ -21,6 +21,7 @@
 
 // 拡大ビュー
 @property (weak, nonatomic) IBOutlet KSLProblemView *problemView;
+@property (weak, nonatomic) IBOutlet UIToolbar *toolBar;
 
 // 状態表示ラベル
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
@@ -277,12 +278,23 @@
 {
     _titleText.text = _problem.title;
     _difficultyText.text = [NSString stringWithFormat:@"%ld", (long)_problem.difficulty];
-    _statusLabel.text = _problem.statusString;
+    _statusLabel.text = _addNew ? _problem.sizeString : [NSString stringWithFormat:@"%@　　%@",
+                                                         _problem.sizeString, _problem.statusString];
     
     if (!_addNew) {
-        self.cameraButton.enabled = NO;
-        self.pictureButton.enabled = NO;
-        self.createButton.enabled = NO;
+        NSMutableArray *items = [[NSMutableArray alloc] initWithArray:[self.toolBar items]];
+        NSMutableArray *removeItems = [NSMutableArray array];
+        for (UIBarButtonItem *item in items) {
+            if (item == self.cameraButton || item == self.pictureButton ||
+                    item == self.createButton) {
+                [removeItems addObject:item];
+            }
+        }
+        [items removeObjectsInArray:removeItems];
+        [self.toolBar setItems:items];
+//        self.cameraButton.enabled = NO;
+//        self.pictureButton.enabled = NO;
+//        self.createButton.enabled = NO;
     }
     if (_problem.status != KSLProblemStatusEditing) {
         self.checkButton.enabled = NO;

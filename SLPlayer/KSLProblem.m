@@ -226,6 +226,11 @@
     }
 }
 
+- (NSString *)sizeString
+{
+    return [NSString stringWithFormat:@"%ld X %ld", (long)self.width, (long)self.height];
+}
+
 - (NSString *)statusString
 {
     switch (_status) {

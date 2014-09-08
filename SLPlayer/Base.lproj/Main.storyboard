@@ -285,7 +285,7 @@
                                                 </connections>
                                             </barButtonItem>
                                             <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
-                                            <barButtonItem systemItem="search" id="4Cq-Sk-ekr">
+                                            <barButtonItem image="picture.png" id="4Cq-Sk-ekr">
                                                 <connections>
                                                     <action selector="pictureClicked:" destination="eQF-aD-vjA" id="DKC-FX-Fo7"/>
                                                 </connections>
@@ -361,6 +361,7 @@
                         <outlet property="problemView" destination="KHN-a3-8D6" id="Qpf-cZ-NJH"/>
                         <outlet property="statusLabel" destination="Jt7-7I-AXZ" id="i0c-T3-4at"/>
                         <outlet property="titleText" destination="aln-9m-GUC" id="vFs-DR-ETl"/>
+                        <outlet property="toolBar" destination="dYR-dQ-7YT" id="Y1O-bl-yJu"/>
                         <segue destination="06K-KE-dCs" kind="unwind" identifier="DoneEditProblem" unwindAction="doneProblemEdit:" id="SNp-4f-Tyg"/>
                     </connections>
                 </viewController>
@@ -429,6 +430,7 @@
     </scenes>
     <resources>
         <image name="check.png" width="20" height="20"/>
+        <image name="picture.png" width="20" height="20"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackOpaque"/>

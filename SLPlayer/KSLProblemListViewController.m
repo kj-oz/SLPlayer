@@ -411,11 +411,10 @@
     KSLProblem *problem = pm.currentWorkbook.problems[indexPath.row];
     KSLProblemListCell *problemCell = (KSLProblemListCell *)cell;
     problemCell.titleLabel.text = problem.title;
-    problemCell.sizeLabel.text = [NSString stringWithFormat:@"%ld X %ld",
-                                  (long)problem.width, (long)problem.height];
-    problemCell.difficultyLabel.text = [NSString stringWithFormat:@"%@", [problem difficultyString]];
+    problemCell.sizeLabel.text = [problem sizeString];
+    problemCell.difficultyLabel.text = [problem difficultyString];
     if (problem.status != KSLProblemStatusNotStarted) {
-        problemCell.statusLabel.text = [NSString stringWithFormat:@"%@", [problem statusString]];
+        problemCell.statusLabel.text = [problem statusString];
     } else {
         problemCell.statusLabel.text = @"";
     }
