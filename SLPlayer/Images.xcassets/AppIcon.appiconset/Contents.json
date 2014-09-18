@@ -21,6 +21,18 @@
       "scale" : "2x"
     },
     {
+      "size" : "72x72",
+      "idiom" : "ipad",
+      "filename" : "app6.png",
+      "scale" : "1x"
+    },
+    {
+      "size" : "72x72",
+      "idiom" : "ipad",
+      "filename" : "app6@2x.png",
+      "scale" : "2x"
+    },
+    {
       "size" : "76x76",
       "idiom" : "ipad",
       "filename" : "app.png",

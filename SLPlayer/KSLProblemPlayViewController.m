@@ -12,6 +12,7 @@
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
 #import "KSLProblemManager.h"
+#import "KSLHelpViewController.h"
 #import "UIAlertView+Blocks.h"
 #import "UIActionSheet+Blocks.h"
 
@@ -79,8 +80,8 @@
     [nc addObserver:self selector:@selector(applicationWillEnterForeground) name:@"applicationWillEnterForeground" object:nil];
     
     [self setBoard:_player.board];
-    [self.titleView addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                                          initWithTarget:self action:@selector(titleTapped:)]];
+//    [self.titleView addGestureRecognizer:[[UITapGestureRecognizer alloc]
+//                                          initWithTarget:self action:@selector(titleTapped:)]];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -317,6 +318,18 @@
     [self refreshBoard];
 }
 
+
+#pragma mark - セグエ関係
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ShowPlayHelp"]) {
+        KSLHelpViewController *hv = (KSLHelpViewController *)segue.destinationViewController;
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSURL *url = [bundle URLForResource:@"playview" withExtension:@"html" subdirectory:@"www"];
+        hv.url = url;
+    }
+}
 
 #pragma mark - ヘルパメソッド群
 

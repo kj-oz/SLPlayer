@@ -178,30 +178,36 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <barButtonItem key="rightBarButtonItem" style="plain" id="Rnu-9P-JOY">
-                            <view key="customView" clipsSubviews="YES" contentMode="scaleToFill" id="tku-y5-qva">
+                        <barButtonItem key="rightBarButtonItem" id="Rnu-9P-JOY">
+                            <view key="customView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" id="tku-y5-qva">
                                 <rect key="frame" x="667" y="5" width="85" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k6p-Ss-Pti">
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6p-Ss-Pti">
                                         <rect key="frame" x="0.0" y="-6" width="85" height="44"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <items>
                                             <barButtonItem systemItem="action" id="aJG-ZV-jhb">
                                                 <connections>
                                                     <action selector="actionClicked:" destination="Vkt-xv-pXA" id="kiF-Aa-YaT"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem width="17" style="plain" systemItem="fixedSpace" id="GsP-Wh-TTA"/>
+                                            <barButtonItem width="17" systemItem="fixedSpace" id="GsP-Wh-TTA"/>
                                             <barButtonItem title="？" id="1ye-A2-hAa">
                                                 <connections>
-                                                    <action selector="helpClicked:" destination="Vkt-xv-pXA" id="rLh-iS-5wq"/>
+                                                    <segue destination="30d-zM-gkR" kind="popover" identifier="ShowPlayHelp" popoverAnchorBarButtonItem="1ye-A2-hAa" id="Rty-0f-vlN">
+                                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                    </segue>
                                                 </connections>
                                             </barButtonItem>
                                         </items>
                                     </toolbar>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                                </accessibility>
                             </view>
                         </barButtonItem>
                     </navigationItem>
@@ -216,7 +222,45 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fp1-xO-Pof" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2802" y="-635"/>
+            <point key="canvasLocation" x="1836" y="-667"/>
+        </scene>
+        <!--Help View Controller-->
+        <scene sceneID="WNL-ra-ZPF">
+            <objects>
+                <viewController id="30d-zM-gkR" customClass="KSLHelpViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rxf-Vc-jCS"/>
+                        <viewControllerLayoutGuide type="bottom" id="p53-d6-JrX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="zR7-29-xsO">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="640"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" allowsInlineMediaPlayback="NO" mediaPlaybackRequiresUserAction="NO" mediaPlaybackAllowsAirPlay="NO" keyboardDisplayRequiresUserAction="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0yH-55-y96">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="640"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <dataDetectorType key="dataDetectorTypes"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="p53-d6-JrX" firstAttribute="top" secondItem="0yH-55-y96" secondAttribute="bottom" id="1sN-MP-3HB"/>
+                            <constraint firstItem="0yH-55-y96" firstAttribute="leading" secondItem="zR7-29-xsO" secondAttribute="leading" id="4zY-jX-mT0"/>
+                            <constraint firstAttribute="trailing" secondItem="0yH-55-y96" secondAttribute="trailing" id="JjY-sP-Fbs"/>
+                            <constraint firstItem="0yH-55-y96" firstAttribute="top" secondItem="zR7-29-xsO" secondAttribute="top" id="lUj-2i-MyE"/>
+                        </constraints>
+                    </view>
+                    <value key="contentSizeForViewInPopover" type="size" width="480" height="640"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="480" height="640"/>
+                    <connections>
+                        <outlet property="webView" destination="0yH-55-y96" id="tsd-oY-hlF"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FJp-68-Xjn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2959" y="-443"/>
         </scene>
         <!--Problem Edit View Controller-->
         <scene sceneID="ueE-jC-Jjy">
@@ -239,7 +283,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <items>
-                                            <barButtonItem style="plain" id="hBP-es-Jxt">
+                                            <barButtonItem id="hBP-es-Jxt">
                                                 <view key="customView" opaque="NO" contentMode="scaleToFill" id="58s-67-0OW">
                                                     <rect key="frame" x="16" y="6" width="540" height="33"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -278,13 +322,13 @@
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
                                             </barButtonItem>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="2L3-QO-bqG"/>
+                                            <barButtonItem systemItem="flexibleSpace" id="2L3-QO-bqG"/>
                                             <barButtonItem systemItem="camera" id="jph-Vg-SjD">
                                                 <connections>
                                                     <action selector="cameraClicked:" destination="eQF-aD-vjA" id="dQy-0z-qei"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="nWM-8G-R5w"/>
+                                            <barButtonItem width="16" systemItem="fixedSpace" id="nWM-8G-R5w"/>
                                             <barButtonItem image="picture.png" id="4Cq-Sk-ekr">
                                                 <connections>
                                                     <action selector="pictureClicked:" destination="eQF-aD-vjA" id="DKC-FX-Fo7"/>
@@ -305,7 +349,9 @@
                                             <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="WTS-yk-JCI"/>
                                             <barButtonItem title="？" id="xB0-BV-1my">
                                                 <connections>
-                                                    <action selector="helpClicked:" destination="eQF-aD-vjA" id="VNu-f0-OXe"/>
+                                                    <segue destination="30d-zM-gkR" kind="popover" identifier="ShowEditHelp" popoverAnchorBarButtonItem="xB0-BV-1my" id="lFU-Ub-agC">
+                                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                    </segue>
                                                 </connections>
                                             </barButtonItem>
                                         </items>
@@ -439,5 +485,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="USL-88-f34"/>
+        <segue reference="Rty-0f-vlN"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -227,6 +227,19 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.editing) {
+        NSUInteger count = [self.tableView indexPathsForSelectedRows].count;
+        modifyButton.enabled = count == 1;
+        if (!count) {
+            copyButton.enabled = NO;
+            _workbookButton.enabled = NO;
+            deleteButton.enabled = NO;
+        }
+    }
+}
+
 #pragma mark - セグエ関係
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

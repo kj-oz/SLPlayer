@@ -13,6 +13,7 @@
 #import "KSLProblem.h"
 #import "KSLPlayer.h"
 #import "KSLProblemView.h"
+#import "KSLHelpViewController.h"
 #import "UIAlertView+Blocks.h"
 
 #pragma mark - エクステンション
@@ -217,6 +218,18 @@
         return;
     }
     [self performSegueWithIdentifier:@"DoneEditProblem" sender:self];
+}
+
+#pragma mark - セグエ関係
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ShowEditHelp"]) {
+        KSLHelpViewController *hv = (KSLHelpViewController *)segue.destinationViewController;
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSURL *url = [bundle URLForResource:@"editview" withExtension:@"html" subdirectory:@"www"];
+        hv.url = url;
+    }
 }
 
 #pragma mark - UIImagePickerControllerDelegate
