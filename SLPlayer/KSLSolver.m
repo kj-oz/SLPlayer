@@ -102,6 +102,7 @@
         [self checkSurroundingElements];
     }
     @catch (NSException *ex) {
+        [_board dump];
         if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
             [_routes addObject:_board.route];
             return YES;
@@ -249,18 +250,30 @@
                             [self changeEdge:[cell.rightEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
                             if ([cell.topEdge cellOfDir:0].number == 2) {
                                 [self changeEdge:[cell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
+                                if (x > 0) {
+                                    [self changeEdge:[cell.topEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                                }
                             }
                             if ([aCell.topEdge cellOfDir:0].number == 2) {
                                 [self changeEdge:[aCell.topEdge cellOfDir:0].topEdge status:KSLEdgeStatusOn];
+                                if (x < _board.width - 2) {
+                                    [self changeEdge:[aCell.topEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                                }
                             }
                         }
                         if (y < _board.height - 1) {
                             [self changeEdge:[cell.rightEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
                             if ([cell.bottomEdge cellOfDir:1].number == 2) {
                                 [self changeEdge:[cell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
+                                if (x > 0) {
+                                    [self changeEdge:[cell.bottomEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                                }
                             }
                             if ([aCell.bottomEdge cellOfDir:1].number == 2) {
                                 [self changeEdge:[aCell.bottomEdge cellOfDir:1].bottomEdge status:KSLEdgeStatusOn];
+                                if (x < _board.width - 2) {
+                                    [self changeEdge:[aCell.bottomEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                                }
                             }
                         }
                     }
@@ -289,18 +302,30 @@
                             [self changeEdge:[cell.topEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
                             if ([cell.leftEdge cellOfDir:0].number == 2) {
                                 [self changeEdge:[cell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
+                                if (y < _board.height - 1) {
+                                    [self changeEdge:[cell.leftEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                                }
                             }
                             if ([aCell.leftEdge cellOfDir:0].number == 2) {
                                 [self changeEdge:[aCell.leftEdge cellOfDir:0].leftEdge status:KSLEdgeStatusOn];
+                                if (y > 1) {
+                                    [self changeEdge:[aCell.leftEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                                }
                             }
                         }
                         if (x < _board.width - 1) {
                             [self changeEdge:[cell.topEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
                             if ([cell.rightEdge cellOfDir:1].number == 2) {
                                 [self changeEdge:[cell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
+                                if (y < _board.height - 1) {
+                                    [self changeEdge:[cell.rightEdge straightEdgeOfLH:1] status:KSLEdgeStatusOff];
+                                }
                             }
                             if ([aCell.rightEdge cellOfDir:1].number == 2) {
                                 [self changeEdge:[aCell.rightEdge cellOfDir:1].rightEdge status:KSLEdgeStatusOn];
+                                if (y > 1) {
+                                    [self changeEdge:[aCell.rightEdge straightEdgeOfLH:0] status:KSLEdgeStatusOff];
+                                }
                             }
                         }
                     }
@@ -713,13 +738,15 @@
                     [self checkNewLoopWithEdge:jointEdge];
                 }
                 @catch (NSException *ex) {
+                    jointEdge.status = KSLEdgeStatusUnset;
+                    if (_currentStep) {
+                        [_currentStep removeLastObject];
+                    }
+                    
                     if ([ex.name isEqualToString:KSLLOOP_COMPLETED_EXCEPTION]) {
-                        [ex raise];
+                        //[ex raise];
+                        // このノードでの分岐の処理が行われなくなってしまうため、正式な手続きで完成するまで待つ
                     } else {
-                        jointEdge.status = KSLEdgeStatusUnset;
-                        if (_currentStep) {
-                            [_currentStep removeLastObject];
-                        }
                         [self changeEdge:jointEdge status:KSLEdgeStatusOff];
                     }
                 }

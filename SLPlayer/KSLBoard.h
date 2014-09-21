@@ -435,9 +435,12 @@ typedef enum : NSInteger {
  * @param pitch セルの幅
  * @param rotate 画面が回転しているかどうか
  * @param erasableColor 消去可能な部分の色
+ * @param isEditing 問題編集中かどうか
  */
 - (void)drawImageWithContext:(CGContextRef)context origin:(CGPoint)origin pitch:(CGFloat)pitch
-                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor;
+                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor isEditing:(BOOL)editing;
+//- (void)drawImageWithContext:(CGContextRef)context origin:(CGPoint)origin pitch:(CGFloat)pitch
+//                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor;
 
 @end
 

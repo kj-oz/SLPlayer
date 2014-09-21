@@ -101,7 +101,7 @@ typedef enum : NSInteger {
 // 解くまでにリセットした回数
 @property (nonatomic, assign) NSInteger resetCount;
 
-// 解くまでにリセットした回数
+// 解くまでに固定した回数
 @property (nonatomic, assign) NSInteger fixCount;
 
 /**
@@ -163,6 +163,14 @@ typedef enum : NSInteger {
  * @return セルの値、空の場合-1
  */
 - (NSInteger)valueOfX:(NSInteger)x andY:(NSInteger)y;
+
+/**
+ * 与えられた位置の数字を設定する.
+ * @param x X座標
+ * @param y Y座標
+ * @param v セルの値、空の場合-1
+ */
+- (void)setValue:(NSInteger)value ofX:(NSInteger)x andY:(NSInteger)y;
 
 /**
  * 問題を文字形式で出力する.

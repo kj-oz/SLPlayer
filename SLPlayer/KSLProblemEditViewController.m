@@ -69,7 +69,8 @@
 
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
     _problemView.delegate = self;
-    _problemView.mode = _problem.status == KSLProblemStatusEditing ?
+    _problemView.mode = (_problem.status == KSLProblemStatusEditing ||
+                         _problem.status == KSLProblemStatusNotStarted) ?
                 KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
     
     self.title = _addNew ? @"新規追加" : _problem.title;
@@ -90,13 +91,62 @@
     _problemView.board = board;
 }
 
+#pragma mark - KSLProblemViewDelegateの実装
+
+- (void)stepBegan
+{
+//    [_step removeAllObjects];
+//    _stepping = YES;
+}
+
+- (void)actionChanged:(NSInteger)newValue
+{
+//    [_player changeAction:newValue];
+//    [self refreshBoard];
+}
+
 - (void)actionPerformed:(KSLAction *)action
 {
-    if (action.target == _lastAction.target) {
-        
+    KSLCell *cell = action.target;
+    KSLNode *node = [cell.topEdge nodeOfLH:0];
+    
+    [_problem setValue:action.newValue ofX:node.x andY:node.y];
+    if (_problem.status != KSLProblemStatusEditing) {
+        _problem.status = KSLProblemStatusEditing;
+        [self updateProblemInfo];
     }
-    // TODO 直前のアクションとtargetが同じならまとめる
-    //[_step addObject:action];
+}
+
+- (void)stepEnded
+{
+//    [_player addStep:_step];
+//    _stepping = NO;
+//    
+//    KSLLoopStatus loopStatus = [_player isLoopFinished];
+//    if (loopStatus == KSLLoopFinished) {
+//        [_timer invalidate];
+//        
+//        KSLProblem *problem = _player.problem;
+//        NSDate *now = [NSDate date];
+//        NSTimeInterval t = [now timeIntervalSinceDate:_start];
+//        
+//        problem.status = KSLProblemStatusSolved;
+//        NSInteger sec = _elapsed + (NSInteger)t;
+//        problem.elapsedSecond = sec;
+//        [_player fix];
+//        
+//        NSString *msg = [NSString stringWithFormat:@"正解です。所要時間%@",
+//                         [self elapsedlabelString:sec]];
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完成"
+//                                                        message:msg delegate:nil cancelButtonTitle:nil
+//                                              otherButtonTitles:@"了解", nil];
+//        [alert show];
+//    } else if (loopStatus == KSLLoopCellError) {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ループエラー"
+//                                                        message:@"条件に合致しないセルがあります。" delegate:nil cancelButtonTitle:nil
+//                                              otherButtonTitles:@"了解", nil];
+//        [alert show];
+//    }
 }
 
 #pragma mark - 各種アクション
@@ -150,12 +200,7 @@
                                      otherButtonTitles:@"了解", nil];
             [subAlert show];
         } else {
-            int *data = calloc(w * h, sizeof(int));
-            for (NSInteger i = 0, n = w * h; i < n; i++) {
-                data[i] = -1;
-            }
-            
-            KSLProblem *problem = [[KSLProblem alloc] initWithWidth:w andHeight:h data:data];
+            KSLProblem *problem = [[KSLProblem alloc] initWithWidth:w andHeight:h data:nil];
             self.problem = problem;
             [self setBoard:[[KSLBoard alloc] initWithProblem:problem]];
             [self updateProblemInfo];
@@ -311,9 +356,12 @@
     }
     if (_problem.status != KSLProblemStatusEditing) {
         self.checkButton.enabled = NO;
+    } else {
+        self.checkButton.enabled = YES;
     }
-    _problemView.mode = _problem.status == KSLProblemStatusEditing ?
-                KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
+//    _problemView.mode = (_problem.status == KSLProblemStatusEditing ||
+//                         _problem.status == KSLProblemStatusNotStarted) ?
+//                                KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
     [self refreshBoard];
 }
 

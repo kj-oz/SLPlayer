@@ -519,7 +519,7 @@
     CGFloat y0 = (imageHeight - pitch * _height) / 2;
     
     [self drawImageWithContext:context origin:CGPointMake(x0, y0) pitch:pitch rotate:NO
-                 erasableColor:[UIColor blackColor].CGColor];
+                 erasableColor:[UIColor blackColor].CGColor isEditing:NO];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -527,7 +527,7 @@
 }
 
 - (void)drawImageWithContext:(CGContextRef)context origin:(CGPoint)origin pitch:(CGFloat)pitch
-                      rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor
+                rotate:(BOOL)rotate erasableColor:(CGColorRef)erasableColor isEditing:(BOOL)editing
 {
     CGFloat charH = 0.8 * pitch;
     CGFloat pointR = 0.03 * pitch;
@@ -566,6 +566,9 @@
     NSArray *chars = @[@"0", @"1", @"2", @"3"];
     UIFont *font = [UIFont systemFontOfSize:charH];
     CGContextSetShouldAntialias(context, YES);
+    if (editing) {
+        CGContextSetFillColorWithColor(context, erasableColor);
+    }
     CGSize size = [@"0" sizeWithFont:font];
     CGFloat nx = (pitch - size.width) * 0.5 + 0.5;
     CGFloat ny = (pitch - size.height) * 0.5;

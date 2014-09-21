@@ -76,6 +76,13 @@
 - (void)copyProblem:(KSLProblem *)problem
 {
     KSLProblem *newProblem = [[KSLProblem alloc] initWithProblem:problem];
+    
+    newProblem.status = problem.status == KSLProblemStatusEditing ?
+                                KSLProblemStatusEditing : KSLProblemStatusNotStarted;
+    newProblem.elapsedSecond = 0;
+    newProblem.resetCount = 0;
+    newProblem.fixCount = 0;
+
     NSString *seed;
     NSInteger number;
     NSRange range = [problem.title rangeOfString:@"\\(\\d+\\)" options:NSRegularExpressionSearch];

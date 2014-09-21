@@ -59,7 +59,7 @@
         KSLProblemManager *pm = [KSLProblemManager sharedManager];
         _uid = [pm currentTimeString];
         self.title = @"未定";
-        self.status = KSLProblemStatusNotStarted;
+        self.status = data ? KSLProblemStatusNotStarted : KSLProblemStatusEditing;
         self.difficulty = 0;
         _width = width;
         _height = height;
@@ -207,6 +207,11 @@
 - (NSInteger)valueOfX:(NSInteger)x andY:(NSInteger)y
 {
     return [((NSNumber *)_data[y * _width + x]) integerValue];
+}
+
+- (void)setValue:(NSInteger)value ofX:(NSInteger)x andY:(NSInteger)y
+{
+    _data[y * _width + x] = @(value);
 }
 
 #pragma mark - 出力
