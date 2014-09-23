@@ -406,6 +406,7 @@
         deleteButton.enabled = NO;
     } else {
         _workbookButton.title = @"問題集";
+        _workbookButton.enabled = YES;
         [self.navigationItem setLeftBarButtonItems:
          @[_workbookButton] animated:animated];
         [self.navigationItem setRightBarButtonItems:

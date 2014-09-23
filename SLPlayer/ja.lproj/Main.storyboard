@@ -10,12 +10,12 @@
             <objects>
                 <tableViewController modalPresentationStyle="formSheet" id="ods-jg-P7r" customClass="KSLWorkbookListViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="psc-iv-Tmm">
-                        <rect key="frame" x="0.0" y="64" width="320" height="576"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="WorkbookCell" id="L8J-g1-vz7">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="L8J-g1-vz7" id="GUu-rg-Q4l">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -28,7 +28,6 @@
                             <outlet property="delegate" destination="ods-jg-P7r" id="reR-oS-RBn"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="i3E-7h-fGi">
                         <barButtonItem key="leftBarButtonItem" systemItem="done" id="rH1-G2-dhq">
                             <connections>
@@ -41,7 +40,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <value key="contentSizeForViewInPopover" type="size" width="320" height="576"/>
+                    <value key="contentSizeForViewInPopover" type="size" width="320" height="852"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="640"/>
                     <connections>
@@ -455,10 +454,9 @@
         <!--Navigation Controller-->
         <scene sceneID="wVp-WH-HME">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="formSheet" id="93g-qo-rzR" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="93g-qo-rzR" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <value key="contentSizeForViewInPopover" type="size" width="320" height="576"/>
+                    <value key="contentSizeForViewInPopover" type="size" width="320" height="640"/>
                     <size key="freeformSize" width="320" height="640"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="SSs-qp-Mto">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
