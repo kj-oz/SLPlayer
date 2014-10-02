@@ -4,7 +4,7 @@ SLPlayerは、[スリザーリンク][Wikipedia]、あるいはナンバーラ�
 
 このソースからビルドされるアプリケーションは、Apple社のAppStoreで **スリザー** という名称で
 無料で配信中です。  
-　[https://itunes.apple.com/us/app/reshipi-zhang/id641147266?l=ja&ls=1&mt=8][AppStore]
+　[https://itunes.apple.com/jp/app/suriza/id918911358?mt=8][AppStore]
 
 画面イメージや使い方は、以下のページをご覧下さい。  
 　[http://slitherlink-player.blogspot.jp][Blogger] 
@@ -39,7 +39,7 @@ iOS 6.0以上、iPad専用
 -----
 Copyright &copy; 2014 Kj Oz  
 
-[AppStore]: https://itunes.apple.com/us/app/reshipi-zhang/id641147266?l=ja&ls=1&mt=8
+[AppStore]: https://itunes.apple.com/jp/app/suriza/id918911358?mt=8
 [Blogger]: http://slitherlink-player.blogspot.jp
 [MIT]: http://www.opensource.org/licenses/mit-license.php
 [Wikipedia]: http://ja.wikipedia.org/wiki/スリザーリンク
