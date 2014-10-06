@@ -63,6 +63,10 @@
     // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
     
+    //
+    BOOL _fixH;
+    BOOL _fixV;
+    
     // ロングプレス時の連続スクロールの定義
     CGFloat _dx;
     CGFloat _dy;
@@ -155,8 +159,26 @@
                 zoomedW = self.frame.size.width / _zpitch;
                 zoomedH = self.frame.size.height / _zpitch;
             }
+            
+            CGFloat x0 = cx - 0.5 * zoomedW;
+            CGFloat y0 = cy - 0.5 * zoomedH;
+            if (!_fixH) {
+                if (x0 < 0) {
+                    x0 = -KSLPROBLEM_MARGIN;
+                } else if (x0 + zoomedW > _board.width) {
+                    x0 = _board.width + KSLPROBLEM_MARGIN - zoomedW;
+                }
+            }
+            if (!_fixV) {
+                if (y0 < 0) {
+                    y0 = -KSLPROBLEM_MARGIN;
+                } else if (y0 + zoomedH > _board.height) {
+                    y0 = _board.height + KSLPROBLEM_MARGIN - zoomedH;
+                }
+            }
+            
             [self setZoomedAreaWithRect:
-                CGRectMake(cx - 0.5 * zoomedW, cy - 0.5 * zoomedH, zoomedW, zoomedH)];
+                CGRectMake(x0, y0, zoomedW, zoomedH)];
         }
         BOOL editing = _mode == KSLProblemViewModeInputNumber;
         if (_zoomed) {
@@ -500,16 +522,20 @@
     
     if (_board.width + 2 * KSLPROBLEM_MARGIN < w) {
         zxmin = zxmax = (w - _board.width) / 2;
+        _fixH = YES;
     } else {
         zxmin = w - (_board.width + KSLPROBLEM_MARGIN);
         zxmax = KSLPROBLEM_MARGIN;
+        _fixH = NO;
     }
     
     if (_board.height + 2 * KSLPROBLEM_MARGIN < h) {
         zymin = zymax = (h - _board.height) / 2;
+        _fixV = YES;
     } else {
         zymin = h - (_board.height + KSLPROBLEM_MARGIN);
         zymax = KSLPROBLEM_MARGIN;
+        _fixV = NO;
     }
     
     _zoomableArea = CGRectMake(-zxmax, -zymax, zxmax + w - zxmin, zymax + h - zymin);
