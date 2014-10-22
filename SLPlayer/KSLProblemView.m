@@ -57,9 +57,6 @@
     CGFloat _ay0;
     CGFloat _apitch;
     
-    // 問題座標系でのズーム時の表示領域
-    CGRect _zoomedArea;
-    
     // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
     
@@ -109,26 +106,9 @@
     _board = board;
     _rotated = [self checkRotation];
     
-    [self calculateOverallParameter];
-    [self calculateZoomedParameter];
-    
     // 拡大サイズでも画面より小さい場合は常に拡大
-    // TODO ビューの初期状態の記録・復元
-    // _zoomed = (_apitch == _zpitch);
     _zoomed = YES;
-    
-    // 初期拡大エリア
-    CGFloat zoomedW;
-    CGFloat zoomedH;
-    if (_rotated) {
-        zoomedW = self.frame.size.height / _zpitch;
-        zoomedH = self.frame.size.width / _zpitch;
-    } else {
-        zoomedW = self.frame.size.width / _zpitch;
-        zoomedH = self.frame.size.height / _zpitch;
-    }
-    [self setZoomedAreaWithRect:
-                   CGRectMake(_zoomableArea.origin.x, _zoomableArea.origin.y, zoomedW, zoomedH)];
+    [self adjustZoomedArea];
 }
 
 #pragma mark - 描画
@@ -144,41 +124,7 @@
         BOOL rotated = [self checkRotation];
         if (rotated != _rotated) {
             _rotated = rotated;
-            [self calculateOverallParameter];
-            [self calculateZoomedParameter];
-            
-            CGFloat cx = CGRectGetMidX(_zoomedArea);
-            CGFloat cy = CGRectGetMidY(_zoomedArea);
-            
-            CGFloat zoomedW;
-            CGFloat zoomedH;
-            if (_rotated) {
-                zoomedW = self.frame.size.height / _zpitch;
-                zoomedH = self.frame.size.width / _zpitch;
-            } else {
-                zoomedW = self.frame.size.width / _zpitch;
-                zoomedH = self.frame.size.height / _zpitch;
-            }
-            
-            CGFloat x0 = cx - 0.5 * zoomedW;
-            CGFloat y0 = cy - 0.5 * zoomedH;
-            if (!_fixH) {
-                if (x0 < 0) {
-                    x0 = -KSLPROBLEM_MARGIN;
-                } else if (x0 + zoomedW > _board.width) {
-                    x0 = _board.width + KSLPROBLEM_MARGIN - zoomedW;
-                }
-            }
-            if (!_fixV) {
-                if (y0 < 0) {
-                    y0 = -KSLPROBLEM_MARGIN;
-                } else if (y0 + zoomedH > _board.height) {
-                    y0 = _board.height + KSLPROBLEM_MARGIN - zoomedH;
-                }
-            }
-            
-            [self setZoomedAreaWithRect:
-                CGRectMake(x0, y0, zoomedW, zoomedH)];
+            [self adjustZoomedArea];
         }
         BOOL editing = _mode == KSLProblemViewModeInputNumber;
         if (_zoomed) {
@@ -296,15 +242,16 @@
         CGPoint translation = [_panGr translationInView:self];
         [_panGr setTranslation:CGPointZero inView:self];
         CGPoint location = KLCGPointSubtract([_panGr locationInView:self], translation);
-        CGRect zoomedArea = [self zoomedAreaInView];
+        CGRect rect = [self zoomedAreaInView];
         
-        if (CGRectContainsPoint(zoomedArea, location)) {
+        if (CGRectContainsPoint(rect, location)) {
+            CGRect zoomedArea = _delegate.zoomedArea;
             if (_rotated) {
                 [self setZoomedAreaWithRect:
-                    CGRectOffset(_zoomedArea, -translation.y / _apitch, translation.x / _apitch)];
+                    CGRectOffset(zoomedArea, -translation.y / _apitch, translation.x / _apitch)];
             } else {
                 [self setZoomedAreaWithRect:
-                    CGRectOffset(_zoomedArea, translation.x / _apitch, translation.y / _apitch)];
+                    CGRectOffset(zoomedArea, translation.x / _apitch, translation.y / _apitch)];
             }
             [self setNeedsDisplay];
         }
@@ -419,20 +366,20 @@
             CGPoint point = [_lpGr locationInView:self];
             _dx = 0;
             _dy = 0;
-            CGFloat xp = point.x / self.bounds.size.width;
-            if (xp < 0.25) {
+            CGFloat xp = point.x;
+            if (xp < 100) {
                 _dx = 1;
-            } else if (xp > 0.75) {
+            } else if (xp > self.bounds.size.width - 100) {
                 _dx = -1;
             }
-            CGFloat yp = point.y / self.bounds.size.height;
-            if (yp < 0.25) {
+            CGFloat yp = point.y;
+            if (yp < 100) {
                 _dy = 1;
-            } else if (yp > 0.75) {
+            } else if (yp > self.bounds.size.height - 100) {
                 _dy = -1;
             }
             if (_dx != 0 || _dy != 0) {
-                _timer = [NSTimer scheduledTimerWithTimeInterval:0.05
+                _timer = [NSTimer scheduledTimerWithTimeInterval:0.02
                         target:self selector:@selector(autoScroll) userInfo:nil repeats:YES];
             }
         } else if (state == UIGestureRecognizerStateEnded) {
@@ -451,6 +398,47 @@
 }
 
 #pragma mark - プライベートメソッド（表示領域）
+
+- (void)adjustZoomedArea
+{
+    [self calculateOverallParameter];
+    [self calculateZoomedParameter];
+    
+    CGRect zoomedArea = _delegate.zoomedArea;
+    CGFloat cx = CGRectGetMidX(zoomedArea);
+    CGFloat cy = CGRectGetMidY(zoomedArea);
+    
+    CGFloat zoomedW;
+    CGFloat zoomedH;
+    if (_rotated) {
+        zoomedW = self.frame.size.height / _zpitch;
+        zoomedH = self.frame.size.width / _zpitch;
+    } else {
+        zoomedW = self.frame.size.width / _zpitch;
+        zoomedH = self.frame.size.height / _zpitch;
+    }
+    
+    CGFloat x0 = cx - 0.5 * zoomedW;
+    CGFloat y0 = cy - 0.5 * zoomedH;
+    if (!_fixH) {
+        if (x0 < 0) {
+            x0 = -KSLPROBLEM_MARGIN;
+        } else if (x0 + zoomedW > _board.width) {
+            x0 = _board.width + KSLPROBLEM_MARGIN - zoomedW;
+        }
+    }
+    if (!_fixV) {
+        if (y0 < 0) {
+            y0 = -KSLPROBLEM_MARGIN;
+        } else if (y0 + zoomedH > _board.height) {
+            y0 = _board.height + KSLPROBLEM_MARGIN - zoomedH;
+        }
+    }
+    
+    [self setZoomedAreaWithRect:
+     CGRectMake(x0, y0, zoomedW, zoomedH)];
+    
+}
 
 /**
  * 全体表示時の位置や点の間隔を予め計算しておく
@@ -547,13 +535,14 @@
  */
 - (void)setZoomedAreaWithRect:(CGRect)rect
 {
-    _zoomedArea = KLCGClumpRect(rect, _zoomableArea);
+    CGRect zoomedArea = KLCGClumpRect(rect, _zoomableArea);
+    _delegate.zoomedArea = zoomedArea;
     if (_rotated) {
-        _zx0 = -_zoomedArea.origin.y * _zpitch;
-        _zy0 = self.frame.size.height + _zoomedArea.origin.x * _zpitch;
+        _zx0 = -zoomedArea.origin.y * _zpitch;
+        _zy0 = self.frame.size.height + zoomedArea.origin.x * _zpitch;
     } else {
-        _zx0 = -_zoomedArea.origin.x * _zpitch;
-        _zy0 = -_zoomedArea.origin.y * _zpitch;
+        _zx0 = -zoomedArea.origin.x * _zpitch;
+        _zy0 = -zoomedArea.origin.y * _zpitch;
     }
 }
 
@@ -567,16 +556,17 @@
     CGFloat y;
     CGFloat w;
     CGFloat h;
+    CGRect zoomedArea = _delegate.zoomedArea;
     if (_rotated) {
-        x = _ax0 + _zoomedArea.origin.y * _apitch;
-        y = _ay0 - (_zoomedArea.origin.x + _zoomedArea.size.width) * _apitch;
-        w = _zoomedArea.size.height * _apitch;
-        h = _zoomedArea.size.width * _apitch;
+        x = _ax0 + zoomedArea.origin.y * _apitch;
+        y = _ay0 - (zoomedArea.origin.x + zoomedArea.size.width) * _apitch;
+        w = zoomedArea.size.height * _apitch;
+        h = zoomedArea.size.width * _apitch;
     } else {
-        x = _ax0 + _zoomedArea.origin.x * _apitch;
-        y = _ay0 + _zoomedArea.origin.y * _apitch;
-        w = _zoomedArea.size.width * _apitch;
-        h = _zoomedArea.size.height * _apitch;
+        x = _ax0 + zoomedArea.origin.x * _apitch;
+        y = _ay0 + zoomedArea.origin.y * _apitch;
+        w = zoomedArea.size.width * _apitch;
+        h = zoomedArea.size.height * _apitch;
     }
     return CGRectMake(x, y, w, h);
 }
@@ -587,11 +577,12 @@
  */
 - (void)panZoomedArea:(CGPoint)translation
 {
+    CGRect zoomedArea = _delegate.zoomedArea;
     if (_rotated) {
-        [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
+        [self setZoomedAreaWithRect:CGRectOffset(zoomedArea,
                                                  translation.y / _zpitch, -translation.x / _zpitch)];
     } else {
-        [self setZoomedAreaWithRect:CGRectOffset(_zoomedArea,
+        [self setZoomedAreaWithRect:CGRectOffset(zoomedArea,
                                                  -translation.x / _zpitch, -translation.y / _zpitch)];
     }
 }

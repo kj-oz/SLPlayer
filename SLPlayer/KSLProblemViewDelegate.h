@@ -29,6 +29,9 @@
 
 @optional
 
+// 拡大画面での表示位置（回転後の問題座標系）
+@property (nonatomic, assign) CGRect zoomedArea;
+
 /**
  * 線の入力／消去時のステップの開始
  */

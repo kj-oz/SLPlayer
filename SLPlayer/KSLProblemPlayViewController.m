@@ -32,6 +32,9 @@
 // 問題名称表示部のビュー（タップイベントを拾うためにアウトレット化）
 @property (weak, nonatomic) IBOutlet UIView *titleView;
 
+// アンドゥ
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *undoButton;
+
 @end
 
 
@@ -91,6 +94,7 @@
     self.titleLabel.text = [NSString stringWithFormat:@"%@（★%ld）",
                             _player.problem.title, (long)_player.problem.difficulty];
     
+    self.undoButton.enabled = NO;
     [self startPlay];
 }
 
@@ -178,6 +182,16 @@
 
 #pragma mark - KSLProblemViewDelegateの実装
 
+- (CGRect)zoomedArea
+{
+    return _player.zoomedArea;
+}
+
+- (void)setZoomedArea:(CGRect)zoomedArea
+{
+    _player.zoomedArea = zoomedArea;
+}
+
 - (void)stepBegan
 {
     [_step removeAllObjects];
@@ -196,6 +210,7 @@
         [_step addObject:action];
     } else {
         [_player addStep:[NSArray arrayWithObject:action]];
+        self.undoButton.enabled = YES;
     }
     [self refreshBoard];
 }
@@ -204,6 +219,7 @@
 {
     [_player addStep:_step];
     _stepping = NO;
+    self.undoButton.enabled = YES;
     
     KSLLoopStatus loopStatus = [_player isLoopFinished];
     if (loopStatus == KSLLoopFinished) {
@@ -217,6 +233,7 @@
         NSInteger sec = _elapsed + (NSInteger)t;
         problem.elapsedSecond = sec;
         [_player fix];
+        self.undoButton.enabled = NO;
         
         NSString *msg = [NSString stringWithFormat:@"正解です。所要時間%@",
                          [self elapsedlabelString:sec]];
@@ -235,10 +252,15 @@
 - (void)undo
 {
     [_player undo];
+    self.undoButton.enabled = NO;
     [self refreshBoard];
 }
 
 #pragma mark - 各種アクション
+
+- (IBAction)undoClicked:(id)sender {
+    [self undo];
+}
 
 /**
  * 問題名部分のタップ
@@ -282,6 +304,7 @@
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
         _player.problem.resetCount++;
         [_player clear];
+        self.undoButton.enabled = NO;
         [self refreshBoard];
     }];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"初期化"
@@ -299,6 +322,7 @@
     RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:@"いいえ" action:nil];
     RIButtonItem *deleteItem = [RIButtonItem itemWithLabel:@"はい" action:^{
         [_player erase];
+        self.undoButton.enabled = NO;
         [self refreshBoard];
     }];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"消去"
@@ -315,6 +339,7 @@
 {
     _player.problem.fixCount++;
     [_player fix];
+    self.undoButton.enabled = NO;
     [self refreshBoard];
 }
 

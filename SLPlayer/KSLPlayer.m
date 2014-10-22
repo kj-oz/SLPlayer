@@ -46,12 +46,15 @@
             }
             self.currentIndex = [json[@"currentIndex"] integerValue];
             self.fixedIndex = [json[@"fixedIndex"] integerValue];
+            self.zoomedArea = CGRectFromString(json[@"zoomedArea"]);
             [self loadStepsFromJson:json[@"steps"]];
         } else {
             _currentIndex = -1;
             _fixedIndex = -1;
             _steps = [NSMutableArray array];
+            _zoomedArea = CGRectZero;
         }
+        
     }
     return self;
 }
@@ -64,6 +67,7 @@
     json[@"currentIndex"] = @(_currentIndex);
     json[@"fixedIndex"] = @(_fixedIndex);
     json[@"steps"] = [self stringArrayFromSteps];
+    json[@"zoomedArea"] = NSStringFromCGRect(_zoomedArea);
     
     NSError *error = nil;
     [[NSJSONSerialization dataWithJSONObject:json options:0 error:&error]

@@ -31,6 +31,9 @@
 // 盤面
 @property (nonatomic, readonly) KSLBoard *board;
 
+// 拡大画面での表示位置（回転後の問題座標系）
+@property (nonatomic, assign) CGRect zoomedArea;
+
 /**
  * 与えられた問題に対するPlayerを作成する.
  * ファイルが残っていればファイルからロードし残っていなければ初期状態で作成する.

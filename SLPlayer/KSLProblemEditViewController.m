@@ -93,16 +93,22 @@
 
 #pragma mark - KSLProblemViewDelegateの実装
 
+- (CGRect)zoomedArea
+{
+    return _player.zoomedArea;
+}
+
+- (void)setZoomedArea:(CGRect)zoomedArea
+{
+    _player.zoomedArea = zoomedArea;
+}
+
 - (void)stepBegan
 {
-//    [_step removeAllObjects];
-//    _stepping = YES;
 }
 
 - (void)actionChanged:(NSInteger)newValue
 {
-//    [_player changeAction:newValue];
-//    [self refreshBoard];
 }
 
 - (void)actionPerformed:(KSLAction *)action
@@ -119,34 +125,6 @@
 
 - (void)stepEnded
 {
-//    [_player addStep:_step];
-//    _stepping = NO;
-//    
-//    KSLLoopStatus loopStatus = [_player isLoopFinished];
-//    if (loopStatus == KSLLoopFinished) {
-//        [_timer invalidate];
-//        
-//        KSLProblem *problem = _player.problem;
-//        NSDate *now = [NSDate date];
-//        NSTimeInterval t = [now timeIntervalSinceDate:_start];
-//        
-//        problem.status = KSLProblemStatusSolved;
-//        NSInteger sec = _elapsed + (NSInteger)t;
-//        problem.elapsedSecond = sec;
-//        [_player fix];
-//        
-//        NSString *msg = [NSString stringWithFormat:@"正解です。所要時間%@",
-//                         [self elapsedlabelString:sec]];
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完成"
-//                                                        message:msg delegate:nil cancelButtonTitle:nil
-//                                              otherButtonTitles:@"了解", nil];
-//        [alert show];
-//    } else if (loopStatus == KSLLoopCellError) {
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ループエラー"
-//                                                        message:@"条件に合致しないセルがあります。" delegate:nil cancelButtonTitle:nil
-//                                              otherButtonTitles:@"了解", nil];
-//        [alert show];
-//    }
 }
 
 #pragma mark - 各種アクション
@@ -253,10 +231,10 @@
         return;
     }
     NSInteger difficulty = [self.difficultyText.text integerValue];
-    if (difficulty < 1 || difficulty > 10) {
+    if (difficulty < 0 || difficulty > 99) {
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"難易度"
-                              message:@"10までの整数を入力して下さい。"
+                              message:@"0から99までの整数を入力して下さい。"
                               delegate:nil cancelButtonTitle:nil
                               otherButtonTitles:@"了解", nil];
         [alert show];
@@ -350,18 +328,13 @@
         }
         [items removeObjectsInArray:removeItems];
         [self.toolBar setItems:items];
-//        self.cameraButton.enabled = NO;
-//        self.pictureButton.enabled = NO;
-//        self.createButton.enabled = NO;
     }
     if (_problem.status != KSLProblemStatusEditing) {
         self.checkButton.enabled = NO;
     } else {
         self.checkButton.enabled = YES;
     }
-//    _problemView.mode = (_problem.status == KSLProblemStatusEditing ||
-//                         _problem.status == KSLProblemStatusNotStarted) ?
-//                                KSLProblemViewModeInputNumber : KSLProblemViewModeScroll;
+
     [self refreshBoard];
 }
 
