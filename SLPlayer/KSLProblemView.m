@@ -47,6 +47,10 @@
     // 問題が正方形の場合縦向きとして扱う
     BOOL _rotated;
     
+    // 拡大領域を調整したか
+    // 初回描画時、及び回転時に拡大領域の調整が実行される
+    BOOL _adjusted;
+    
     // 画面座標系でのズーム時の問題原点（左上）の座標と点の間隔
     CGFloat _zx0;
     CGFloat _zy0;
@@ -108,7 +112,8 @@
     
     // 拡大サイズでも画面より小さい場合は常に拡大
     _zoomed = YES;
-    [self adjustZoomedArea];
+    _adjusted = NO;
+//    [self adjustZoomedArea];
 }
 
 #pragma mark - 描画
@@ -122,7 +127,7 @@
     
     if (_board) {
         BOOL rotated = [self checkRotation];
-        if (rotated != _rotated) {
+        if (rotated != _rotated || !_adjusted) {
             _rotated = rotated;
             [self adjustZoomedArea];
         }
@@ -405,6 +410,10 @@
     [self calculateZoomedParameter];
     
     CGRect zoomedArea = _delegate.zoomedArea;
+    if (zoomedArea.size.width < 0.1 && _rotated) {
+        // その問題の初回描画時で回転していたら画面上の左上隅が表示されるよう修正
+        zoomedArea = CGRectOffset(zoomedArea, _board.width, 0);
+    }
     CGFloat cx = CGRectGetMidX(zoomedArea);
     CGFloat cy = CGRectGetMidY(zoomedArea);
     
@@ -435,9 +444,9 @@
         }
     }
     
-    [self setZoomedAreaWithRect:
-     CGRectMake(x0, y0, zoomedW, zoomedH)];
+    [self setZoomedAreaWithRect:CGRectMake(x0, y0, zoomedW, zoomedH)];
     
+    _adjusted = YES;
 }
 
 /**
