@@ -11,6 +11,7 @@
 #import "KLIMBinaryImage.h"
 #import "KLIMLabelingImage.h"
 #import "KLIMLabelingBlock.h"
+#import "KLIMHistgram.h"
 
 #pragma mark - KLIMAxesBlock
 
@@ -117,14 +118,77 @@
     if (self) {
         _bin = image;
         _li = [[KLIMLabelingImage alloc] initWithBinaryImage:image];
-        _blocks = [NSMutableArray array];
         
-        // 以下の判定基準は、1000X1000程度のイメージを想定
+        // 大きな画像で10X10の問題を想定し、長さのヒストグラムの最大は64、面積のヒストグラムの最大は64*64とする
+        // それより大きなラベルはグリッド点以外とみなす
+        NSInteger minL = image.width / 300;
+        NSInteger maxL = image.width / 66;
+        NSInteger bandL = 1;
+        NSInteger minA = minL * minL;
+        NSInteger maxA = (maxL + 1) * (maxL + 1) - 1;
+        NSInteger bandA = 4;
+        
+        KLIMHistgram *hArea = [[KLIMHistgram alloc] initWithMin:minA max:maxA bandWidth:bandA];
+        KLIMHistgram *hLen = [[KLIMHistgram alloc] initWithMin:minL max:maxL bandWidth:bandL];
+        BOOL dummy = YES;
+        for (KLIMLabelingBlock *block in _li.blocks) {
+            if (!dummy) {
+                block.work = 0;
+                int x = (int)block.width;
+                int y = (int)block.height;
+                int a = (int)block.area;
+                if (minL <= x && x <= maxL &&
+                        minL <= y && y <= maxL &&
+                        minA <= a && a <= maxA) {
+                    float lRatio = (float)x / y;
+                    float aFactor = (float)a / x / y;
+                    if (lRatio >= 0.8 && lRatio <= 1.25 &&
+                            aFactor > 0.5) {
+                        block.work = 1;
+                        [hLen addValue:x];
+                        [hLen addValue:y];
+                        [hArea addValue:a];
+                    }
+                }
+            } else {
+                // 最初のダミー要素読み飛ばし
+                dummy = NO;
+            }
+        }
+        KLDBGPrint("長さ\n");
+        [hLen dump];
+        KLDBGPrint("面積\n");
+        [hArea dump];
+        
+        NSInteger peak = [hLen findPeak];
+        NSInteger min = [hLen findPrevBottom:peak limit:0.2];
+        if (min >= 0) {
+            minL = [hLen minAtIndex:min] - 1;
+        }
+        NSInteger max = [hLen findNextBottom:peak limit:0.2];
+        if (max >= 0) {
+            maxL = [hLen maxAtIndex:max] + 1;
+        }
+        
+        peak = [hArea findPeak];
+        min = [hArea findPrevBottom:peak limit:0.2];
+        if (min >= 0) {
+            minA = [hArea minAtIndex:min] - 4;
+        }
+        max = [hArea findNextBottom:peak limit:0.2];
+        if (max >= 0) {
+            maxA = [hArea maxAtIndex:max] + 4;
+        }
+        
+        // ヒストグラムから判明した範囲でフィルタリング
+        _blocks = [NSMutableArray array];
         for (NSInteger i = 1; i < _li.blocks.count; i++) {
             KLIMLabelingBlock *block = _li.blocks[i];
-            if (1 < block.width && block.width < 14 &&
-                1 < block.height && block.height < 14 &&
-                4 < block.area && block.area < 120) {
+        
+            if (block.work &&
+                minL <= block.width && block.width <= maxL &&
+                minL <= block.height && block.height <= maxL &&
+                minA <= block.area && block.area <= maxA) {
                 [_blocks addObject:block];
             }
         }
@@ -433,8 +497,10 @@
 {
     // 与えられた点から軸上の点に向かって4つ（但し軸に達してしまう場合はそれ以下）の点が想定する位置に存在するかを調べる
     CGPoint vec = KLCGPointDevide(KLCGPointSubtract(point, center), n);
+    // 想定座標と点の距離が中心と端部の距離の2%以内か（経験則）
+    CGFloat dmax = KLCGPointDistance(point, center) * 0.03;
     for (NSInteger i = n - 1; i >= n / 2 && i > 2; i--) {
-        CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(vec, i));
+         CGPoint pt = KLCGPointAdd(center, KLCGPointMultiply(vec, i));
         
         NSArray *blocks = [self sortByDistanceFromPoint:pt
                                                maxCount:1 maxDistance:_searchDistance/2];
@@ -442,8 +508,7 @@
             return NO;
         }
         KLIMLabelingBlock *block = blocks[0];
-        // 想定座標と点の距離が10ピクセル（経験値）以内か
-        if (KLCGPointDistance2(block.center, pt) > 10 * 10) {
+        if (KLCGPointDistance2(block.center, pt) > dmax * dmax) {
             return NO;
         }
     }

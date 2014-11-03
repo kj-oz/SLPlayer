@@ -23,21 +23,22 @@
 - (KSLProblem *)detectProblemFromImage:(UIImage *)image
 {
     UIImage *orgImage = image;
-    NSInteger min = MIN(image.size.width, image.size.height);
-    NSInteger factor = (NSInteger)(min / 1000.0);
-    if (factor) {
-        // 対象の画像の大きさは、短辺が1000より小さくなる程度にリサイズ
-        factor++;
-        NSInteger w = image.size.width / factor;
-        NSInteger h = image.size.height / factor;
-        UIGraphicsBeginImageContext(CGSizeMake(w, h));
-        [image drawInRect:CGRectMake(0, 0, w, h)];
-        orgImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-    }
+//    NSInteger min = MIN(image.size.width, image.size.height);
+//    NSInteger factor = (NSInteger)(min / 1000.0);
+//    if (factor) {
+//        // 対象の画像の大きさは、短辺が1000より小さくなる程度にリサイズ
+//        factor++;
+//        NSInteger w = image.size.width / factor;
+//        NSInteger h = image.size.height / factor;
+//        UIGraphicsBeginImageContext(CGSizeMake(w, h));
+//        [image drawInRect:CGRectMake(0, 0, w, h)];
+//        orgImage = UIGraphicsGetImageFromCurrentImageContext();
+//        UIGraphicsEndImageContext();
+//    }
     
     // グリッド抽出用の２値化画像には適応的２値化を行い、膨張処理は行わない画像を使用
     KLIMBinaryImage *bin = [[KLIMBinaryImage alloc] initWithUIImage:orgImage];
+    
     KLIMPointGrid *grid = [[KLIMPointGrid alloc] initWithBinaryImage:bin];
     if (grid) {
         NSInteger numCol = grid.numCol;
