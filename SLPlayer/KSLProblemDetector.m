@@ -51,13 +51,15 @@
             }
         }
         
-        UIImage *normalizedImage = [self createNormalizedImageWithGrid:grid fromImage:orgImage];
+        NSInteger pitch = 60;
+        UIImage *normalizedImage = [self createNormalizedImageWithGrid:grid pitch:pitch fromImage:orgImage];
         // 数値の認識用２値化画像も適応的２値化を行った画像を使用
         KLIMBinaryImage *normalizedBin = [[KLIMBinaryImage alloc] initWithUIImage:normalizedImage];
         
         KLIMLabelingImage *li = [[KLIMLabelingImage alloc] initWithBinaryImage:normalizedBin];
-        NSInteger pitch = grid.pitch;
-        // 以下のサイズチェック用の係数は経験則
+        //NSInteger pitch = grid.pitch;
+        
+        // 以下のサイズチェック用の係数は経験則（pitch 40〜100程度の場合）
         NSInteger wmin = (NSInteger)(pitch * 0.2);
         NSInteger wmax = (NSInteger)(pitch * 0.7);
         NSInteger hmin = (NSInteger)(pitch * 0.5);
@@ -95,14 +97,15 @@
 /**
  * ゆがみを補正してグリッドにマッチさせた画像を得る.
  * @param grid グリッド
+ * @param pitch 出力画像のグリッドピッチ
  * @param orgImage 元画像
  * @return ゆがみを補正してグリッドにマッチさせた画像
  */
-- (UIImage *)createNormalizedImageWithGrid:(KLIMPointGrid *)grid fromImage:(UIImage *)orgImage;
+- (UIImage *)createNormalizedImageWithGrid:(KLIMPointGrid *)grid pitch:(CGFloat)pitch fromImage:(UIImage *)orgImage;
 {
     // 正規化後のサイズ
     UIImage *parts[4];
-    NSInteger pitch = grid.pitch;
+//    NSInteger pitch = grid.pitch;
     NSInteger dx0 = pitch * grid.axesX;
     NSInteger dy0 = pitch * grid.axesY;
     NSInteger dx1 = pitch * grid.numCol - dx0;
