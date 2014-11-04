@@ -118,6 +118,9 @@
     if (self) {
         _bin = image;
         _li = [[KLIMLabelingImage alloc] initWithBinaryImage:image];
+        UIImage *im = [_li createImage];
+        NSData *data = UIImagePNGRepresentation(im);
+        [data writeToFile:@"/Users/zak/Documents/Temp/label.png" atomically:YES];
         
         // 大きな画像で10X10の問題を想定し、長さのヒストグラムの最大は64、面積のヒストグラムの最大は64*64とする
         // それより大きなラベルはグリッド点以外とみなす
@@ -137,18 +140,15 @@
                 int x = (int)block.width;
                 int y = (int)block.height;
                 int a = (int)block.area;
+                
                 if (minL <= x && x <= maxL &&
                         minL <= y && y <= maxL &&
-                        minA <= a && a <= maxA) {
-                    float lRatio = (float)x / y;
-                    float aFactor = (float)a / x / y;
-                    if (lRatio >= 0.8 && lRatio <= 1.25 &&
-                            aFactor > 0.5) {
-                        block.work = 1;
-                        [hLen addValue:x];
-                        [hLen addValue:y];
-                        [hArea addValue:a];
-                    }
+                        minA <= a && a <= maxA &&
+                        [self isCirclePointWithX:x y:y a:a]) {
+                    block.work = 1;
+                    [hLen addValue:x];
+                    [hLen addValue:y];
+                    [hArea addValue:a];
                 }
             } else {
                 // 最初のダミー要素読み飛ばし
@@ -163,35 +163,40 @@
         NSInteger peak = [hLen findPeak];
         NSInteger min = [hLen findPrevBottom:peak limit:0.2];
         if (min >= 0) {
-            minL = [hLen minAtIndex:min] - 1;
+            minL = (NSInteger)([hLen minAtIndex:min] / 1.2);
         }
         NSInteger max = [hLen findNextBottom:peak limit:0.2];
         if (max >= 0) {
-            maxL = [hLen maxAtIndex:max] + 1;
+            maxL = (NSInteger)([hLen maxAtIndex:max] * 1.2);
         }
         
         peak = [hArea findPeak];
         min = [hArea findPrevBottom:peak limit:0.2];
         if (min >= 0) {
-            minA = [hArea minAtIndex:min] - 4;
+            minA = (NSInteger)([hArea minAtIndex:min] / 1.44);
         }
         max = [hArea findNextBottom:peak limit:0.2];
         if (max >= 0) {
-            maxA = [hArea maxAtIndex:max] + 4;
+            maxA = (NSInteger)([hArea maxAtIndex:max] * 1.44);
         }
         
         // ヒストグラムから判明した範囲でフィルタリング
         _blocks = [NSMutableArray array];
+        NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
         for (NSInteger i = 1; i < _li.blocks.count; i++) {
             KLIMLabelingBlock *block = _li.blocks[i];
         
             if (block.work &&
-                minL <= block.width && block.width <= maxL &&
-                minL <= block.height && block.height <= maxL &&
-                minA <= block.area && block.area <= maxA) {
+                    minL <= block.width && block.width <= maxL &&
+                    minL <= block.height && block.height <= maxL &&
+                    minA <= block.area && block.area <= maxA) {
                 [_blocks addObject:block];
+                [indexes addIndex:i];
             }
         }
+        im = [_li createImageWithFilter:indexes];
+        data = UIImagePNGRepresentation(im);
+        [data writeToFile:@"/Users/zak/Documents/Temp/labelfilter.png" atomically:YES];
         
         // 中心に近い16ブロックから検証
         // 点の検索半径はイメージ幅の1/10（10×10の問題でも最低１つの点は見つかる距離を想定）とする
@@ -257,6 +262,14 @@
 }
 
 #pragma mark - プライベートメソッド群
+
+- (BOOL)isCirclePointWithX:(int)x y:(int)y a:(int)a
+{
+    float lRatio = (float)x / y;
+    float aFactor = (float)a / x / y;
+    return (lRatio >= 0.8 && lRatio <= 1.25 &&
+            aFactor > 0.5);
+}
 
 /**
  * 与えられた画素群を中央点としてグリッドの認識を試みる.

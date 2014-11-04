@@ -38,6 +38,10 @@
     
     // グリッド抽出用の２値化画像には適応的２値化を行い、膨張処理は行わない画像を使用
     KLIMBinaryImage *bin = [[KLIMBinaryImage alloc] initWithUIImage:orgImage];
+//    UIImage *im = [bin createImage];
+//    NSData *data = UIImagePNGRepresentation(im);
+//    [data writeToFile:@"/Users/zak/Documents/Temp/bin.png" atomically:YES];
+    
     
     KLIMPointGrid *grid = [[KLIMPointGrid alloc] initWithBinaryImage:bin];
     if (grid) {
