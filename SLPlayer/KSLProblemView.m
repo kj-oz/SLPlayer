@@ -132,11 +132,12 @@
             [self adjustZoomedArea];
         }
         BOOL editing = _mode == KSLProblemViewModeInputNumber;
+        UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.9 alpha:1.0];
         if (_zoomed) {
             CGContextSetFillColorWithColor(context, [UIColor lightGrayColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
-            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+            CGContextSetFillColorWithColor(context, bgColor.CGColor);
             
             CGRect boardRect;
             float margin = (KSLPROBLEM_MARGIN - KSLPROBLEM_BORDER_WIDTH) * _zpitch;
@@ -163,7 +164,7 @@
                            erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor
                                isEditing:editing];
         } else {
-            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+            CGContextSetFillColorWithColor(context, bgColor.CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
             [_board drawImageWithContext:context origin:CGPointMake(_ax0, _ay0) pitch:_apitch rotate:_rotated

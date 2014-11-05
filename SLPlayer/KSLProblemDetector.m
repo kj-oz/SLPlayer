@@ -61,6 +61,10 @@
         KLIMBinaryImage *normalizedBin = [[KLIMBinaryImage alloc] initWithUIImage:normalizedImage];
         
         KLIMLabelingImage *li = [[KLIMLabelingImage alloc] initWithBinaryImage:normalizedBin];
+//        UIImage *im = [li createImage];
+//        NSData *data = UIImagePNGRepresentation(im);
+//        [data writeToFile:@"/Users/zak/Documents/Temp/normalizedLabel.png" atomically:YES];
+        
         //NSInteger pitch = grid.pitch;
         
         // 以下のサイズチェック用の係数は経験則（pitch 40〜100程度の場合）
@@ -145,8 +149,8 @@
     pts[3] = [grid ctrlBlockOfPosition:7].center;
     parts[3] = [homography transformFromPoints:pts ofImage:orgImage toSize:CGSizeMake(dx1, dy1)];
 
-    NSInteger width = grid.numCol * grid.pitch;
-    NSInteger height = grid.numRow * grid.pitch;
+    NSInteger width = grid.numCol * pitch;
+    NSInteger height = grid.numRow * pitch;
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     
     [parts[0] drawInRect:CGRectMake(0, 0, parts[0].size.width, parts[0].size.height)];
