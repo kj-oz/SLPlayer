@@ -78,14 +78,16 @@
 //            CGFloat rDensity = [self rightDensity];
             CGFloat rlDensity = [self rightLHDensity];
             //　底辺の密度を調べて
-            if (bDensity > 0.95) {
+            if (bDensity > 0.8) {
                 // 0.95以上あれば2
                 ans = 2;
-            } else if ([self topDensity] > 0.95) {
+            } else if ([self topDensity] > 0.8) {
                 // 上辺が0.95以上なら
                 // 底辺が0.2より大きければ5、それ以下なら7
                 ans = bDensity > 0.2 ? 5 : 7;
-            } else if ([self rightLHDensity] < 0.4) {
+            } else if (bDensity < 0.65) {
+                ans = 3;
+            } else if ([self rightLHDensity] < 0.35) {
                 // 右辺下半分が0.4以下なら2
                 // 下辺が0.95以下のケースもあるため
                 ans = 2;

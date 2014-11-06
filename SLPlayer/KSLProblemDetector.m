@@ -59,6 +59,8 @@
         UIImage *normalizedImage = [self createNormalizedImageWithGrid:grid pitch:pitch fromImage:orgImage];
         // 数値の認識用２値化画像も適応的２値化を行った画像を使用
         KLIMBinaryImage *normalizedBin = [[KLIMBinaryImage alloc] initWithUIImage:normalizedImage];
+        [normalizedBin contract];
+        [normalizedBin expand];
         
         KLIMLabelingImage *li = [[KLIMLabelingImage alloc] initWithBinaryImage:normalizedBin];
 //        UIImage *im = [li createImage];
