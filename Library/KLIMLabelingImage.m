@@ -21,6 +21,9 @@
         image = [[KLIMBinaryImage alloc] initWithBinaryImage:image];
         [image ensureClearEdge];
         [image removeCrumb];
+        UIImage *im = [image createImage];
+        NSData *data = UIImagePNGRepresentation(im);
+        [data writeToFile:@"/Users/zak/Documents/Temp/nbin.png" atomically:YES];
         
         _width = image.width;
         _height = image.height;
@@ -47,7 +50,7 @@
                         // 右側が0-画素
                         code = 3;
                         NSInteger label0 = 0; //仮の値
-                        for (NSInteger xi = 1; xi < x - 1; xi++) {
+                        for (NSInteger xi = 1; xi < x; xi++) {
                             if (_pixels[c-xi]) {
                                 label0 = _pixels[c-xi];   //外側境界のラベルと同じくする
                                 break;

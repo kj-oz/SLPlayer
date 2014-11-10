@@ -211,8 +211,8 @@
         _buffer[y * _width + x] = 0;
     }
     for (NSInteger y = 1; y < _height - 1; y++) {
-        _buffer[(y - 1) * _width + 1] = 0;
         _buffer[y * _width] = 0;
+        _buffer[(y + 1) * _width - 1] = 0;
     }
 }
 

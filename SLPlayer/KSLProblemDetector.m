@@ -23,25 +23,24 @@
 - (KSLProblem *)detectProblemFromImage:(UIImage *)image
 {
     UIImage *orgImage = image;
-//    NSInteger min = MIN(image.size.width, image.size.height);
-//    NSInteger factor = (NSInteger)(min / 1000.0);
-//    if (factor) {
-//        // 対象の画像の大きさは、短辺が1000より小さくなる程度にリサイズ
-//        factor++;
-//        NSInteger w = image.size.width / factor;
-//        NSInteger h = image.size.height / factor;
-//        UIGraphicsBeginImageContext(CGSizeMake(w, h));
-//        [image drawInRect:CGRectMake(0, 0, w, h)];
-//        orgImage = UIGraphicsGetImageFromCurrentImageContext();
-//        UIGraphicsEndImageContext();
-//    }
+    NSInteger min = MIN(image.size.width, image.size.height);
+    NSInteger factor = (NSInteger)(min / 1000.0);
+    if (factor) {
+        // 対象の画像の大きさは、短辺が1000より小さくなる程度にリサイズ
+        factor++;
+        NSInteger w = image.size.width / factor;
+        NSInteger h = image.size.height / factor;
+        UIGraphicsBeginImageContext(CGSizeMake(w, h));
+        [image drawInRect:CGRectMake(0, 0, w, h)];
+        orgImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
     
     // グリッド抽出用の２値化画像には適応的２値化を行い、膨張処理は行わない画像を使用
     KLIMBinaryImage *bin = [[KLIMBinaryImage alloc] initWithUIImage:orgImage];
-//    UIImage *im = [bin createImage];
-//    NSData *data = UIImagePNGRepresentation(im);
-//    [data writeToFile:@"/Users/zak/Documents/Temp/bin.png" atomically:YES];
-    
+    UIImage *im = [bin createImage];
+    NSData *data = UIImagePNGRepresentation(im);
+    [data writeToFile:@"/Users/zak/Documents/Temp/bin.png" atomically:YES];
     
     KLIMPointGrid *grid = [[KLIMPointGrid alloc] initWithBinaryImage:bin];
     if (grid) {
@@ -59,8 +58,11 @@
         UIImage *normalizedImage = [self createNormalizedImageWithGrid:grid pitch:pitch fromImage:orgImage];
         // 数値の認識用２値化画像も適応的２値化を行った画像を使用
         KLIMBinaryImage *normalizedBin = [[KLIMBinaryImage alloc] initWithUIImage:normalizedImage];
-        [normalizedBin contract];
-        [normalizedBin expand];
+//        [normalizedBin contract];
+//        [normalizedBin expand];
+        UIImage *im = [normalizedBin createImage];
+        NSData *data = UIImagePNGRepresentation(im);
+        [data writeToFile:@"/Users/zak/Documents/Temp/normalizedbin.png" atomically:YES];
         
         KLIMLabelingImage *li = [[KLIMLabelingImage alloc] initWithBinaryImage:normalizedBin];
 //        UIImage *im = [li createImage];

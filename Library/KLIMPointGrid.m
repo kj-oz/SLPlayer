@@ -97,6 +97,9 @@
     // ラベリングされた画素群
     NSMutableArray *_blocks;
     
+    // 点とみなすアスペクト比
+    CGFloat _lRatio;
+    
     // 点の検索半径
     CGFloat _searchDistance;
     
@@ -122,14 +125,17 @@
         NSData *data = UIImagePNGRepresentation(im);
         [data writeToFile:@"/Users/zak/Documents/Temp/label.png" atomically:YES];
         
+        // 点の大きさは概ね0.5〜1.0mm、新書版が幅10cm、ジャイアント版が15cm、写真のサイズが1.1〜1.5倍とすると
+        
         // 大きな画像で10X10の問題を想定し、長さのヒストグラムの最大は64、面積のヒストグラムの最大は64*64とする
         // それより大きなラベルはグリッド点以外とみなす
-        NSInteger minL = image.width / 300;
-        NSInteger maxL = image.width / 66;
+        NSInteger minL = image.width / 400;
+        NSInteger maxL = image.width / 50;
         NSInteger bandL = 1;
         NSInteger minA = minL * minL;
         NSInteger maxA = (maxL + 1) * (maxL + 1) - 1;
         NSInteger bandA = 4;
+        _lRatio = 0.8;
         
         KLIMHistgram *hArea = [[KLIMHistgram alloc] initWithMin:minA max:maxA bandWidth:bandA];
         KLIMHistgram *hLen = [[KLIMHistgram alloc] initWithMin:minL max:maxL bandWidth:bandL];
@@ -265,10 +271,11 @@
 
 - (BOOL)isCirclePointWithX:(int)x y:(int)y a:(int)a
 {
-    float lRatio = (float)x / y;
-    float aFactor = (float)a / x / y;
-    return (lRatio >= 0.8 && lRatio <= 1.25 &&
-            aFactor > 0.5);
+    float fx = (float)x;
+    float fy = (float)y;
+    float lRatio = x > y ? fy / fx : fx / fy;
+    float aFactor = a / fx / fy;
+    return (lRatio >= _lRatio && aFactor >= 0.5);
 }
 
 /**
