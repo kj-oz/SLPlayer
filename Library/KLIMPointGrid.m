@@ -121,21 +121,17 @@
     if (self) {
         _bin = image;
         _li = [[KLIMLabelingImage alloc] initWithBinaryImage:image];
-        UIImage *im = [_li createImage];
-        NSData *data = UIImagePNGRepresentation(im);
-        [data writeToFile:@"/Users/zak/Documents/Temp/label.png" atomically:YES];
         
-        // 点の大きさは概ね0.5〜1.0mm、新書版が幅10cm、ジャイアント版が15cm、写真のサイズが1.1〜1.5倍とすると
-        
-        // 大きな画像で10X10の問題を想定し、長さのヒストグラムの最大は64、面積のヒストグラムの最大は64*64とする
-        // それより大きなラベルはグリッド点以外とみなす
+        // 点の大きさは概ね0.5〜1.0mm、新書版が幅10cm、ジャイアント版が15cm、写真のサイズが1.1〜1.5倍
+        // 大きな画像を縮めることで、2pixelほど大きくなる傾向
+        // lRatioは点が小さい場合に、誤差が大きくなるので0.5程度は許容
         NSInteger minL = image.width / 400;
         NSInteger maxL = image.width / 50;
         NSInteger bandL = 1;
         NSInteger minA = minL * minL;
         NSInteger maxA = (maxL + 1) * (maxL + 1) - 1;
         NSInteger bandA = 4;
-        _lRatio = 0.8;
+        _lRatio = 0.4;
         
         KLIMHistgram *hArea = [[KLIMHistgram alloc] initWithMin:minA max:maxA bandWidth:bandA];
         KLIMHistgram *hLen = [[KLIMHistgram alloc] initWithMin:minL max:maxL bandWidth:bandL];
@@ -200,9 +196,6 @@
                 [indexes addIndex:i];
             }
         }
-        im = [_li createImageWithFilter:indexes];
-        data = UIImagePNGRepresentation(im);
-        [data writeToFile:@"/Users/zak/Documents/Temp/labelfilter.png" atomically:YES];
         
         // 中心に近い16ブロックから検証
         // 点の検索半径はイメージ幅の1/10（10×10の問題でも最低１つの点は見つかる距離を想定）とする
@@ -269,6 +262,13 @@
 
 #pragma mark - プライベートメソッド群
 
+/**
+ * 与えられたブロックのパラメータから塗りつぶした円とみなせるか判定する.
+ * @param x 幅（ピクセル）
+ * @param y 高さ（ピクセル）
+ * @param a 面積（ピクセル）
+ * @return 塗りつぶし円かどうか
+ */
 - (BOOL)isCirclePointWithX:(int)x y:(int)y a:(int)a
 {
     float fx = (float)x;

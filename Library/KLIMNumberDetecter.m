@@ -43,11 +43,13 @@
     switch (_block.numHole) {
         case 2:
             // 穴が2つあれば8
+            printf("8\n");
             return 8;
         case 1:
             // 穴が1つ
             if ([self topDensity] < 0.2) {
                 // 上辺の密度が0.2以下なら4
+                printf("4\n");
                 return 4;
             }
             CGFloat lDensity = [self leftDensity];
@@ -55,9 +57,11 @@
             // 左右辺の密度を比較し
             if (lDensity < rDensity * 0.8) {
                 // 左辺が右辺の8割以下なら9
+                printf("9\n");
                 return 9;
             } else if (rDensity < lDensity * 0.8) {
                 // 右辺が左辺の8割以下なら6
+                printf("6\n");
                 return 6;
             } else {
                 // ほぼ均等なら0

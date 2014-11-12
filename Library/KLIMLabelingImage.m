@@ -21,9 +21,6 @@
         image = [[KLIMBinaryImage alloc] initWithBinaryImage:image];
         [image ensureClearEdge];
         [image removeCrumb];
-        UIImage *im = [image createImage];
-        NSData *data = UIImagePNGRepresentation(im);
-        [data writeToFile:@"/Users/zak/Documents/Temp/nbin.png" atomically:YES];
         
         _width = image.width;
         _height = image.height;
