@@ -385,7 +385,7 @@
                 _dy = -1;
             }
             if (_dx != 0 || _dy != 0) {
-                _timer = [NSTimer scheduledTimerWithTimeInterval:0.02
+                _timer = [NSTimer scheduledTimerWithTimeInterval:0.0
                         target:self selector:@selector(autoScroll) userInfo:nil repeats:YES];
             }
         } else if (state == UIGestureRecognizerStateEnded) {

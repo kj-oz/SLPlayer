@@ -156,10 +156,10 @@ static KSLProblemManager *_sharaedInstance = nil;
         NSString *fromFile = [fromDir stringByAppendingPathComponent:problem.uid];
         NSString *toFile = [toDir stringByAppendingPathComponent:problem.uid];
         NSError *error;
-        [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"problem"]
-                    toPath:[toFile stringByAppendingPathComponent:@"problem"] error:&error];
-        [fm moveItemAtPath:[fromFile stringByAppendingPathComponent:@"play"]
-                    toPath:[toFile stringByAppendingPathComponent:@"play"] error:&error];
+        [fm moveItemAtPath:[fromFile stringByAppendingString:@".problem"]
+                    toPath:[toFile stringByAppendingString:@".problem"] error:&error];
+        [fm moveItemAtPath:[fromFile stringByAppendingString:@".play"]
+                    toPath:[toFile stringByAppendingString:@".play"] error:&error];
         
         [to addProblem:problem withSave:NO];
         [_currentWorkbook removeProblem:problem withDelete:NO];
