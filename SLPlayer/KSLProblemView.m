@@ -64,7 +64,7 @@
     // 問題座標系でのズームエリアの可動範囲
     CGRect _zoomableArea;
     
-    //
+    // 拡大時の盤面サイズが画面より小さく、スクロールの必要がない場合にYES
     BOOL _fixH;
     BOOL _fixV;
     
@@ -72,6 +72,14 @@
     CGFloat _dx;
     CGFloat _dy;
     NSTimer *_timer;
+    
+    // 描画色
+    UIColor *_boardColor;
+    UIColor *_erasableColor;
+    UIColor *_zoomAreaStrokeColor;
+    UIColor *_zoomAreaFillColor;
+    UIColor *_bgColor;
+    UIColor *_trackColor;
 }
 
 #pragma mark - 初期化
@@ -97,6 +105,14 @@
     _zpitch = KSLPROBLEM_TOUCHABLE_PITCH;
     _r = _zpitch * 0.5;
     _scrollStep = _zpitch * 0.2;
+    
+    // 色
+    _boardColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.9 alpha:1.0];
+    _erasableColor = [UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0];
+    _zoomAreaStrokeColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.2];
+    _zoomAreaFillColor = [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:0.1];
+    _bgColor = [UIColor lightGrayColor];
+    _trackColor = [UIColor colorWithRed:0.0 green:1.0 blue:1.0 alpha:0.03];
 }
 
 #pragma mark - プロパティ
@@ -121,6 +137,12 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
+    CGColorRef boardColor = _boardColor.CGColor;
+    CGColorRef erasableColor = _erasableColor.CGColor;
+    CGColorRef zoomAreaStrokeColor = _zoomAreaStrokeColor.CGColor;
+    CGColorRef zoomAreaFillColor = _zoomAreaFillColor.CGColor;
+    CGColorRef bgColor = _bgColor.CGColor;
+    CGColorRef trackColor = _trackColor.CGColor;
     
     CGFloat w = self.frame.size.width;
     CGFloat h = self.frame.size.height;
@@ -132,13 +154,11 @@
             [self adjustZoomedArea];
         }
         BOOL editing = _mode == KSLProblemViewModeInputNumber;
-        UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.9 alpha:1.0];
         if (_zoomed) {
-            CGContextSetFillColorWithColor(context, [UIColor lightGrayColor].CGColor);
+            CGContextSetFillColorWithColor(context, bgColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
-
-            CGContextSetFillColorWithColor(context, bgColor.CGColor);
             
+            CGContextSetFillColorWithColor(context, boardColor);
             CGRect boardRect;
             float margin = (KSLPROBLEM_MARGIN - KSLPROBLEM_BORDER_WIDTH) * _zpitch;
             if (_rotated) {
@@ -153,29 +173,25 @@
             CGContextFillRect(context, boardRect);
             
             // タッチの余韻描画
-            CGContextSetFillColorWithColor(context,
-                                        [UIColor colorWithRed:0.0 green:1.0 blue:1.0 alpha:0.03].CGColor);
+            CGContextSetFillColorWithColor(context, trackColor);
             for (NSValue *val in _tracks) {
                 CGPoint track = val.CGPointValue;
                 CGContextFillEllipseInRect(context, CGRectMake(track.x - _r, track.y - _r, 2 * _r, 2 * _r));
             }
             
             [_board drawImageWithContext:context origin:CGPointMake(_zx0, _zy0) pitch:_zpitch rotate:_rotated
-                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor
+                           erasableColor:erasableColor
                                isEditing:editing];
         } else {
-            CGContextSetFillColorWithColor(context, bgColor.CGColor);
+            CGContextSetFillColorWithColor(context, boardColor);
             CGContextFillRect(context, CGRectMake(0, 0, w, h));
 
             [_board drawImageWithContext:context origin:CGPointMake(_ax0, _ay0) pitch:_apitch rotate:_rotated
-                           erasableColor:[UIColor colorWithRed:0.0 green:0.5 blue:1.0 alpha:1.0].CGColor
+                           erasableColor:erasableColor
                                isEditing:editing];
             
-            CGContextSetFillColorWithColor(context,
-                                           [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:0.1].CGColor);
-            CGContextSetStrokeColorWithColor(context,
-                                           [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.2].CGColor);
-            
+            CGContextSetFillColorWithColor(context, zoomAreaFillColor);
+            CGContextSetStrokeColorWithColor(context, zoomAreaStrokeColor);
             CGRect rect = [self zoomedAreaInView];
             CGContextFillRect(context, rect);
             CGContextStrokeRect(context, rect);

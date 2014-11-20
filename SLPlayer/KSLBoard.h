@@ -45,6 +45,7 @@ typedef enum : NSInteger {
 typedef enum : NSInteger {
     KSLLoopError,                   // 1本のループになっていない
     KSLLoopCellError,               // 1本のループだがセルの数値と合致しない
+    KSLLoopMultiLoopError,          // 全てのセルの数値を満たしているが複数のループがある
     KSLLoopFinished                 // 1本のループでなおかつ全てのセルの数値を満たしている
 } KSLLoopStatus;
 

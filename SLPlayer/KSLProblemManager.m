@@ -44,9 +44,9 @@ static KSLProblemManager *_sharaedInstance = nil;
     self = [super init];
     if (self) {
         _workbooks = [NSMutableArray array];
-        NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+        NSArray* paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                              NSUserDomainMask, YES);
-        _documentDir = [[paths objectAtIndex:0] copy];
+        _documentDir = [paths[0] stringByAppendingPathComponent:@"Workbooks"];
         KLDBGPrint("** Application start **\n");
         KLDBGPrint(" document directory:%s\n", _documentDir.UTF8String);
         
@@ -72,10 +72,30 @@ static KSLProblemManager *_sharaedInstance = nil;
 - (void)load
 {
     NSFileManager *fm = [NSFileManager defaultManager];
+    NSError *error;
+    BOOL isDir;
+    if (![fm fileExistsAtPath:_documentDir isDirectory:&isDir]) {
+        [fm createDirectoryAtPath:_documentDir withIntermediateDirectories:YES
+                                                    attributes:nil error:&error];
+    }
+    
+    // Docディレクトリーの問題集をLib/Workbooksの下に移動（V1.1）
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                         NSUserDomainMask, YES);
+    NSString *oldDocDir = paths[0];
+    NSArray *files = [fm contentsOfDirectoryAtPath:oldDocDir error:NULL];
+    for (NSString *file in files) {
+        NSString *path = [oldDocDir stringByAppendingPathComponent:file];
+        [fm fileExistsAtPath:path isDirectory:&isDir];
+        if (isDir) {
+            [fm moveItemAtPath:path
+                        toPath:[_documentDir stringByAppendingPathComponent:file] error:&error];
+        }
+    }
     
     // アプリにバンドルされたサンプル問題集の展開
     NSBundle *bundle = [NSBundle mainBundle];
-    NSArray *paths = [bundle pathsForResourcesOfType:@"workbook" inDirectory:nil];
+    paths = [bundle pathsForResourcesOfType:@"workbook" inDirectory:nil];
     for (NSString *path in paths) {
         NSString *title = [[path lastPathComponent] stringByDeletingPathExtension];
         NSString *docPath = [_documentDir stringByAppendingPathComponent:title];
@@ -85,8 +105,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     }
 
     // Docディレクトリーに置かれた問題集ファイルの展開
-    NSArray *files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
-    NSError *error;
+    files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
     for (NSString *file in files) {
         NSString *path = [_documentDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:NULL];
@@ -98,7 +117,6 @@ static KSLProblemManager *_sharaedInstance = nil;
 
     // ディレクトリーの問題集化
     files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
-    BOOL isDir;
     for (NSString *file in files) {
         NSString *path = [_documentDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:&isDir];

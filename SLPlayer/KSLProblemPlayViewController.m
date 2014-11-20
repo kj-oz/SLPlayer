@@ -246,6 +246,11 @@
                                 message:@"条件に合致しないセルがあります。" delegate:nil cancelButtonTitle:nil
                                 otherButtonTitles:@"了解", nil];
         [alert show];
+    } else if (loopStatus == KSLLoopMultiLoopError) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ループエラー"
+                                                        message:@"複数のループに分かれています。" delegate:nil cancelButtonTitle:nil
+                                              otherButtonTitles:@"了解", nil];
+        [alert show];
     }
 }
 

@@ -393,6 +393,8 @@
             return KSLLoopFinished;
         }
         return KSLLoopCellError;
+    } else if ([self findOpenCell] == nil) {
+        return KSLLoopMultiLoopError;
     }
     return KSLLoopError;
 }
@@ -659,7 +661,7 @@
             }
         }
     }
-    
+//    CGColorRelease(fixedColor);
 }
 
 #pragma mark - プライベートメソッド

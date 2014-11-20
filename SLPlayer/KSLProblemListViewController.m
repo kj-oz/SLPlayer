@@ -86,6 +86,8 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
+    
     KSLAppDelegate *app = [UIApplication sharedApplication].delegate;
     KSLProblemManager *pm = [KSLProblemManager sharedManager];
     self.title = pm.currentWorkbook.title;
