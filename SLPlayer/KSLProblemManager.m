@@ -46,9 +46,9 @@ static KSLProblemManager *_sharaedInstance = nil;
         _workbooks = [NSMutableArray array];
         NSArray* paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                              NSUserDomainMask, YES);
-        _documentDir = [paths[0] stringByAppendingPathComponent:@"Workbooks"];
+        _workbookDir = [paths[0] stringByAppendingPathComponent:@"Workbooks"];
         KLDBGPrint("** Application start **\n");
-        KLDBGPrint(" document directory:%s\n", _documentDir.UTF8String);
+        KLDBGPrint(" document directory:%s\n", _workbookDir.UTF8String);
         
         // 日付フォーマットオブジェクトの生成
         _dateFormatter = [[NSDateFormatter alloc] init];
@@ -64,7 +64,7 @@ static KSLProblemManager *_sharaedInstance = nil;
 
 - (NSString *)currentWorkbookDir
 {
-    return [_documentDir stringByAppendingPathComponent:_currentWorkbook.title];
+    return [_workbookDir stringByAppendingPathComponent:_currentWorkbook.title];
 }
 
 #pragma mark - ロード
@@ -74,23 +74,35 @@ static KSLProblemManager *_sharaedInstance = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
     NSError *error;
     BOOL isDir;
-    if (![fm fileExistsAtPath:_documentDir isDirectory:&isDir]) {
-        [fm createDirectoryAtPath:_documentDir withIntermediateDirectories:YES
+    if (![fm fileExistsAtPath:_workbookDir isDirectory:&isDir]) {
+        [fm createDirectoryAtPath:_workbookDir withIntermediateDirectories:YES
                                                     attributes:nil error:&error];
     }
     
     // Docディレクトリーの問題集をLib/Workbooksの下に移動（V1.1）
+    BOOL vuTo1_1 = NO;
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask, YES);
-    NSString *oldDocDir = paths[0];
-    NSArray *files = [fm contentsOfDirectoryAtPath:oldDocDir error:NULL];
+    NSString *documentDir = paths[0];
+    NSArray *files = [fm contentsOfDirectoryAtPath:documentDir error:NULL];
     for (NSString *file in files) {
-        NSString *path = [oldDocDir stringByAppendingPathComponent:file];
+        NSString *path = [documentDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:&isDir];
         if (isDir) {
             [fm moveItemAtPath:path
-                        toPath:[_documentDir stringByAppendingPathComponent:file] error:&error];
+                        toPath:[_workbookDir stringByAppendingPathComponent:file] error:&error];
+            vuTo1_1 = YES;
         }
+    }
+    if (vuTo1_1) {
+        NSString *msg = [NSString stringWithFormat:@"%@%@%@",
+            @"バージョンアップしていただきありがとうございます。このバージョンに添付している問題集の",
+            @"「A1」はV1.0に添付の「0_初級1」と、「B1」は、「1_中級1」「2_上級1」「3_特級1」を合わせたものと",
+            @"同じ内容で各問題の名称と難易度（見直しました）だけを変更したものです。不要の場合には削除していただくようお願いします。"];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"お知らせ"
+                                                        message:msg delegate:nil
+                                              cancelButtonTitle:nil otherButtonTitles:@"了解", nil];
+        [alert show];
     }
     
     // アプリにバンドルされたサンプル問題集の展開
@@ -98,16 +110,16 @@ static KSLProblemManager *_sharaedInstance = nil;
     paths = [bundle pathsForResourcesOfType:@"workbook" inDirectory:nil];
     for (NSString *path in paths) {
         NSString *title = [[path lastPathComponent] stringByDeletingPathExtension];
-        NSString *docPath = [_documentDir stringByAppendingPathComponent:title];
+        NSString *docPath = [_workbookDir stringByAppendingPathComponent:title];
         if (![fm fileExistsAtPath:docPath isDirectory:NULL]) {
             [self importWorkbook:path];
         }
     }
 
     // Docディレクトリーに置かれた問題集ファイルの展開
-    files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
+    files = [fm contentsOfDirectoryAtPath:documentDir error:NULL];
     for (NSString *file in files) {
-        NSString *path = [_documentDir stringByAppendingPathComponent:file];
+        NSString *path = [documentDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:NULL];
         if ([[file pathExtension] isEqualToString:@"workbook"]) {
             [self importWorkbook:path];
@@ -116,9 +128,9 @@ static KSLProblemManager *_sharaedInstance = nil;
     }
 
     // ディレクトリーの問題集化
-    files = [fm contentsOfDirectoryAtPath:_documentDir error:NULL];
+    files = [fm contentsOfDirectoryAtPath:_workbookDir error:NULL];
     for (NSString *file in files) {
-        NSString *path = [_documentDir stringByAppendingPathComponent:file];
+        NSString *path = [_workbookDir stringByAppendingPathComponent:file];
         [fm fileExistsAtPath:path isDirectory:&isDir];
         if (isDir) {
             KSLWorkbook *book = [[KSLWorkbook alloc] initWithTitle:file];
@@ -159,7 +171,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     KSLWorkbook *wb = _workbooks[index];
     NSError *error;
     NSFileManager *fm = [NSFileManager defaultManager];
-    [fm removeItemAtPath:[_documentDir stringByAppendingPathComponent:wb.title] error:&error];
+    [fm removeItemAtPath:[_workbookDir stringByAppendingPathComponent:wb.title] error:&error];
     
     [_workbooks removeObjectAtIndex:index];
 }
@@ -168,7 +180,7 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *fromDir = self.currentWorkbookDir;
-    NSString *toDir = [_documentDir stringByAppendingPathComponent:to.title];
+    NSString *toDir = [_workbookDir stringByAppendingPathComponent:to.title];
     
     for (KSLProblem *problem in problems) {
         NSString *fromFile = [fromDir stringByAppendingPathComponent:problem.uid];
@@ -188,8 +200,8 @@ static KSLProblemManager *_sharaedInstance = nil;
 {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSError *error;
-    NSString *fromDir = [_documentDir stringByAppendingPathComponent:workbook.title];
-    NSString *toDir = [_documentDir stringByAppendingPathComponent:name];
+    NSString *fromDir = [_workbookDir stringByAppendingPathComponent:workbook.title];
+    NSString *toDir = [_workbookDir stringByAppendingPathComponent:name];
     [fm moveItemAtPath:fromDir toPath:toDir error:&error];
     
     if (!error) {
@@ -227,7 +239,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     }
     NSString *title = json[@"title"];
     
-    NSString *path = [_documentDir stringByAppendingPathComponent:title];
+    NSString *path = [_workbookDir stringByAppendingPathComponent:title];
     
     NSInteger num = 1;
     NSString *base = title;
@@ -235,7 +247,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     while ([fm fileExistsAtPath:path]) {
         num++;
         title = [NSString stringWithFormat:@"%@-%ld", base, (long)num];
-        path = [_documentDir stringByAppendingPathComponent:title];
+        path = [_workbookDir stringByAppendingPathComponent:title];
     }
     [fm createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:&error];
     
@@ -251,6 +263,9 @@ static KSLProblemManager *_sharaedInstance = nil;
             problem.status = KSLProblemStatusEditing;
         }
 #endif
+        if (problem.width > problem.height) {
+            [problem rotate];
+        }
         [problem saveToFile:path];
     }
     return title;

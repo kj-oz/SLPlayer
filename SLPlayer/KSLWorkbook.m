@@ -25,7 +25,7 @@
         _problems = [NSMutableArray array];
         
         KSLProblemManager *pm = [KSLProblemManager sharedManager];
-        NSString *path = [pm.documentDir stringByAppendingPathComponent:title];
+        NSString *path = [pm.workbookDir stringByAppendingPathComponent:title];
         
         NSFileManager *fm = [NSFileManager defaultManager];
         BOOL isDir;
@@ -54,7 +54,7 @@
     
     if (save) {
         KSLProblemManager *pm = [KSLProblemManager sharedManager];
-        [problem saveToFile:[pm.documentDir stringByAppendingPathComponent:_title]];
+        [problem saveToFile:[pm.workbookDir stringByAppendingPathComponent:_title]];
     }
 }
 
@@ -65,7 +65,7 @@
     if (delete) {
         NSFileManager *fm = [NSFileManager defaultManager];
         KSLProblemManager *pm = [KSLProblemManager sharedManager];
-        NSString *dir = [pm.documentDir stringByAppendingPathComponent:_title];
+        NSString *dir = [pm.workbookDir stringByAppendingPathComponent:_title];
         NSString *file = [dir stringByAppendingPathComponent:problem.uid];
         NSError *error;
         [fm removeItemAtPath:[file stringByAppendingPathExtension:@"problem"] error:&error];
@@ -107,7 +107,7 @@
     newProblem.title = newTitle;
     [_problems addObject:newProblem];
     
-    [problem saveToFile:[pm.documentDir stringByAppendingPathComponent:_title]];
+    [problem saveToFile:[pm.workbookDir stringByAppendingPathComponent:_title]];
 }
 
 #pragma mark - プライベート・メソッド群

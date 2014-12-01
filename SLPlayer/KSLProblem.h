@@ -135,13 +135,13 @@ typedef enum : NSInteger {
 - (id)initWithProblem:(KSLProblem *)original;
 
 /**
- *
- * @param original 
+ * 与えられた問題の内容で自身の内容を修正する.
+ * @param original コピー元の問題
  */
 - (void)updateWithProblem:(KSLProblem *)original;
 
 /**
- *
+ * 問題を９０°左に回転させて縦横を入れ替える.
  */
 - (void)rotate;
 

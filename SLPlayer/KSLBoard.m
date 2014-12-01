@@ -388,13 +388,16 @@
 
 - (KSLLoopStatus)loopStatusOfEdge:(KSLEdge *)edge
 {
-    if ([self isOnlyLoopOfEdge:edge]) {
-        if ([self findOpenCell] == nil) {
-            return KSLLoopFinished;
+    int check = [self isOnlyLoopOfEdge:edge];
+    if (check >= 0) {
+        if (check) {
+            if ([self findOpenCell] == nil) {
+                return KSLLoopFinished;
+            }
+            return KSLLoopCellError;
+        } else if ([self findOpenCell] == nil) {
+            return KSLLoopMultiLoopError;
         }
-        return KSLLoopCellError;
-    } else if ([self findOpenCell] == nil) {
-        return KSLLoopMultiLoopError;
     }
     return KSLLoopError;
 }
@@ -669,9 +672,9 @@
 /**
  * 与えられたEdgeの含まれているループが盤面の唯一のループかどうかを確認する
  * @param edge Edge
- * @return 盤面の唯一のループかどうか
+ * @return -1:閉じていない、0:複数ループあり、1:盤面の唯一のループ
  */
-- (BOOL)isOnlyLoopOfEdge:(KSLEdge *)edge
+- (int)isOnlyLoopOfEdge:(KSLEdge *)edge
 {
     KSLNode *root = [edge nodeOfLH:0];
     KSLNode *node = [edge nodeOfLH:1];
@@ -679,14 +682,14 @@
     while (node != root) {
         edge = [node onEdgeConnectToEdge:edge];
         if (!edge) {
-            return NO;
+            return -1;
         }
         conCount++;
         
         node = [edge anotherNodeOfNode:node];
     }
     
-    return conCount == [self countOnEdge];
+    return conCount == [self countOnEdge] ? 1 : 0;
 }
 
 /**

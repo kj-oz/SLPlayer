@@ -26,7 +26,7 @@
 @property (nonatomic, weak) KSLProblem *currentProblem;
 
 // 問題集を配置するデイレクトリー
-@property (nonatomic, readonly) NSString *documentDir;
+@property (nonatomic, readonly) NSString *workbookDir;
 
 // カレントの問題集のディレクトリー
 @property (nonatomic, readonly) NSString *currentWorkbookDir;
