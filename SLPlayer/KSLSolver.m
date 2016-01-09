@@ -200,10 +200,10 @@
             [self changeEdge:[_board vEdgeAtX:x+hdir andY:y+dy] status:KSLEdgeStatusOn];
             [self changeEdge:[_board hEdgeAtX:x+dx andY:y+vdir] status:KSLEdgeStatusOn];
             if ([_board cellAtX:x+dx andY:y].number == 3) {
-                [self changeEdge:[_board vEdgeAtX:x+dx+dx andY:y] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board vEdgeAtX:x+hdir+dx+dx andY:y] status:KSLEdgeStatusOn];
             }
             if ([_board cellAtX:x andY:y+dy].number == 3) {
-                [self changeEdge:[_board hEdgeAtX:x andY:y+dy+dy] status:KSLEdgeStatusOn];
+                [self changeEdge:[_board hEdgeAtX:x andY:y+vdir+dy+dy] status:KSLEdgeStatusOn];
             }
             break;
         case 3:
@@ -559,7 +559,7 @@
                     } else {
                         [ex raise];
                     }
-                    //[_board dumpWithEdeg:edge];
+                    //[_board dump];
                     //[self dumpStepsFromIndex:1];
                     [self clearCurrentStep];
                     continue;

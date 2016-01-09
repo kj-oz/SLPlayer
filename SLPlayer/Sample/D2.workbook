@@ -1,4 +1,4 @@
-{"title":"D2", "problems":[
+{"title":"D2", "checked":1, "problems":[
 {"difficulty":24,
 "elapsedSeconds":0,
 "status":1,

@@ -215,7 +215,7 @@ static KSLProblemManager *_sharaedInstance = nil;
     NSString *dateString = [_dateFormatter stringFromDate:[NSDate date]];
     if ([dateString compare:_lastDateString] != NSOrderedDescending) {
         long long lastDate = [_lastDateString longLongValue];
-        dateString = [NSString stringWithFormat:@"%ld", (long)lastDate];
+        dateString = [NSString stringWithFormat:@"%ld", (long)++lastDate];
     }
     _lastDateString = dateString;
     return dateString;
@@ -238,7 +238,9 @@ static KSLProblemManager *_sharaedInstance = nil;
         [[NSException exceptionWithName:error.description reason:jsonPath userInfo:nil] raise];
     }
     NSString *title = json[@"title"];
-    
+    id checked = json[@"checked"];
+    BOOL bChecked = checked != nil;
+  
     NSString *path = [_workbookDir stringByAppendingPathComponent:title];
     
     NSInteger num = 1;
@@ -255,12 +257,18 @@ static KSLProblemManager *_sharaedInstance = nil;
     for (NSDictionary *dic in problems) {
         KSLProblem *problem = [[KSLProblem alloc] initWithJson:dic];
 #if TARGET_IPHONE_SIMULATOR
-        // エミュレータで実行中の場合のみ問題の正しさを検証する
-        KSLSolver *solver = [[KSLSolver alloc] initWithBoard:
-                             [[KSLBoard alloc] initWithProblem:problem]];
-        NSError *error;
-        if (![solver solveWithError:&error]) {
-            problem.status = KSLProblemStatusEditing;
+        if (!bChecked) {
+            // エミュレータで実行中の場合のみ問題の正しさを検証する
+            KSLSolver *solver = [[KSLSolver alloc] initWithBoard:
+                                 [[KSLBoard alloc] initWithProblem:problem]];
+            NSError *error;
+            if (![solver solveWithError:&error]) {
+                KLDBGPrint("▼▼ %s not solved: %s\n",
+                         problem.title.UTF8String, error.description.UTF8String);
+                problem.status = KSLProblemStatusEditing;
+            } else {
+                KLDBGPrint("△△ %s solved\n", problem.title.UTF8String);
+            }
         }
 #endif
         if (problem.width > problem.height) {

@@ -1,4 +1,4 @@
-{"title":"B1", "problems":[
+{"title":"B1", "checked":1, "problems":[
 {"difficulty":5,
 "elapsedSeconds":0,
 "status":1,
